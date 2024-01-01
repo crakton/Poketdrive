@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "dev-wave",
+  "private_key_id": "faa5889a5532aff9a1e0753f00cff8b5f64c0e66",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDCQVQYP62y0vmR\nvapOjOGEUJbXNZr87EgiD1a9kH9In/na7lvq2Zvc+8J1aZoyT94Zj1wWuVqt+See\nMJXUaoCIDpbd+kaxenYnmDh2pgTs82tL438ohy8AyQOCoVCdMVcWf64LoTM8JJnn\neI26pTWEHITAqUFnFFzAPehqAz4SRgg8VyVFrno9swHe24F0pqTp5F9n/kxXVhjq\nuAekvjXQVa6ypRbneyZFmeKr9ZPehHLxRy9CLiCjGGeUtlzFBRRPKZ90imUO+Lnr\nTxXkLgZmmrEjpxjJP2Tz2MTR8s64yz/OMIjSoa+KGaOfX1aarGH2XvytFjjd40Yn\nRq9YA0SfAgMBAAECggEAFsEp9XiJbhqU3b5kCN/WJOEpzNt8ebxrIK4/oLn15vnH\nqJ5mNFGO6+kDw4F+F1RQCxobapVbar32UZXrCcml9QoRyxPKRyI2B/emmY4N9/xK\n6RtPewhcIvvo8NrY7hOTBNF/qjYU9yppwCRYzxsTdJPAoIQoY0eOgShfUAJsOXM4\nBIyZrZNrSS/iwtW/Zqcz6FCou6/rW3oj74M8iubxt8KatpPX2HgGKBam0fIRDoTj\nhluDELoqwM+mRdpwzTfWdI1/pKF6rLaKg5akJwinf4j7rGCyVBDEzAOt4AOMi4iV\ngE0SEfHBq8JQ2P5W94xKtKbN5B3jnGYMC1At3KrJGQKBgQDpULMFh1uWSftUftGT\nwbu2yhEFNaqP6RwIFNr89ophZXhDdvixkFBV7k8cn7eZOJcZxEaUPUu8xmJTAi9G\nn1xFPwXoxvOM5rjhBmCv4spHkxjeRswL+uqRkfeOeusxAmq85JfMJCAPfpKdvIgC\nAid20+4tt1pWx7judgnWyv+dOQKBgQDVJGkb125P2TkaxLl1rjTs4mMN7m7S0i9N\nmYysZH06bjMzF8BNE12ojHFPKYe54TQSCzcJPtV1J0GfvaNqTeYtqUgu5q+9KAaE\nGuBHb96RNOXdEOXre8cEKk1TwyeWoQOOIzqnDM57FbclE9l7j14wQmXf7j5j9sCz\nbeQv1LHIlwKBgF5rdCd2oc/uXLHTKMldC7RrjfvHviDDO77hgcYBl/rWb5cN3JMv\nTfOYn5d743c0eaHJ1q5DKBVbS4tARRWVhGfZm3CaoxGQhZ07UYGcjDPvCY9ao1Tt\n1GPY6JBWmjuZOMz8zZmlvPvIQ1lmZLw7VvE1zxvdKcgYx3RpfI3aVRuxAoGAXHOV\nsADrFXGIpobMVzJAPLwZ8TIKGiIXaJaBAUn5U733MWNNA2GyD2kTwR2nhMYdevIo\nZjc+CboEahCs8HBntkimScnAUtEoumaaAAKTTPLf/drVkCY5diIPNpUA+AJRc3bu\newVADv2lWkzY2hKe7VnvrIk/wMaIYYv6HZEpqHMCgYBe2kfJbhFVh9DksxTrDmhI\naRMmhnRMDpDKnrXwYCVXU2d/Eki3kvoSksVgtezXKTEqCbXCIlgmb7eeZvdYs0TV\nrCsWEU6kohYvkuv5PiEPOmJCDWg/mUjV92O0SGMjKQ8imWm2g/s1dvb5SJLjVrUX\nDdLWcIRnYZBVHvXkkTEIpA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "devwave-admin@dev-wave.iam.gserviceaccount.com",
+  "client_id": "100681437057584608569",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/devwave-admin%40dev-wave.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
