@@ -1,6 +1,15 @@
 import Image from "next/image";
+import { useEffect } from "react";
+import {onLCP, onFID, onCLS} from 'web-vitals';
 
 export default function Home() {
+
+  // log performance metrics
+  useEffect(() => {
+    onCLS(console.log);
+    onFID(console.log);
+    onLCP(console.log);
+  }, [])
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
