@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import { useEffect } from "react";
 import {onLCP, onFID, onCLS} from 'web-vitals';
