@@ -1,29 +1,32 @@
-module.exports = { 
-    extends: ['@commitlint/config-conventional'],
-    rules: {
-        'type-enum': [2, 'always', [
-            'task',
-            'bug',
-            'feat', 
-            'fix', 
-            'docs', 
-            'style', 
-            'refactor', 
-            'perf', 
-            'test', 
-            'build', 
-            'ci', 
-            'chore', 
-            'revert', 
-            'workflow', 
-            'types', 
-            'release'
-        ]],
-        'type-case': [0, 'always', 'lower-case'],
-        'type-empty': [2, 'never'],
-        'scope-empty': [0, 'never'],
-        'scope-case': [0, 'always', 'lower-case'],
-        'subject-empty': [2, 'never'],
-    }
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'type-enum': [
+      2,
+      'always',
+      [
+        'task',
+        'bug',
+        'feat',
+        'fix',
+        'docs',
+        'style',
+        'refactor',
+        'perf',
+        'test',
+        'build',
+        'ci',
+        'chore',
+        'revert',
+        'workflow',
+        'types',
+        'release',
+      ],
+    ],
+    'type-case': [0, 'always', 'lower-case'],
+    'type-empty': [2, 'never'],
+    'scope-empty': [0, 'never'],
+    'scope-case': [0, 'always', 'lower-case'],
+    'subject-empty': [2, 'never'],
+  },
 };
-
