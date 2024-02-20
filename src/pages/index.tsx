@@ -1,8 +1,12 @@
+import { IonPage } from "@ionic/react";
+
 const IndexPage = () => {
     return (
-        <div>
-            <h1>The Main Page</h1>
-        </div>
+        <>
+            <IonPage>
+                <h1>Hello World</h1>
+            </IonPage>
+        </>
     )
 }
 
