@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import '@ionic/react/css/core.css';
+import { setupIonicReact } from '@ionic/react';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+
+setupIonicReact();
 
 export const metadata: Metadata = {
   title: "Create Next App",
