@@ -1,13 +1,14 @@
-import { IonPage } from "@ionic/react";
+// import { IonPage } from "@ionic/react";
+import React from 'react';
 
-const IndexPage = () => {
-    return (
-        <>
-            <IonPage>
-                <h1>Hello World</h1>
-            </IonPage>
-        </>
-    )
+function IndexPage() {
+  return (
+    <>
+      {/* <IonPage> */}
+      <h1>Hello World</h1>
+      {/* </IonPage> */}
+    </>
+  );
 }
 
 export default IndexPage;
