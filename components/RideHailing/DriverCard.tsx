@@ -62,7 +62,6 @@ const DriverCard = () => {
                 <TouchableOpacity
                   style={[
                     tailwind`flex flex-row mx-2 items-center rounded-full p-2`,
-
                     tailwind`bg-[#049813]`,
                   ]}
                 >
