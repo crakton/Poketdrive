@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "ur-ride",
+    "slug": "ur-ride",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/splash.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6633"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/splash.png",
+        "backgroundColor": "#FF6633"
+      }
+    },
+    "web": {
+      "favicon": "./assets/splash.png"
+    }
+  }
+}
