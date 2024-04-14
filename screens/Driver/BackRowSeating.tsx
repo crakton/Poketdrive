@@ -1,6 +1,7 @@
 import {
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -36,7 +37,8 @@ const BackRowSeating = () => {
   };
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
+      <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <HeaderWithBackButton navigation={navigation} />
         <View style={tw`px-5`}>

@@ -1,6 +1,7 @@
 import {
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -22,7 +23,8 @@ const PriceSetting = () => {
     const [price, setPrice] = useState("");
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
+    <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <HeaderWithBackButton navigation={navigation} />
         <View style={tw`px-5`}>

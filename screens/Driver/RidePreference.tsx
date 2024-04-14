@@ -8,6 +8,7 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import tw from "twrnc";
@@ -55,7 +56,8 @@ const RidePreference = () => {
 `;
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
+    <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <HeaderWithBackButton
           navigation={navigation}

@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import React from "react";
 import tw from "twrnc";
@@ -15,7 +16,10 @@ import RideSchduleForm from "../../components/Driver/RideSchduleForm";
 const RideSchdule = () => {
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <View style={tw`flex gap-[1]`}>
           <HeaderWithBackButton

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  StatusBar,
 } from "react-native";
 import { CheckBox } from "@rneui/themed"; // Import CheckBox component
 import tw from "twrnc";
@@ -85,7 +86,10 @@ const VehicleDetails = () => {
   }, [oneTime]);
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <View>
           <HeaderWithBackButton

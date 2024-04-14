@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -46,7 +47,10 @@ const Home = () => {
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
         <TouchableOpacity
           onPress={() => navigation.navigate("AccountVerification")}
@@ -68,7 +72,7 @@ const Home = () => {
             Hi there, what are you looking to do today?
           </Text>
         </View>
-{/* here is the horizontal line */}
+        {/* here is the horizontal line */}
         <View style={[tw`bg-gray-600`, { height: 1 }]} />
         <View style={tw`py-5`}>
           {data.map((item, index) => (

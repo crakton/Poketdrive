@@ -14,7 +14,7 @@ import { SvgXml } from "react-native-svg";
 
 // interface CardProps {
 //   date: string;
-//   seatsLeft: number;
+//   seatsTaken: number;
 //   fromLocation: string;
 //   fromDescription: string;
 //   toLocation: string;
@@ -27,11 +27,13 @@ import { SvgXml } from "react-native-svg";
 
 // const DriverCard: React.FC<CardProps> = ({
 //   date,
-//   seatsLeft,
+//   seatsTaken,
 //   fromLocation,
 //   fromDescription,
 //   toLocation,
 //   toDescription,
+//    deliveryRide,
+//    EditRide
 //   driverImage,
 //   driverName,
 //   carDescription,

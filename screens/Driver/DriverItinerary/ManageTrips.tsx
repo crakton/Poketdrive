@@ -1,6 +1,7 @@
 import {
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,7 +22,10 @@ const ManageTrips = () => {
       NativeStackNavigationProp<AuthStackParamList, "ManageTrips">
     >();
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
         <TouchableOpacity
           onPress={() => navigation.navigate("AccountVerification")}

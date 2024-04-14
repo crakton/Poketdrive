@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,7 +26,8 @@ const WalletHome = () => {
     >();
 
   return (
-    <SafeAreaView style={tw`bg-[#f5f5f5] h-full`}>
+    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
+    <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} />
         <View

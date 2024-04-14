@@ -1,5 +1,6 @@
 import {
   FlatList,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,8 +31,8 @@ const cardData = [
     carDescription: "Toyota Corolla 2024",
     price: "₦500",
     link: "MapScreen",
-    rating:4.9,
-    driven:"35 driven"
+    rating: 4.9,
+    driven: "35 driven",
   },
   {
     date: "Today at 1:00pm",
@@ -45,8 +46,8 @@ const cardData = [
     carDescription: "Toyota Corolla 2024",
     price: "₦500",
     link: "MapScreen",
-    rating:4.8,
-    driven:"25 driven"
+    rating: 4.8,
+    driven: "25 driven",
   },
   {
     date: "Today at 1:00pm",
@@ -60,8 +61,8 @@ const cardData = [
     carDescription: "Toyota Corolla 2024",
     price: "₦500",
     link: "MapScreen",
-    rating:4.4,
-    driven:"25 driven"
+    rating: 4.4,
+    driven: "25 driven",
   },
 ];
 
@@ -70,7 +71,13 @@ const RideSelection = () => {
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
   return (
-    <SafeAreaView style={tailwind`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[
+        tailwind`bg-[#FFFFFF] h-full`,
+        { paddingTop: StatusBar.currentHeight },
+      ]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Search results" />
       </View>

@@ -62,7 +62,7 @@ export default function App() {
           >
             <Stack.Navigator>
               {/* account creation starts here */}
-              {/* <Stack.Screen
+              <Stack.Screen
                 name="CreateAccount"
                 component={CreateAccount}
                 options={{
@@ -82,29 +82,29 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
-              /> */}
+              /> 
 
               {/* account creation ends here */}
 
               {/* here is the main home screen */}
-              {/* <Stack.Screen
+              <Stack.Screen
                 name="Home"
                 component={Home}
                 options={{
                   headerShown: false,
                 }}
-              /> */}
+              />
 
               {/* passangesr screens starts here */}
-              {/* <Stack.Screen
+              <Stack.Screen
                 name="TripSelection"
                 component={TripSelection}
                 options={{
                   headerShown: false,
                 }}
-              /> */}
+              />
 
-              {/* <Stack.Screen
+               <Stack.Screen
                 name="RideSelection"
                 component={RideSelection}
                 options={{
@@ -124,9 +124,9 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
-              /> */}
+              /> 
               {/* screen for driver to set info  */}
-              {/* <Stack.Screen
+               <Stack.Screen
                 name="RideSchdule"
                 component={RideSchdule}
                 options={{
@@ -160,7 +160,7 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
-              /> */}
+              />
 
               <Stack.Screen
                 name="ManageTrips"
@@ -169,6 +169,7 @@ export default function App() {
                   headerShown: false,
                 }}
               />
+
               {/* driver setting ends here */}
               <Stack.Screen
                 name="WalletHome"

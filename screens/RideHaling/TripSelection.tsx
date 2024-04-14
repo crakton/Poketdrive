@@ -1,5 +1,6 @@
 import {
   FlatList,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -36,12 +37,15 @@ const TripSelection = () => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Find a trip" />
       </View>
       <View style={tw`px-3 py-5`}>
-        <TripForm /> 
+        <TripForm />
       </View>
       <View>
         <View>
