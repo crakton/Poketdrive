@@ -8,10 +8,21 @@ export interface User {
   role: string[];
 }
 
-const register = async (user: User) => {
+export const register = async (user: User) => {
   const options: AxiosRequestConfig = {
     method: "POST",
     url: "/register",
+    data: user,
+  };
+
+  const response = await request(options);
+  return response;
+};
+
+export const login = async (user: User) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: "/login",
     data: user,
   };
 
