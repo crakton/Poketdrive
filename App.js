@@ -118,13 +118,13 @@ export default function App() {
                   headerShown: false,
                 }}
               />
-              <Stack.Screen
+              {/* <Stack.Screen
                 name="Payment"
                 component={Payment}
                 options={{
                   headerShown: false,
                 }}
-              /> 
+              />  */}
               {/* screen for driver to set info  */}
                <Stack.Screen
                 name="RideSchdule"
