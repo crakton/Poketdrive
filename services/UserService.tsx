@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { request } from "../libs/api";
+import { request } from "../lib/api";
 
 export interface User {
   firstName: string;
