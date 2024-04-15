@@ -28,7 +28,7 @@ const ManageTrips = () => {
       <StatusBar translucent backgroundColor="transparent" />
       <View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("AccountVerification")}
+          onPress={() => navigation.navigate("Home")}
         >
           <Icon name="menu" />
         </TouchableOpacity>
