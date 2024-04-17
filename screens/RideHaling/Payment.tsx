@@ -80,7 +80,8 @@ const Payment = () => {
         </View>
       </View>
       <View style={tw`flex flex-row mx-5 items-center justify-end`}>
-        <TouchableOpacity style={tw` px-5 py-2`}>
+        <TouchableOpacity style={tw` px-5 py-2`}
+        onPress={() => navigation.navigate("FAQs")}>
           <Text style={[tw`text-lg `, { fontFamily: "Poppins-Medium" }]}>
             Need help?
           </Text>
