@@ -62,7 +62,7 @@ export default function App() {
           >
             <Stack.Navigator>
               {/* account creation starts here */}
-              <Stack.Screen
+              {/* <Stack.Screen
                 name="CreateAccount"
                 component={CreateAccount}
                 options={{
@@ -82,7 +82,7 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
-              /> 
+              />  */}
 
               {/* account creation ends here */}
 

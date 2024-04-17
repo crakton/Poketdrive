@@ -38,7 +38,7 @@ const data = [
     id: 3,
     titel: "Need help?",
     Icon: "help-outline",
-    link: "Help",
+    link: "FAQs",
   },
 ];
 

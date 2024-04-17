@@ -120,7 +120,7 @@ const Settings = () => {
         <View style={tw`relative top-[30] `}>
           <TouchableOpacity
             style={tw`justify-center items-center`}
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => navigation.goBack()}
           >
             <Text
               style={[

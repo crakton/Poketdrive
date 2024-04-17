@@ -72,16 +72,16 @@ const RideSelection = () => {
 
   return (
     <SafeAreaView
-      style={[
-        tailwind`bg-[#FFFFFF] h-full`,
-        { paddingTop: StatusBar.currentHeight },
-      ]}
-    >
+  style={[
+    tailwind`bg-[#FFFFFF] flex-1`,
+    { paddingTop: StatusBar.currentHeight },
+  ]}
+>
       <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Search results" />
       </View>
-      <View>
+     
         <Text
           style={[
             tailwind`text-2xl px-5 pb-2`,
@@ -116,9 +116,9 @@ const RideSelection = () => {
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         />
-      </View>
+      
     </SafeAreaView>
   );
 };
@@ -129,3 +129,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+
