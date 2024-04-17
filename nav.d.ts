@@ -1,6 +1,8 @@
 import { StackNavigationProp } from "react-native-screens";
 
 export type AuthStackParamList = {
+  Confirmation:undefined
+  TripConfirmation:undefined
   RideIdentification: undefined
   EndTrip:undefined
   RideProgress :undefined
