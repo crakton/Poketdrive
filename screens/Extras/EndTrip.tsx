@@ -26,7 +26,7 @@ const EndTrip = () => {
       <RideVerification
         title="End Trip"
         classes={{ cardContainer: styles.cardContainer }}
-        direction="EndTrip"
+        direction="TripConfirmation"
       />
     </View>
   </View>

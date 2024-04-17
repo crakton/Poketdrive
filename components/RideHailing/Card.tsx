@@ -109,9 +109,7 @@ const Card: React.FC<CardProps> = ({
         </View>
         <View style={tailwind``} />
 
-        <View
-          style={tailwind`flex flex-row justify-between justify-between items-center pt-[20]`}
-        >
+        <View style={tailwind` flex-row justify-between  items-center pt-[20]`}>
           <View style={tailwind`flex flex-row gap-4`}>
             <View>
               <Avatar
@@ -136,45 +134,42 @@ const Card: React.FC<CardProps> = ({
                 {carDescription}
               </Text>
             </View>
-            <View style={tailwind`flex-col justify-between `}>
-              <View style={tailwind`flex-col justify-between `}>
+          </View>
+          <View style={tailwind`flex-col justify-between `}>
+            <View style={tailwind` pb-[10]]`}>
+              <Text
+                style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}
+              >
+                {price}
+              </Text>
+            </View>
+            <View
+              style={tailwind`flex-row ml-[-50] justify-center items-center `}
+            >
+              <Icon
+                name="star"
+                type="ionicon"
+                color="black"
+                style={styles.icon}
+              />
+              <Text
+                style={[
+                  tailwind`text-[10px] ml-[-7]`,
+                  { fontFamily: "Poppins-SemiBold" },
+                ]}
+              >
+                {rating}
+              </Text>
+
+              <View style={tailwind`pt-[10]`}>
                 <Text
-                  style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}
+                  style={[
+                    tailwind`text-[10px]`,
+                    { fontFamily: "Poppins-SemiBold" },
+                  ]}
                 >
-                  {price}
+                  . {driven}
                 </Text>
-                <View
-                  style={tailwind`flex-row gap-[0] justify-center items-center`}
-                >
-                  <View
-                    style={tailwind`flex-row gap-[-2] justify-center items-center `}
-                  >
-                    <Icon
-                      name="star"
-                      type="ionicon"
-                      color="black"
-                      style={styles.icon}
-                    />
-                    <Text
-                      style={[
-                        tailwind`text-[10px]`,
-                        { fontFamily: "Poppins-SemiBold" },
-                      ]}
-                    >
-                      {rating}
-                    </Text>
-                  </View>
-                  <View style={tailwind`pt-[10]`}>
-                    <Text
-                      style={[
-                        tailwind`text-[10px]`,
-                        { fontFamily: "Poppins-SemiBold" },
-                      ]}
-                    >
-                      . {driven}
-                    </Text>
-                  </View>
-                </View>
               </View>
             </View>
           </View>
