@@ -34,6 +34,8 @@ import RidePreference from "./screens/Driver/RidePreference";
 import BackRowSeating from "./screens/Driver/BackRowSeating";
 import PriceSetting from "./screens/Driver/PriceSetting";
 import ManageTrips from "./screens/Driver/DriverItinerary/ManageTrips";
+import Confirmation from "./screens/RideHaling/Confirmation";
+import TripConfirmation from "./screens/Extras/TripConfirmation";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -125,6 +127,14 @@ export default function App() {
                   headerShown: false,
                 }}
               /> 
+               <Stack.Screen
+                name="Confirmation"
+                component={Confirmation}
+                options={{
+                  headerShown: false,
+                }}
+              /> 
+
               {/* screen for driver to set info  */}
                <Stack.Screen
                 name="RideSchdule"
@@ -238,6 +248,12 @@ export default function App() {
                 component={EndTrip}
                 options={{ headerShown: false }}
               />
+               <Stack.Screen
+                name="TripConfirmation" 
+                component={TripConfirmation}
+                options={{ headerShown: false }}
+              />
+
             </Stack.Navigator>
           </KeyboardAvoidingView>
         </SafeAreaProvider>
