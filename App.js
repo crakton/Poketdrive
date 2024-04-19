@@ -25,17 +25,18 @@ import IdVerification from "./screens/Settings/IdVerification";
 import IdDetails from "./screens/Settings/IdDetails";
 import Settings from "./screens/Settings/Settings";
 import FAQs from "./screens/Settings/FAQs";
-import RideIdentification from "./screens/Extras/RideIdentification"
+import RideIdentification from "./screens/Extras/RideIdentification";
 import CarIdentification from "./screens/Extras/CarIdentification";
-import RideProgress  from "./screens/Extras/RideProgress";
+import RideProgress from "./screens/Extras/RideProgress";
 import VehicleDetails from "./screens/Driver/VehicleDetails";
-import EndTrip from"./screens/Extras/EndTrip"
+import EndTrip from "./screens/Extras/EndTrip";
 import RidePreference from "./screens/Driver/RidePreference";
 import BackRowSeating from "./screens/Driver/BackRowSeating";
 import PriceSetting from "./screens/Driver/PriceSetting";
 import ManageTrips from "./screens/Driver/DriverItinerary/ManageTrips";
 import Confirmation from "./screens/RideHaling/Confirmation";
 import TripConfirmation from "./screens/Extras/TripConfirmation";
+import TripItinerary from "./screens/Driver/DriverItinerary/TripItinerary";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -106,7 +107,7 @@ export default function App() {
                 }}
               />
 
-               <Stack.Screen
+              <Stack.Screen
                 name="RideSelection"
                 component={RideSelection}
                 options={{
@@ -126,17 +127,17 @@ export default function App() {
                 options={{
                   headerShown: false,
                 }}
-              /> 
-               <Stack.Screen
+              />
+              <Stack.Screen
                 name="Confirmation"
                 component={Confirmation}
                 options={{
                   headerShown: false,
                 }}
-              /> 
+              />
 
               {/* screen for driver to set info  */}
-               <Stack.Screen
+              <Stack.Screen
                 name="RideSchdule"
                 component={RideSchdule}
                 options={{
@@ -175,6 +176,13 @@ export default function App() {
               <Stack.Screen
                 name="ManageTrips"
                 component={ManageTrips}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="TripItinerary"
+                component={TripItinerary}
                 options={{
                   headerShown: false,
                 }}
@@ -220,40 +228,39 @@ export default function App() {
                 name="Settings"
                 component={Settings}
                 options={{ headerShown: false }}
-              /> 
-            
+              />
+
               <Stack.Screen
                 name="FAQs"
                 component={FAQs}
                 options={{ headerShown: false }}
               />
-              
-               <Stack.Screen
+
+              <Stack.Screen
                 name="CarIdentification"
                 component={CarIdentification}
                 options={{ headerShown: false }}
               />
-               <Stack.Screen
+              <Stack.Screen
                 name="RideIdentification"
                 component={RideIdentification}
                 options={{ headerShown: false }}
               />
               <Stack.Screen
                 name="RideProgress"
-                component={RideProgress }
+                component={RideProgress}
                 options={{ headerShown: false }}
               />
-               <Stack.Screen
-                name="EndTrip" 
+              <Stack.Screen
+                name="EndTrip"
                 component={EndTrip}
                 options={{ headerShown: false }}
               />
-               <Stack.Screen
-                name="TripConfirmation" 
+              <Stack.Screen
+                name="TripConfirmation"
                 component={TripConfirmation}
                 options={{ headerShown: false }}
               />
-
             </Stack.Navigator>
           </KeyboardAvoidingView>
         </SafeAreaProvider>

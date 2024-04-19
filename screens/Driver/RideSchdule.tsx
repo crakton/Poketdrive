@@ -12,9 +12,14 @@ import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import RideSchduleForm from "../../components/Driver/RideSchduleForm";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../nav";
 
 const RideSchdule = () => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<AuthStackParamList, "RidePreference">
+    >();
   return (
     <SafeAreaView
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
@@ -27,7 +32,10 @@ const RideSchdule = () => {
             title={"Ride Schdule"}
           />
           <View style={tw`flex flex-row items-center justify-end px-5`}>
-            <TouchableOpacity style={tw`bg-red-500 rounded-md`}>
+            <TouchableOpacity
+              style={tw`bg-red-500 rounded-md`}
+              onPress={() => navigation.navigate("ManageTrips")}
+            >
               <Text
                 style={[
                   tw`px-2 text-white  py-1`,
@@ -38,7 +46,6 @@ const RideSchdule = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          {/* <View style={[tw`bg-gray-600 my-5`, { height: 1 }]} /> */}
 
           <View style={tw`flex px-3 mb-5 items-start`}>
             <Text style={[tw`text-2xl px-5`, { fontFamily: "Poppins-Bold" }]}>

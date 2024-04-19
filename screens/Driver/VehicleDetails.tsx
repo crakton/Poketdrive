@@ -245,13 +245,20 @@ const VehicleDetails = () => {
                   onChangeText={(date) => handleTripDateChange(index, date)}
                   editable={false}
                 />
-                <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>
-                  <Icon name="time" type="ionicon" size={30} color="black" />
+                <TouchableOpacity>
+                  <Icon
+                    name="time"
+                    type="ionicon"
+                    size={30}
+                    color="black"
+                    onPress={() => setDatePickerVisibility(true)}
+                  />
                 </TouchableOpacity>
                 <DateTimePickerModal
                   isVisible={isDatePickerVisible}
                   mode="datetime"
                   textColor="#000000"
+                  minimumDate={new Date()}
                   onConfirm={(date) => handleConfirmDateTime(date, index)}
                   onCancel={() => setDatePickerVisibility(false)}
                 />
@@ -263,6 +270,7 @@ const VehicleDetails = () => {
                   ]}
                   placeholder="00:00am"
                   value={trip.time}
+                  editable={false}
                   onChangeText={(time) => handleTripTimeChange(index, time)}
                 />
                 {trips.length > 1 && (

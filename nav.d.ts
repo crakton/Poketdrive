@@ -1,21 +1,21 @@
 import { StackNavigationProp } from "react-native-screens";
 
 export type AuthStackParamList = {
-  Confirmation:undefined
-  TripConfirmation:undefined
-  RideIdentification: undefined
-  EndTrip:undefined
-  RideProgress :undefined
-  CarIdentification:undefined
-  AccountVerification:undefined
-  Settings:undefined
-  FAQs:undefined
-  IdDetails:undefined
-  IdVerification:undefined
-  WalletHome:undefined
-  PaymentSucessful:undefined
-  AddPaymentMethod:undefined
-  WalletHistory:undefined
+  Confirmation: undefined;
+  TripConfirmation: undefined;
+  RideIdentification: undefined;
+  EndTrip: undefined;
+  RideProgress: undefined;
+  CarIdentification: undefined;
+  AccountVerification: undefined;
+  Settings: undefined;
+  FAQs: undefined;
+  IdDetails: undefined;
+  IdVerification: undefined;
+  WalletHome: undefined;
+  PaymentSucessful: undefined;
+  AddPaymentMethod: undefined;
+  WalletHistory: undefined;
   AccountVerification: undefined;
   Settings: undefined;
   FAQs: undefined;
@@ -39,4 +39,5 @@ export type AuthStackParamList = {
   BackRowSeating: undefined;
   PriceSetting: undefined;
   ManageTrips: undefined;
+  TripItinerary: undefined;
 };

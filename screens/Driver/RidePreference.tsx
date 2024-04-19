@@ -56,8 +56,10 @@ const RidePreference = () => {
 `;
 
   return (
-    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
-    <StatusBar translucent backgroundColor="transparent" />
+    <SafeAreaView
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <HeaderWithBackButton
           navigation={navigation}
@@ -100,10 +102,14 @@ const RidePreference = () => {
                     }}
                     style={[
                       tw`flex flex-row mx-1 items-center justify-center gap-5 rounded-lg border px-6 py-2`,
-                      selected === item ? tw`bg-[#565656]` : tw`bg-[#FFFFFF]`,
+                      selected === item ? tw`bg-[#000000]` : tw`bg-[#FFFFFF]`,
                     ]}
                   >
-                    <Icon name="briefcase" type="ionicon" color="black" />
+                    <Icon
+                      name="briefcase"
+                      type="ionicon"
+                      color={selected === item ? "white" : "black"}
+                    />
                   </TouchableOpacity>
                   <Text style={tw`text-center`}>
                     {item === 1
