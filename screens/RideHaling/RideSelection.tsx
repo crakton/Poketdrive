@@ -29,7 +29,7 @@ const cardData = [
     driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
     driverName: "Favour",
     carDescription: "Toyota Corolla 2024",
-    price: "₦500",
+    price: "7600",
     link: "MapScreen",
     rating: 4.9,
     driven: "35 driven",
@@ -44,7 +44,7 @@ const cardData = [
     driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
     driverName: "Favour",
     carDescription: "Toyota Corolla 2024",
-    price: "₦500",
+    price: "5000",
     link: "MapScreen",
     rating: 4.8,
     driven: "25 driven",
@@ -59,7 +59,7 @@ const cardData = [
     driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
     driverName: "Favour",
     carDescription: "Toyota Corolla 2024",
-    price: "₦500",
+    price: "3500",
     link: "MapScreen",
     rating: 4.4,
     driven: "25 driven",
@@ -72,16 +72,16 @@ const RideSelection = () => {
 
   return (
     <SafeAreaView
-      style={[
-        tailwind`bg-[#FFFFFF] h-full`,
-        { paddingTop: StatusBar.currentHeight },
-      ]}
-    >
+  style={[
+    tailwind`bg-[#FFFFFF] flex-1`,
+    { paddingTop: StatusBar.currentHeight },
+  ]}
+>
       <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Search results" />
       </View>
-      <View>
+     
         <Text
           style={[
             tailwind`text-2xl px-5 pb-2`,
@@ -116,9 +116,9 @@ const RideSelection = () => {
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         />
-      </View>
+      
     </SafeAreaView>
   );
 };
@@ -129,3 +129,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+

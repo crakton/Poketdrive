@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type AuthStackParamList = {
-  RideSchdule: undefined;
+  RideSchedule: undefined;
   TripSelection: undefined;
   Help: undefined;
   AccountVerification: undefined;
@@ -26,7 +26,7 @@ const data = [
     id: 1,
     titel: "Post a ride as a driver",
     Icon: "add",
-    link: "RideSchdule",
+    link: "RideSchedule",
   },
   {
     id: 2,
@@ -38,7 +38,7 @@ const data = [
     id: 3,
     titel: "Need help?",
     Icon: "help-outline",
-    link: "Help",
+    link: "FAQs",
   },
 ];
 

@@ -4,10 +4,10 @@
     "slug": "ur-ride",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splash.png",
+    "icon": "./assets/SplashNew.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/SplashNew.png",
       "resizeMode": "contain",
       "backgroundColor": "#FF6633"
     },
@@ -17,12 +17,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/splash.png",
+        "foregroundImage": "./assets/SplashNew.png",
         "backgroundColor": "#FF6633"
       }
     },
     "web": {
-      "favicon": "./assets/splash.png"
+      "favicon": "./assets/SplashNew.png"
     }
   }
 }

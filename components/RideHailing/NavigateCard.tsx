@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   ScrollView,
+  Linking,
 } from "react-native";
 import tailwind from "twrnc";
 import { Avatar, Icon, Image } from "@rneui/base";
@@ -17,7 +18,7 @@ import { AuthStackParamList } from "../../nav";
 const NavigateCard = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList, "MapScreen">>();
-  const [selected, setSelected] = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
 
   const carSeatSvg = `
     <svg width="30" height="30" viewBox="0 0 17 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,9 +31,36 @@ const NavigateCard = () => {
     </svg>
   `;
 
+  const phoneNumber = "1234567890"; // Replace this with the desired phone number
+
+  const handlePhoneCall = () => {
+    const phoneUrl = `tel:${phoneNumber}`;
+    Linking.openURL(phoneUrl);
+  };
+
+  // Price formatter function
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // Function to toggle seat selection
+  const toggleSeatSelection = (seatNumber: number) => {
+    if (selectedSeats.includes(seatNumber)) {
+      // If seat is already selected, remove it from the array
+      setSelectedSeats(selectedSeats.filter((seat) => seat !== seatNumber));
+    } else {
+      // If seat is not selected, add it to the array
+      setSelectedSeats([...selectedSeats, seatNumber]);
+    }
+  };
+
   return (
-    <ScrollView style={tailwind`bg-[#F3F3F3] h-full`}>
-      <View style={tailwind`px-5 py-2 bg-[#FFFF]`}>
+    <ScrollView style={tailwind`bg-[#F3F3F3] flex-1`}>
+      <View style={tailwind`px-5 py-5 bg-[#FFFF]`}>
         <View style={tailwind`flex flex-row justify-between`}>
           <View style={tailwind`flex flex-row`}>
             <Icon
@@ -90,7 +118,7 @@ const NavigateCard = () => {
           <View style={styles.verticalLine} />
 
           <Text style={[tailwind`text-sm`, { fontFamily: "Poppins-Bold" }]}>
-            (N700)per seat
+            {formatPrice(700)} per seat
           </Text>
         </View>
         <View
@@ -101,31 +129,31 @@ const NavigateCard = () => {
               Booked
             </Text>
           </View>
-          <View>
-            <FlatList
-              data={[1, 2, 3, 4]}
-              keyExtractor={(item, index) => index.toString()} // Change keyExtractor to use index
-              horizontal
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelected(item as any);
-                    
-                  }}
-                  style={[
-                    tailwind`flex flex-row mx-1 items-center justify-center gap-5 rounded-full p-2`,
-                    selected === item
-                      ? tailwind`bg-[#565656]`
-                      : tailwind`bg-[#DDDDDD]`,
-                  ]}
-                >
-                  <SvgXml
-                    xml={selected === item ? carSeatSelectedSvg : carSeatSvg}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+
+          <FlatList
+            data={[1, 2, 3, 4, 5, 6]}
+            keyExtractor={(item, index) => index.toString()} // Change keyExtractor to use index
+            horizontal
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => toggleSeatSelection(item)}
+                style={[
+                  tailwind`flex flex-row mx-1 items-center justify-center gap-5 rounded-full p-2`,
+                  selectedSeats.includes(item)
+                    ? tailwind`bg-[#565656]`
+                    : tailwind`bg-[#DDDDDD]`,
+                ]}
+              >
+                <SvgXml
+                  xml={
+                    selectedSeats.includes(item)
+                      ? carSeatSelectedSvg
+                      : carSeatSvg
+                  }
+                />
+              </TouchableOpacity>
+            )}
+          />
 
           <View>
             <TouchableOpacity>
@@ -176,13 +204,13 @@ const NavigateCard = () => {
             style={styles.icon}
           />
           <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Regular" }]}>
-          Medium Luggage
+            Medium Luggage
           </Text>
         </View>
         <View style={tailwind`flex flex-row items-center justify-center gap-5`}>
           <TouchableOpacity
             style={tailwind`rounded-[1rem] bg-[#F25B3E] p-3 my-2`}
-            onPress={() => navigation.navigate("Payment")} 
+            onPress={() => navigation.navigate("Payment")}
           >
             <Text
               style={[
@@ -190,10 +218,13 @@ const NavigateCard = () => {
                 { fontFamily: "Poppins-Bold" },
               ]}
             >
-              Request to book
+              Request to Book
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={tailwind`border p-2 rounded-full bg-black`}>
+          <TouchableOpacity
+            style={tailwind`border p-2 rounded-full bg-black`}
+            onPress={handlePhoneCall}
+          >
             <Icon name="call-outline" type="ionicon" color="white" />
           </TouchableOpacity>
           <TouchableOpacity style={tailwind`border p-2 rounded-full bg-black`}>

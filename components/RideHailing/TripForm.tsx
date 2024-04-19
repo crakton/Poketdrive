@@ -11,6 +11,7 @@ import tw from "twrnc";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const TripForm = () => {
   const navigation =
@@ -18,16 +19,23 @@ const TripForm = () => {
   const [fromwhere, setFromWhere] = useState("");
   const [towhere, setToWhere] = useState("");
   const [departureTime, setDepartureTime] = useState("");
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const handleSearch = () => {
     // Basic validation
-    if (!fromwhere || !towhere || !departureTime) {
-      Alert.alert("Please fill all fields");
-      return;
-    }
+    // if (!fromwhere || !towhere || !departureTime) {
+    //   Alert.alert("Please fill all fields");
+    //   return;
+    // }
 
     // Handle sign-up logic here if validation passes
     console.log("Signing up...");
+    navigation.navigate("RideSelection");
+  };
+
+  const handleConfirm = (date: any) => {
+    setDepartureTime(date.toLocaleString());
+    setDatePickerVisibility(false);
   };
 
   return (
@@ -56,18 +64,23 @@ const TripForm = () => {
           onChangeText={setToWhere}
         />
       </View>
-      <View style={styles.inputContainer}>
+      <View style={styles.inputContainerDate}>
         <Icon name="time" type="ionicon" color="red" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Departure time"
-          value={departureTime}
-          onChangeText={setDepartureTime}
+        <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>
+          <Text style={tw``}>{departureTime || "Select Departure Time"}</Text>
+        </TouchableOpacity>
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="datetime"
+          textColor="#000000"
+          minimumDate={new Date()}
+          onConfirm={handleConfirm}
+          onCancel={() => setDatePickerVisibility(false)}
         />
       </View>
       <TouchableOpacity
         style={tw`rounded-[1rem] bg-[#333333] p-3 my-2`}
-        onPress={() => navigation.navigate("RideSelection")}
+        onPress={handleSearch}
       >
         <Text
           style={[
@@ -89,6 +102,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderColor: "#D9D9D9",
     borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "#D9D9D9",
+  },
+  inputContainerDate: {
+    flexDirection: "row",
+    display: "flex",
+    alignItems: "center",
+    marginBottom: 20,
+    borderColor: "#D9D9D9",
+    borderWidth: 1,
+    height: 50,
     borderRadius: 5,
     paddingHorizontal: 10,
     backgroundColor: "#D9D9D9",

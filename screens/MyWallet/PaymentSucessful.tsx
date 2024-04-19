@@ -21,6 +21,13 @@ const PaymentSucessful = () => {
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
+    const formatPrice = (price: number) => {
+      return new Intl.NumberFormat("en-NG", {
+        style: "currency",
+        currency: "NGN",
+        minimumFractionDigits: 0,
+      }).format(price);
+    };
   return (
     <SafeAreaView
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
@@ -37,7 +44,7 @@ const PaymentSucessful = () => {
               { fontFamily: "Poppins-SemiBold" },
             ]}
           >
-            Sucessful
+            Successful
           </Text>
         </TouchableOpacity>
         <View style={[tw`flex items-center justify-center`]}>
@@ -55,7 +62,9 @@ const PaymentSucessful = () => {
           </View>
         </View>
         <View style={[tw`flex items-center justify-center mt-[15]`]}>
-          <Text style={tw`text-[37px] font-bold`}>N700</Text>
+          <Text style={tw`text-[37px] font-bold`}>
+            {formatPrice(5000)}
+          </Text>
         </View>
         <TouchableOpacity
           style={[
@@ -74,7 +83,7 @@ const PaymentSucessful = () => {
         <View style={[tw`flex items-center justify-center mt-[15]`]}>
           <Text style={[tw`text-[18px]   `, { fontFamily: "Poppins-Medium" }]}>
             {" "}
-            recipt{" "}
+            Receipt{" "}
           </Text>
         </View>
       </View>

@@ -18,6 +18,7 @@ import { Icon } from "@rneui/base";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const VehicleDetails = () => {
   const navigation =
@@ -30,11 +31,13 @@ const VehicleDetails = () => {
   const [oneTime, setOneTime] = useState(true);
   const [recurring, setRecurring] = useState(false);
   const [trips, setTrips] = useState([{ date: "", time: "" }]);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const handleRideSchedule = (selectedOption: string) => {
     if (selectedOption === "oneTime") {
       setOneTime(true);
       setRecurring(false);
+      setTrips([{ date: "", time: "" }]); // Reset trips for one-time schedule
     } else if (selectedOption === "recurring") {
       setOneTime(false);
       setRecurring(true);
@@ -58,13 +61,30 @@ const VehicleDetails = () => {
   };
 
   const addTrip = () => {
-    setTrips([...trips, { date: "", time: "" }]); // Add a new trip to the trips array
+    if (trips.length < 2) {
+      // If there are less than 2 trips, simply add a new one
+      setTrips([...trips, { date: "", time: "" }]);
+    } else {
+      // If there are already 2 trips, replace the second one
+      const updatedTrips = [...trips];
+      updatedTrips[1] = { date: "", time: "" };
+      setTrips(updatedTrips);
+    }
   };
 
   const removeTrip = (index: number) => {
     const newTrips = [...trips];
     newTrips.splice(index, 1);
     setTrips(newTrips);
+  };
+
+  const handleConfirmDateTime = (date: Date, index: number) => {
+    const updatedTrips = [...trips];
+    updatedTrips[index].date = date.toLocaleDateString(); // Format date as desired
+    updatedTrips[index].time = date.toLocaleTimeString(); // Format time as desired
+    setTrips(updatedTrips);
+    console.log(trips);
+    setDatePickerVisibility(false);
   };
 
   const handleTripDateChange = (index: number, date: string) => {
@@ -223,10 +243,26 @@ const VehicleDetails = () => {
                   placeholder="Date"
                   value={trip.date}
                   onChangeText={(date) => handleTripDateChange(index, date)}
+                  editable={false}
                 />
-                <Text style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}>
-                  at
-                </Text>
+                <TouchableOpacity>
+                  <Icon
+                    name="time"
+                    type="ionicon"
+                    size={30}
+                    color="black"
+                    onPress={() => setDatePickerVisibility(true)}
+                  />
+                </TouchableOpacity>
+                <DateTimePickerModal
+                  isVisible={isDatePickerVisible}
+                  mode="datetime"
+                  textColor="#000000"
+                  minimumDate={new Date()}
+                  onConfirm={(date) => handleConfirmDateTime(date, index)}
+                  onCancel={() => setDatePickerVisibility(false)}
+                />
+
                 <TextInput
                   style={[
                     tw`w-[30%] bg-[#D9D9D9] p-2 rounded-lg h-20 text-center`,
@@ -234,9 +270,10 @@ const VehicleDetails = () => {
                   ]}
                   placeholder="00:00am"
                   value={trip.time}
+                  editable={false}
                   onChangeText={(time) => handleTripTimeChange(index, time)}
                 />
-                {trips.length > 1 && ( // Conditionally render delete button
+                {trips.length > 1 && (
                   <TouchableOpacity onPress={() => removeTrip(index)}>
                     <Icon
                       name="trash-outline"
@@ -251,7 +288,7 @@ const VehicleDetails = () => {
           ))}
 
           <View>
-            {recurring && (
+            {recurring && trips.length < 2 && (
               <View style={tw`border-t-2 border-b-2 my-5 border-[#D9D9D9] `}>
                 <TouchableOpacity>
                   <Text
