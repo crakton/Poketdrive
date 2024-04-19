@@ -13,10 +13,10 @@ import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
-const RideSchduleForm = () => {
+const RideScheduleForm = () => {
   const navigation =
     useNavigation<
-      NativeStackNavigationProp<AuthStackParamList, "RideSchdule">
+      NativeStackNavigationProp<AuthStackParamList, "RideSchedule">
     >();
   const [fromwhere, setFromWhere] = useState("");
   const [towhere, setToWhere] = useState("");
@@ -59,7 +59,7 @@ const RideSchduleForm = () => {
     <View style={tw`flex gap-5`}>
       <View>
         <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-          Ride details
+          Start Location
         </Text>
         <View style={styles.inputContainer}>
           <Icon
@@ -97,8 +97,8 @@ const RideSchduleForm = () => {
         </View>
       </View>
       <View>
-        <Text style={[tw`text-lg`, { fontFamily: "Poppins-Light" }]}>
-          Stops
+        <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+          Stops ?
         </Text>
         <View
           style={tw`flex flex-row items-center justify-start border-dotted border rounded-lg`}
@@ -144,11 +144,6 @@ const RideSchduleForm = () => {
         )}
       </View>
 
-      <View>
-        <Text style={[tw`text-2xl`, { fontFamily: "Poppins-Bold" }]}>
-          Ride schedule
-        </Text>
-      </View>
       <TouchableOpacity
         style={tw`rounded-[1rem] bg-[#333333] p-3 my-2`}
         onPress={() => navigation.navigate("VehicleDetails")}
@@ -209,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RideSchduleForm;
+export default RideScheduleForm;

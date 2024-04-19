@@ -15,14 +15,14 @@ const AccountVerification = () => {
   return (
     <View>
       <Profile />
-      <View style={tw`flex-row justify-between mt-[40] items-center`}>
-        <Text
-          style={[tw` text-[16px] ml-[20]`, { fontFamily: "Poppins-Regular" }]}
-        >
+      <View style={tw`flex-row justify-between mt-[40] items-center`}></View>
+      <TouchableOpacity style={tw`flex-row justify-between px-[25] `}>
+        <Text style={[tw` text-[16px] `, { fontFamily: "Poppins-Regular" }]}>
           Account Verification
         </Text>
+
         <TouchableOpacity
-          style={tw` bg-[#F25B3E] mr-[20] rounded-[5]`}
+          style={tw` bg-[#F25B3E] mr-[20] rounded-lg`}
           onPress={() => navigation.navigate("IdVerification")}
         >
           <Text
@@ -34,7 +34,7 @@ const AccountVerification = () => {
             Pending
           </Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity style={tw`flex-row justify-between p-[25] `}>
         <Text style={[tw` text-[16px] `, { fontFamily: "Poppins-Regular" }]}>
           Card Management{" "}
@@ -109,7 +109,10 @@ const AccountVerification = () => {
         onPress={() => navigation.goBack()}
       >
         <Text
-          style={[tw` text-[18px] ml-[-5]`, { fontFamily: "Poppins-SemiBold" }]}
+          style={[
+            tw` text-[18px] ml-[-5] text-[#FF4E00]`,
+            { fontFamily: "Poppins-SemiBold" },
+          ]}
         >
           Back
         </Text>

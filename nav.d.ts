@@ -30,7 +30,7 @@ export type AuthStackParamList = {
   Verification: undefined;
   Home: undefined;
   TripForm: undefined;
-  RideSchdule: undefined;
+  RideSchedule: undefined;
   RideSelection: undefined;
   MapScreen: undefined;
   Payment: undefined;

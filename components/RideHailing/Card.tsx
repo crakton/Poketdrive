@@ -34,6 +34,14 @@ const Card: React.FC<CardProps> = ({
   rating,
   driven,
 }: CardProps) => {
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
   return (
     <SafeAreaView style={tailwind`bg-[#FFFFFF]`}>
       <View style={styles.card}>
@@ -140,7 +148,7 @@ const Card: React.FC<CardProps> = ({
               <Text
                 style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}
               >
-                {price}
+                {formatPrice(parseInt(price))}
               </Text>
             </View>
             <View

@@ -2,7 +2,6 @@
 
 import React from "react";
 import {
-  StyleSheet,
   SafeAreaView,
   StatusBar,
   Text,
@@ -35,7 +34,7 @@ const ManageTrips = () => {
       toDescription: "Total Filling Station",
       driverName: "Abraham",
       carDescription: "Toyota Corolla 2021",
-      price: "₦700",
+      price: "700",
       seatsTaken: "2",
       isEmpty: false,
     },
@@ -47,7 +46,7 @@ const ManageTrips = () => {
       toDescription: "Wuse Zone 5, under bridge opposite NNPC",
       driverName: "Moses",
       carDescription: "Toyota Corolla 2021",
-      price: "₦700",
+      price: "5600",
       seatsTaken: "1",
       isEmpty: false,
     },
@@ -59,7 +58,7 @@ const ManageTrips = () => {
       toDescription: "Gwarinpa 3rd Avenue",
       driverName: "Abraham",
       carDescription: "Toyota Corolla 2021",
-      price: "₦700",
+      price: "11000.105",
       seatsTaken: "10",
       isEmpty: true,
     },

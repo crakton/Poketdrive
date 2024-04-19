@@ -11,11 +11,11 @@ import React from "react";
 import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
-import RideSchduleForm from "../../components/Driver/RideSchduleForm";
+import RideScheduleForm from "../../components/Driver/RideScheduleForm";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 
-const RideSchdule = () => {
+const RideSchedule = () => {
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "RidePreference">
@@ -29,7 +29,7 @@ const RideSchdule = () => {
         <View style={tw`flex gap-[1]`}>
           <HeaderWithBackButton
             navigation={navigation}
-            title={"Ride Schdule"}
+            title={"Ride Schedule"}
           />
           <View style={tw`flex flex-row items-center justify-end px-5`}>
             <TouchableOpacity
@@ -58,18 +58,18 @@ const RideSchdule = () => {
               ]}
             >
               Your origin, destination, and stops you are willing to make along
-              way
+              the way
             </Text>
           </View>
         </View>
         <View style={tw`px-5`}>
-          <RideSchduleForm />
+          <RideScheduleForm />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default RideSchdule;
+export default RideSchedule;
 
 const styles = StyleSheet.create({});

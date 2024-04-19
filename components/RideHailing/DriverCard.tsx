@@ -26,6 +26,13 @@ const carSeatSelectedSvg = `
       <path fill-rule="evenodd" clip-rule="evenodd" d="M12.6594 2.716C12.9614 4.297 12.2984 7.588 11.0714 10.593C8.96643 15.749 8.96043 15.754 5.06743 15.232C0.517429 14.622 -0.98557 16.119 0.62743 19.658C1.54643 21.674 2.41343 22 6.86543 22C11.2464 22 12.1974 21.657 13.0944 19.75C14.8934 15.926 16.2004 9.718 16.2514 4.75C16.2944 0.59 16.0424 0 14.2204 0C12.4964 0 12.2294 0.465 12.6594 2.716Z" fill="#DDDD"/>
     </svg>
   `;
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    minimumFractionDigits: 0,
+  }).format(price);
+};
 
 const DriverCard: React.FC<CardProps> = ({
   date,
@@ -56,22 +63,26 @@ const DriverCard: React.FC<CardProps> = ({
             <View>
               <TouchableOpacity
                 style={[
-                  tailwind`flex flex-row mx-2 items-center rounded-full p-2`,
+                  tailwind`flex flex-row mx-2 items-center rounded-full`,
                   isEmpty ? tailwind`bg-[#FF0000]` : tailwind`bg-[#049813]`,
                 ]}
               >
-                <Text
-                  style={[
-                    tailwind`text-[10px] text-white pb-2`,
-                    { fontFamily: "Poppins-Bold" },
-                  ]}
-                >
-                  {seatsTaken}
-                </Text>
-                <SvgXml xml={carSeatSelectedSvg} />
+                <View style={tailwind`p-2`}>
+                  <Text
+                    style={[
+                      tailwind`text-[10px] text-center text-white pb-2`,
+                      { fontFamily: "Poppins-Bold" },
+                    ]}
+                  >
+                    {seatsTaken}
+                  </Text>
+                </View>
+                <View style={tailwind`mr-1`}>
+                  <SvgXml xml={carSeatSelectedSvg} />
+                </View>
               </TouchableOpacity>
             </View>
-            <View style={tailwind`flex  flex-row pt-2 gap-2`}>
+            <View style={tailwind`flex flex-row gap-2`}>
               <TouchableOpacity onPress={onDelete}>
                 <Icon name="trash-outline" type="ionicon" />
               </TouchableOpacity>
@@ -155,7 +166,7 @@ const DriverCard: React.FC<CardProps> = ({
         </View>
         <View>
           <Text style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}>
-            {price}
+            {formatPrice(parseInt(price))}
           </Text>
         </View>
       </View>

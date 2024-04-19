@@ -15,7 +15,7 @@ import TripSelection from "./screens/RideHaling/TripSelection";
 import RideSelection from "./screens/RideHaling/RideSelection";
 import MapScreen from "./screens/RideHaling/MapScreen";
 import Payment from "./screens/RideHaling/Payment";
-import RideSchdule from "./screens/Driver/RideSchdule";
+import RideSchedule from "./screens/Driver//RideSchdule";
 import WalletHome from "./screens/MyWallet/Home";
 import WalletHistory from "./screens/MyWallet/WalletHistory";
 import AddPaymentMethod from "./screens/MyWallet/AddPaymentMethod";
@@ -138,8 +138,8 @@ export default function App() {
 
               {/* screen for driver to set info  */}
               <Stack.Screen
-                name="RideSchdule"
-                component={RideSchdule}
+                name="RideSchedule"
+                component={RideSchedule}
                 options={{
                   headerShown: false,
                 }}
