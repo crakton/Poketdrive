@@ -13,12 +13,22 @@ import Profile from "../../components/Settings/Profile";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import * as ImagePicker from "expo-image-picker";
 
 const IdDetails = () => {
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  };
   return (
     <View style={tw`justify-between flex-1`}>
       <View>
@@ -44,11 +54,19 @@ const IdDetails = () => {
         </View>
         <View style={tw`justify-center items-center flex-row`}>
           <TouchableOpacity
-            style={tw`h-[81px] w-[147px] mx-[10] bg-[#D9D9D9] rounded-[2]`}
-          ></TouchableOpacity>
+            style={tw`h-[100px] w-[147px] mx-[10] bg-[#D9D9D9] rounded-[2] justify-center items-center `}
+            onPress={pickImage}
+          >
+            <Text  style={tw`text-gray-500`}>front image</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
-            style={tw`h-[81px] mx-[10] w-[147px] bg-[#D9D9D9] rounded-[2]`}
-          ></TouchableOpacity>
+            style={tw`h-[100px] mx-[10] w-[147px] bg-[#D9D9D9] rounded-[2] justify-center items-center`}
+            onPress={pickImage}
+          >
+          
+            <Text  style={tw`text-gray-500`}>back image</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <View>
