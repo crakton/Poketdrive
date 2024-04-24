@@ -37,6 +37,7 @@ import ManageTrips from "./screens/Driver/DriverItinerary/ManageTrips";
 import Confirmation from "./screens/RideHaling/Confirmation";
 import TripConfirmation from "./screens/Extras/TripConfirmation";
 import TripItinerary from "./screens/Driver/DriverItinerary/TripItinerary";
+import DriverDetails from "./screens/Driver/DriverDetails";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -183,6 +184,13 @@ export default function App() {
               <Stack.Screen
                 name="TripItinerary"
                 component={TripItinerary}
+                options={{
+                  headerShown: false,
+                }}
+              />
+               <Stack.Screen
+                name="DriverDetails"
+                component={DriverDetails}
                 options={{
                   headerShown: false,
                 }}
