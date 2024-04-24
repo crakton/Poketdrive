@@ -167,8 +167,9 @@ const NavigateCard = () => {
           </View>
         </View>
       </View>
-      <View
+      <TouchableOpacity
         style={tailwind`flex flex-row items-center justify-between px-5 mt-1 bg-white`}
+        onPress={() =>navigation.navigate("DriverDetails")}
       >
         <View
           style={tailwind`flex flex-row items-center justify-start gap-5 py-1`}
@@ -194,7 +195,7 @@ const NavigateCard = () => {
             />
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={tailwind`flex px-5 mt-1 bg-white py-2 justify-center gap-3`}>
         <View style={tailwind`flex flex-row px-5 pt-1 `}>
           <Icon

@@ -12,7 +12,7 @@ const MapScreen = () => {
   const navigation = useNavigation();
   return (
     <View>
-      <View style={tw`z-50 absolute top-8 `}>
+      <View style={tw`z-50 absolute top-2 `}>
         <HeaderWithBackButton navigation={navigation} />
       </View>
 

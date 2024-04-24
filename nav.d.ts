@@ -2,6 +2,7 @@ import { StackNavigationProp } from "react-native-screens";
 
 export type AuthStackParamList = {
   Confirmation: undefined;
+  DriverDetails:undefined;
   TripConfirmation: undefined;
   RideIdentification: undefined;
   EndTrip: undefined;
