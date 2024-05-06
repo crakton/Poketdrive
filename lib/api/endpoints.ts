@@ -1,0 +1,3 @@
+enum ENDPOINT {
+    "LOGIN" = "login"
+}

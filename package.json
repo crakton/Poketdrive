@@ -20,6 +20,7 @@
     "@reduxjs/toolkit": "^2.2.1",
     "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
+    "@tanstack/react-query": "^5.35.1",
     "axios": "^1.6.8",
     "expo": "~50.0.8",
     "expo-image-picker": "~14.7.1",
@@ -50,8 +51,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@tanstack/eslint-plugin-query": "^5.32.1",
     "@tsconfig/react-native": "^3.0.3",
     "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.10",
     "@types/react": "^18.2.63",
     "@types/react-test-renderer": "^18.0.7",
     "typescript": "^5.3.3"

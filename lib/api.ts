@@ -15,14 +15,15 @@ const navigateToLogin = () => {
 // State to track shown errors
 const shownErrors = new Set();
 
-export const request = async (config: AxiosRequestConfig<any>) => {
+export const fetch = async (config: AxiosRequestConfig<any>) => {
   try {
     let access = await AsyncStorage.getItem('accessToken');
 
     if (access) {
       config.headers = {
         ...config.headers,
-        urideAccess: access ? access : "",
+        "X-Api-Key": access ? access : "",
+        "uRideAccess": access ? access : "",
       };
     }
 

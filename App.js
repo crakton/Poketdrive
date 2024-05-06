@@ -38,7 +38,10 @@ import Confirmation from "./screens/RideHaling/Confirmation";
 import TripConfirmation from "./screens/Extras/TripConfirmation";
 import TripItinerary from "./screens/Driver/DriverItinerary/TripItinerary";
 import DriverDetails from "./screens/Driver/DriverDetails";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const Stack = createNativeStackNavigator();
+
+const queryClient = new QueryClient();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -56,223 +59,225 @@ export default function App() {
   }
 
   return (
-    <Provider store={store}>
-      <NavigationContainer>
-        <SafeAreaProvider>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
-          >
-            <Stack.Navigator>
-              {/* account creation starts here */}
-              {/* <Stack.Screen
-                name="CreateAccount"
-                component={CreateAccount}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="Verification"
-                component={Verification}
-                options={{
-                  headerShown: false,
-                }}
-              />  */}
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <NavigationContainer>
+          <SafeAreaProvider>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
+            >
+              <Stack.Navigator>
+                {/* account creation starts here */}
+                {/* <Stack.Screen
+                  name="CreateAccount"
+                  component={CreateAccount}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={Login}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Verification"
+                  component={Verification}
+                  options={{
+                    headerShown: false,
+                  }}
+                />  */}
 
-              {/* account creation ends here */}
+                {/* account creation ends here */}
 
-              {/* here is the main home screen */}
-              <Stack.Screen
-                name="Home"
-                component={Home}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                {/* here is the main home screen */}
+                <Stack.Screen
+                  name="Home"
+                  component={Home}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
 
-              {/* passangesr screens starts here */}
-              <Stack.Screen
-                name="TripSelection"
-                component={TripSelection}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                {/* passangesr screens starts here */}
+                <Stack.Screen
+                  name="TripSelection"
+                  component={TripSelection}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
 
-              <Stack.Screen
-                name="RideSelection"
-                component={RideSelection}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="MapScreen"
-                component={MapScreen}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="Payment"
-                component={Payment}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="Confirmation"
-                component={Confirmation}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                <Stack.Screen
+                  name="RideSelection"
+                  component={RideSelection}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="MapScreen"
+                  component={MapScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Payment"
+                  component={Payment}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Confirmation"
+                  component={Confirmation}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
 
-              {/* screen for driver to set info  */}
-              <Stack.Screen
-                name="RideSchedule"
-                component={RideSchedule}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="VehicleDetails"
-                component={VehicleDetails}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="RidePreference"
-                component={RidePreference}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="BackRowSeating"
-                component={BackRowSeating}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="PriceSetting"
-                component={PriceSetting}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                {/* screen for driver to set info  */}
+                <Stack.Screen
+                  name="RideSchedule"
+                  component={RideSchedule}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="VehicleDetails"
+                  component={VehicleDetails}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="RidePreference"
+                  component={RidePreference}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="BackRowSeating"
+                  component={BackRowSeating}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="PriceSetting"
+                  component={PriceSetting}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
 
-              <Stack.Screen
-                name="ManageTrips"
-                component={ManageTrips}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="TripItinerary"
-                component={TripItinerary}
-                options={{
-                  headerShown: false,
-                }}
-              />
-               <Stack.Screen
-                name="DriverDetails"
-                component={DriverDetails}
-                options={{
-                  headerShown: false,
-                }}
-              />
+                <Stack.Screen
+                  name="ManageTrips"
+                  component={ManageTrips}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="TripItinerary"
+                  component={TripItinerary}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="DriverDetails"
+                  component={DriverDetails}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
 
-              {/* driver setting ends here */}
-              <Stack.Screen
-                name="WalletHome"
-                component={WalletHome}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="WalletHistory"
-                component={WalletHistory}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AddPaymentMethod"
-                component={AddPaymentMethod}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="PaymentSucessful"
-                component={PaymentSucessful}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AccountVerification"
-                component={AccountVerification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="IdVerification"
-                component={IdVerification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="IdDetails"
-                component={IdDetails}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Settings"
-                component={Settings}
-                options={{ headerShown: false }}
-              />
+                {/* driver setting ends here */}
+                <Stack.Screen
+                  name="WalletHome"
+                  component={WalletHome}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="WalletHistory"
+                  component={WalletHistory}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="AddPaymentMethod"
+                  component={AddPaymentMethod}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="PaymentSucessful"
+                  component={PaymentSucessful}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="AccountVerification"
+                  component={AccountVerification}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="IdVerification"
+                  component={IdVerification}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="IdDetails"
+                  component={IdDetails}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Settings"
+                  component={Settings}
+                  options={{ headerShown: false }}
+                />
 
-              <Stack.Screen
-                name="FAQs"
-                component={FAQs}
-                options={{ headerShown: false }}
-              />
+                <Stack.Screen
+                  name="FAQs"
+                  component={FAQs}
+                  options={{ headerShown: false }}
+                />
 
-              <Stack.Screen
-                name="CarIdentification"
-                component={CarIdentification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="RideIdentification"
-                component={RideIdentification}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="RideProgress"
-                component={RideProgress}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="EndTrip"
-                component={EndTrip}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="TripConfirmation"
-                component={TripConfirmation}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          </KeyboardAvoidingView>
-        </SafeAreaProvider>
-      </NavigationContainer>
+                <Stack.Screen
+                  name="CarIdentification"
+                  component={CarIdentification}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RideIdentification"
+                  component={RideIdentification}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RideProgress"
+                  component={RideProgress}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="EndTrip"
+                  component={EndTrip}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="TripConfirmation"
+                  component={TripConfirmation}
+                  options={{ headerShown: false }}
+                />
+              </Stack.Navigator>
+            </KeyboardAvoidingView>
+          </SafeAreaProvider>
+        </NavigationContainer>
     </Provider>
+    </QueryClientProvider>
   );
 }
