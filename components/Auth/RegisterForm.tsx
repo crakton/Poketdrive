@@ -25,6 +25,7 @@ const RegisterForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [checked, setChecked] = useState(true);
   const toggleCheckbox = () => setChecked(!checked);
+  const [disEnableLogin, setDisEnableLogin] = useState(true);
 
   const handleSignUp = () => {
     // Basic validation
@@ -32,20 +33,23 @@ const RegisterForm = () => {
       Alert.alert("All fields are required");
       return;
     }
-
+  
     if (password !== confirmPassword) {
       Alert.alert("Passwords do not match");
       return;
     }
-
+  
     if (password.length < 8) {
       Alert.alert("Password must be at least 8 characters long");
       return;
     }
-
+  
+    // If all validations passed
+    setDisEnableLogin(false); // Set disable button to false
     // Handle sign-up logic here if validation passes
     console.log("Signing up...");
   };
+  
 
   return (
     <View>
@@ -111,8 +115,9 @@ const RegisterForm = () => {
         </Text>
       </View>
       <TouchableOpacity
+        // disabled={disEnableLogin}
         style={tw`rounded-[1rem] bg-[#F25B3E] p-3 my-2`}
-        onPress={() => navigation.navigate("Login")} // Corrected
+        onPress={handleSignUp}
       >
         <Text
           style={[
