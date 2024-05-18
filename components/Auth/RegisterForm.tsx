@@ -7,61 +7,94 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { CheckBox } from "@rneui/base"; // Import CheckBox component
+import { CheckBox } from "@rneui/base";
 import tw from "twrnc";
 import SocialLinks from "./SocialLinks";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useMutation } from "@tanstack/react-query";
+import register, { IRegisterRequest } from "../../lib/api/functions/register";
 
 const RegisterForm = () => {
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "CreatAccount">
     >();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [checked, setChecked] = useState(true);
+
   const toggleCheckbox = () => setChecked(!checked);
-  const [disEnableLogin, setDisEnableLogin] = useState(true);
+
+  const mutation = useMutation<any, IRegisterRequest>(
+    (payload: as any) => register(payload),
+    {
+      onSuccess: () => {
+        Alert.alert("Registration successful", "You can now log in.");
+        navigation.navigate("Login"); // Navigate to the login screen
+      },
+      onError: (error: any) => {
+        Alert.alert(
+          "Registration failed",
+          error.message || "Please try again."
+        );
+      },
+    }
+  );
 
   const handleSignUp = () => {
     // Basic validation
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       Alert.alert("All fields are required");
       return;
     }
-  
+
     if (password !== confirmPassword) {
       Alert.alert("Passwords do not match");
       return;
     }
-  
+
     if (password.length < 8) {
       Alert.alert("Password must be at least 8 characters long");
       return;
     }
-  
-    // If all validations passed
-    setDisEnableLogin(false); // Set disable button to false
-    // Handle sign-up logic here if validation passes
-    console.log("Signing up...");
-  };
-  
 
+    const payload: IRegisterRequest = {
+      firstName,
+      lastName,
+      email,
+      password,
+    };
+
+    // If all validations passed, call the mutation
+    mutation.mutate(payload);
+  };
   return (
     <View>
       <View style={styles.inputContainer}>
         <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
-          Full Name
+          First Name
         </Text>
         <TextInput
           style={styles.input}
           placeholder="Your full name"
-          value={fullName}
-          onChangeText={setFullName}
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
+          Last Name
+        </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your full name"
+          value={lastName}
+          onChangeText={setLastName}
         />
       </View>
       <View style={styles.inputContainer}>

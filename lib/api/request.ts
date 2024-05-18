@@ -15,6 +15,7 @@ interface IQueryRequest {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
     url: string;
     params?: any; // data to be sent to the server
+    data?: any; // data to be sent to the server
 }
 
 /**

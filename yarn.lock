@@ -6855,7 +6855,7 @@ to-regex-range@^5.0.1:
 
 toastify-react-native@^5.0.0:
   version "5.0.0"
-  resolved "https://registry.npmjs.org/toastify-react-native/-/toastify-react-native-5.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/toastify-react-native/-/toastify-react-native-5.0.0.tgz#4154087f6de015046a289b07f808e016059f05b0"
   integrity sha512-TmkoAb8bH6z0mUoUijm1Fm3BiUESosW3itSL6Wi12waJzzCU4sA2jipinyKTdTVNdpKrNQXYJFhLxk8Qt645sg==
 
 toidentifier@1.0.1:
