@@ -30,9 +30,9 @@ const RegisterForm = () => {
 
   const toggleCheckbox = () => setChecked(!checked);
 
-  const mutation = useMutation<any, IRegisterRequest>(
-    (payload: as any) => register(payload),
+  const mutation = useMutation(
     {
+      mutationFn: (payload: IRegisterRequest) => register(payload),
       onSuccess: () => {
         Alert.alert("Registration successful", "You can now log in.");
         navigation.navigate("Login"); // Navigate to the login screen
@@ -45,6 +45,22 @@ const RegisterForm = () => {
       },
     }
   );
+
+  // const mutation = useMutation<any, IRegisterRequest>(
+  //   mutationFn: (payload: IRegisterRequest) => register(payload),
+  //   {
+  //     onSuccess: () => {
+  //       Alert.alert("Registration successful", "You can now log in.");
+  //       navigation.navigate("Login"); // Navigate to the login screen
+  //     },
+  //     onError: (error: any) => {
+  //       Alert.alert(
+  //         "Registration failed",
+  //         error.message || "Please try again."
+  //       );
+  //     },
+  //   }
+  // );
 
   const handleSignUp = () => {
     // Basic validation
