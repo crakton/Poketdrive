@@ -1,28 +1,48 @@
 import { baseUrl } from "../../../utils/constant";
-import request from "../request";
+import { request } from "../request";
 
-// Define the structure of the registration request
-export interface IRegisterRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
-/**
- * The register function sends a POST request to the registration endpoint with the provided user details.
- *
- * @param {IRegisterRequest} data - The user details to be registered.
- * @returns {Promise<any>} - A Promise that resolves with the response from the registration endpoint.
- */
-const register = async (data: IRegisterRequest): Promise<any> => {
-  const response = await request({
-    method: "POST",
-    url: `${baseUrl}/auth/register`,
-    data,
+export const RegisterUser = async (RegisterData: any) => {
+  const res = await request("POST", `${baseUrl}/auth/register`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: RegisterData,
   });
 
-  return response;
+  return res;
 };
 
-export default register;
+export const RequestOTP = async (OTPEmail: any) => {
+  const res = await request("POST", `${baseUrl}/auth/send-otp`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: OTPEmail,
+  });
+
+  return res;
+};
+
+export const VerifytOTP = async (OTP: any) => {
+  try {
+    const res = await request("POST", `${baseUrl}/auth/verify-otp`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: OTP,
+    });
+
+    return res.data;
+  } catch (error: any) {
+    let errorMessage = "Failed to verify OTP";
+    if (
+      error &&
+      error.response &&
+      error.response.data &&
+      error.response.data.message
+    ) {
+      errorMessage = error.response.data.message;
+    }
+    throw new Error(errorMessage);
+  }
+};

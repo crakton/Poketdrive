@@ -36,7 +36,8 @@ const Verification = () => {
             Verification Title
           </Text>
           <Text style={[tw`text-lg py-5`, { fontFamily: "Poppins-Regular" }]}>
-            Enter the code we've sent to your phone number +234 70 345 67899
+            {/* Enter the code we've sent to your phone number +234 70 345 67899 */}
+            Enter the code we've sent to your email address
           </Text>
         </View>
         <CodeVerification />

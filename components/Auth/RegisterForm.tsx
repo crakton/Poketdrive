@@ -6,7 +6,7 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CheckBox } from "@rneui/base";
 import tw from "twrnc";
 import SocialLinks from "./SocialLinks";
@@ -14,7 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation } from "@tanstack/react-query";
-import register, { IRegisterRequest } from "../../lib/api/functions/register";
+import { RegisterUser } from "../../lib/api/functions/register";
+import Loader from "../loader/Loader";
 
 const RegisterForm = () => {
   const navigation =
@@ -30,38 +31,11 @@ const RegisterForm = () => {
 
   const toggleCheckbox = () => setChecked(!checked);
 
-  const mutation = useMutation({
-    mutationFn: (payload: IRegisterRequest) => register(payload),
-    onSuccess: () => {
-      Alert.alert("Registration successful", "You can now log in.");
-      navigation.navigate("Login"); // Navigate to the login screen
-    },
-    onError: (error: any) => {
-      console.log(error.message || "Please try again.");
-      Alert.alert(
-        "Registration failed for mee",
-        error.message || "Please try again."
-      );
-    },
+  const { mutateAsync, status, isSuccess, data } = useMutation({
+    mutationFn: (payload: any) => RegisterUser(payload), // Assuming RegisterUser is an async function returning a Promise
   });
 
-  // const mutation = useMutation<any, IRegisterRequest>(
-  //   mutationFn: (payload: IRegisterRequest) => register(payload),
-  //   {
-  //     onSuccess: () => {
-  //       Alert.alert("Registration successful", "You can now log in.");
-  //       navigation.navigate("Login"); // Navigate to the login screen
-  //     },
-  //     onError: (error: any) => {
-  //       Alert.alert(
-  //         "Registration failed",
-  //         error.message || "Please try again."
-  //       );
-  //     },
-  //   }
-  // );
-
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     // Basic validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
       Alert.alert("All fields are required");
@@ -78,7 +52,7 @@ const RegisterForm = () => {
       return;
     }
 
-    const payload: IRegisterRequest = {
+    const payload = {
       firstName,
       lastName,
       email,
@@ -86,10 +60,21 @@ const RegisterForm = () => {
     };
 
     // If all validations passed, call the mutation
-    mutation.mutate(payload);
+    await mutateAsync(payload);
   };
+
+  useEffect(() => {
+    if (data && data?.code === 400) {
+      Alert.alert(data?.message);
+    } else if (isSuccess) {
+      Alert.alert("Registration successful");
+      navigation.navigate("Login");
+    }
+  }, [data, isSuccess, navigation]);
+
   return (
     <View>
+      {status == "pending" && <Loader />}
       <View style={styles.inputContainer}>
         <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
           First Name

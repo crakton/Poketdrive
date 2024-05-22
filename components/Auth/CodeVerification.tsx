@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { TouchableOpacity, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
@@ -12,13 +12,17 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { useMutation } from "@tanstack/react-query";
+import { VerifytOTP } from "../../lib/api/functions/register";
+import Loader from "../loader/Loader";
 
-const { width } = Dimensions.get("window");
-const CELL_COUNT = 4;
+const CELL_COUNT = 6;
 
 const CodeVerification = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<AuthStackParamList, "Login">>();
+    useNavigation<
+      NativeStackNavigationProp<AuthStackParamList, "Verification">
+    >();
   const [value, setValue] = useState("");
   const [isCodeComplete, setIsCodeComplete] = useState(false);
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
@@ -26,6 +30,7 @@ const CodeVerification = () => {
     value,
     setValue,
   });
+
   const renderCell = ({
     index,
     symbol,
@@ -64,12 +69,34 @@ const CodeVerification = () => {
     setIsCodeComplete(value.length === CELL_COUNT);
   }, [value]);
 
-  const handleSubmit = () => {
-    console.log("Code submitted: ", value);
+  const { mutateAsync, status, isSuccess, isError, data } = useMutation({
+    mutationFn: (payload: any) => VerifytOTP(payload),
+  });
+
+  const handleSubmit = async () => {
+    const payload = {
+      otp: value,
+    };
+
+    console.log(payload, "payload");
+
+    await mutateAsync(payload);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      Alert.alert("Success");
+      navigation.navigate("Home");
+    } else if (isError) {
+      Alert.alert("Error", "An error occurred, please try again");
+    }
+  }, [isSuccess, isError, navigation]);
+
+  console.log(status, isSuccess);
 
   return (
     <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+      {status == "pending" && <Loader />}
       <View style={{ flex: 1, alignItems: "center" }}>
         <View
           style={{
@@ -122,8 +149,7 @@ const CodeVerification = () => {
           </View>
           <TouchableOpacity
             disabled={!isCodeComplete} // Disable button if code is not complete
-            onPress={() => navigation.navigate("Home")}
-            // onPress={handleSubmit}
+            onPress={handleSubmit}
             style={[
               tw`p-3`,
               {

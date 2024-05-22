@@ -38,10 +38,8 @@ import Confirmation from "./screens/RideHaling/Confirmation";
 import TripConfirmation from "./screens/Extras/TripConfirmation";
 import TripItinerary from "./screens/Driver/DriverItinerary/TripItinerary";
 import DriverDetails from "./screens/Driver/DriverDetails";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import QueryClientProvider from "./utils/ReactQueryProvider";
 const Stack = createNativeStackNavigator();
-
-const queryClient = new QueryClient();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -59,7 +57,7 @@ export default function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider>
       <Provider store={store}>
         <NavigationContainer>
           <SafeAreaProvider>
