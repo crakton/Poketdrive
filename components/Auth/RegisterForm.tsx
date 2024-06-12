@@ -6,29 +6,45 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import { CheckBox } from "@rneui/base"; // Import CheckBox component
+import React, { useEffect, useState } from "react";
+import { CheckBox } from "@rneui/base";
 import tw from "twrnc";
 import SocialLinks from "./SocialLinks";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useMutation } from "@tanstack/react-query";
+import { RegisterUser } from "../../lib/api/functions/register";
+import Loader from "../loader/Loader";
 
 const RegisterForm = () => {
   const navigation =
     useNavigation<
-      NativeStackNavigationProp<AuthStackParamList, "CreatAccount">
+      NativeStackNavigationProp<AuthStackParamList, "CreateAccount">
     >();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [checked, setChecked] = useState(true);
+
   const toggleCheckbox = () => setChecked(!checked);
 
-  const handleSignUp = () => {
+  const { mutateAsync, status } = useMutation({
+    mutationFn: (payload: any) => RegisterUser(payload),
+    onSuccess: () => {
+      Alert.alert("Success", "Registration successful");
+      navigation.replace("Login");
+    },
+    onError: (error) => {
+      Alert.alert(error.message);
+    },
+  });
+
+  const handleSignUp = async () => {
     // Basic validation
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       Alert.alert("All fields are required");
       return;
     }
@@ -43,21 +59,40 @@ const RegisterForm = () => {
       return;
     }
 
-    // Handle sign-up logic here if validation passes
-    console.log("Signing up...");
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      password,
+    };
+
+    // If all validations passed, call the mutation
+    await mutateAsync(payload);
   };
 
   return (
     <View>
+      {status == "pending" && <Loader />}
       <View style={styles.inputContainer}>
         <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
-          Full Name
+          First Name
         </Text>
         <TextInput
           style={styles.input}
           placeholder="Your full name"
-          value={fullName}
-          onChangeText={setFullName}
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
+          Last Name
+        </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your full name"
+          value={lastName}
+          onChangeText={setLastName}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -111,8 +146,9 @@ const RegisterForm = () => {
         </Text>
       </View>
       <TouchableOpacity
+        // disabled={disEnableLogin}
         style={tw`rounded-[1rem] bg-[#F25B3E] p-3 my-2`}
-        onPress={() => navigation.navigate("Login")} // Corrected
+        onPress={handleSignUp}
       >
         <Text
           style={[
@@ -123,6 +159,17 @@ const RegisterForm = () => {
           Create Account
         </Text>
       </TouchableOpacity>
+      <View style={tw`flex flex-row items-center justify-center`}>
+        <Text style={[tw`text-center`, { fontFamily: "Poppins-Regular" }]}>
+          Already have an account?{" "}
+          <Text
+            style={[tw`text-[#F25B3E]`, { fontFamily: "Poppins-bold" }]}
+            onPress={() => navigation.replace("Login")}
+          >
+            Login
+          </Text>
+        </Text>
+      </View>
       <View style={tw`flex flex-row items-center py-2 px-10 justify-center`}>
         <View style={tw`flex-1 h-px bg-[#F25B3E] `} />
         <Text

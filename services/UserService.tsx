@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { request } from "../lib/api";
+import { fetch } from "../lib/api";
 
 export interface User {
   firstName: string;
@@ -15,7 +15,7 @@ export const register = async (user: User) => {
     data: user,
   };
 
-  const response = await request(options);
+  const response = await fetch(options);
   return response;
 };
 
@@ -26,6 +26,6 @@ export const login = async (user: User) => {
     data: user,
   };
 
-  const response = await request(options);
+  const response = await fetch(options);
   return response;
 };

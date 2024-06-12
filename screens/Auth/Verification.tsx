@@ -26,9 +26,7 @@ const Verification = () => {
           onPress={() => {
             navigation.goBack();
           }}
-        >
-          <Icon name="arrow-back-outline" type="ionicon" color="black" />
-        </TouchableOpacity>
+        ></TouchableOpacity>
       </View>
       <ScrollView>
         <View style={tw`flex px-3`}>
@@ -36,7 +34,8 @@ const Verification = () => {
             Verification Title
           </Text>
           <Text style={[tw`text-lg py-5`, { fontFamily: "Poppins-Regular" }]}>
-            Enter the code we've sent to your phone number +234 70 345 67899
+            {/* Enter the code we've sent to your phone number +234 70 345 67899 */}
+            Enter the code we've sent to your email address
           </Text>
         </View>
         <CodeVerification />

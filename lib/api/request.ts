@@ -1,47 +1,126 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetch } from '../api';
+import { DictOf } from "../../types";
+
+type ResponseType = "json" | "text" | "blob";
+type FetchResponse = DictOf<any>;
+type PromiseRejector = (error: FetchResponse) => void;
+type PromiseResolver = (value: FetchResponse) => void;
+
+export type FetchArgs = { url: string; options?: RequestOptions };
+export type FetchResult = Promise<FetchResponse> | PromiseLike<FetchResponse>;
+export type FetchFn = (args: FetchArgs) => FetchResult;
+
+export type Method = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
+
+export type RequestOptions = RequestInit & {
+  multipart?: boolean;
+  params?: DictOf<any>;
+  data?: DictOf<any>;
+  responseType?: ResponseType;
+};
 
 /**
- * Represents the request details for a server request.
- *
- * @interface IQueryRequest
- * @property {string | string[]} key - A unique identifier for the request.
- * @property {'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'} method - The HTTP method to use for the request.
- * @property {string} url - The URL to send the request to.
- * @property {any} [params] - Data to be sent to the server.
+ * Builds the query string based on arguments.
  */
-interface IQueryRequest {
-    key: string | string[];
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    url: string;
-    params?: any; // data to be sent to the server
+export const buildQueryString = (params: DictOf<any> = {}) =>
+  Object.keys(params)
+    .filter(
+      (key: string) =>
+        ![undefined, null].includes(params[key]) &&
+        params[key].toString().trim() !== ""
+    )
+    .map((key: string) => [
+      key,
+      // encodes `value` to use it in URL addresses
+      encodeURIComponent(params[key]),
+    ])
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+export const buildFormData = (body: DictOf<any> = {}): FormData =>
+  Object.keys(body).reduce((acc, key) => {
+    const value = body[key];
+    if (value !== null && value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((val: any) => acc.append(key, val));
+      } else {
+        acc.append(key, value);
+      }
+    }
+    return acc;
+  }, new FormData());
+
+export default function handleResponse(
+  response: Response,
+  responseType: ResponseType,
+  resolve: PromiseResolver,
+  reject: PromiseRejector
+) {
+  if (response.status < 500) {
+    switch (responseType) {
+      // case 'blob':
+      //   return response // prettier
+      //     .blob()
+      //     .then((blob: Blob) => blobToBase64(blob))
+      //     .then((base64: string) => resolve({base64}));
+
+      case "text":
+        return response // prettier
+          .text()
+          .then((text: string) => resolve({ text }));
+
+      default:
+        return response // prettier
+          .json()
+          .then((data: DictOf<any>) => resolve(data));
+    }
+  } else {
+    return response
+      .json()
+      .then((content: any) => {
+        const err = { status: response.status, error: content.message };
+
+        return reject(err);
+      })
+      .catch(() => {
+        // response is not JSON, ignore content
+        return reject({ status: `${response.status}` });
+      });
+  }
 }
 
-/**
- * Makes a request to the server using the specified method and URL.
- *
- * @param {IQueryRequest} options - An object containing the request details.
- * @param {string | string[]} options.key - A unique identifier for the request.
- * @param {'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'} options.method - The HTTP method to use for the request.
- * @param {string} options.url - The URL to send the request to.
- * @param {any} [options.params] - Data to be sent to the server.
- *
- * @returns {Promise<{ data: any, isError: boolean, error: any, isLoading: boolean }>} 
- *  - A promise that resolves to an object containing the request data, error, loading status, and whether an error occurred.
- */
-const request = async ({ key, method, url, params }: IQueryRequest) => {
-    const { data, isError, error, isLoading } = useQuery({
-        queryKey: [key],
-        queryFn: () => {
-            return fetch({
-                method,
-                url,
-                data: params,
-            });
-        }
-    });
+export function request(
+  method: Method,
+  url: string,
+  {
+    headers,
+    multipart,
+    params,
+    data,
+    responseType = "json",
+    ...rest
+  }: RequestOptions
+): Promise<FetchResponse> {
+  return new Promise((resolve: PromiseResolver, reject: PromiseRejector) => {
+    const options: RequestInit = { ...rest, method, headers: headers || {} };
+    if (data) {
+      if (multipart) {
+        // options.headers = { ...options.headers, 'Content-Type': 'multipart/form-data' };
+        options.body = buildFormData(data);
+      } else {
+        options.headers = {
+          ...options.headers,
+          "Content-Type": "application/json",
+        };
+        options.body = JSON.stringify(data);
+      }
+    }
 
-    return { data, isError, error, isLoading };
+    const path = params ? `${url}/?${buildQueryString(params)}` : url;
+
+    fetch(path, options)
+      .then((response) =>
+        handleResponse(response, responseType, resolve, reject)
+      )
+      .catch((error) => reject(error));
+  });
 }
-
-export default request;

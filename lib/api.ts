@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { Toast } from 'toastify-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const client = axios.create({
@@ -42,33 +41,33 @@ export const fetch = async (config: AxiosRequestConfig<any>) => {
 
         // Show the error toast
         if (status === 401 || status === 403) {
-          Toast.error(
-            `Client Error: ${status} - ${
-              (data as { message?: string })?.message || "Error, try Again"
-            }`,
-            'bottom'
-          );
+          // Toast.error(
+          //   `Client Error: ${status} - ${
+          //     (data as { message?: string })?.message || "Error, try Again"
+          //   }`,
+          //   'bottom'
+          // );
 
           // Redirect to the login route for authentication
           navigateToLogin();
         } else if (status && status >= 400 && status < 500) {
-          Toast.error(
-            `Client Error: ${status} - ${
-              (data as { message?: string })?.message || "Error, try Again"
-            }`,
-            'bottom'
-          );
+          // Toast.error(
+          //   `Client Error: ${status} - ${
+          //     (data as { message?: string })?.message || "Error, try Again"
+          //   }`,
+          //   'bottom'
+          // );
         } else if (status && status >= 500) {
-          Toast.error(
-            `Server Error: ${status} - ${
-              (data as { message?: string })?.message || "Error, try Again"
-            }`,
-            'bottom'
-          );
+          // Toast.error(
+          //   `Server Error: ${status} - ${
+          //     (data as { message?: string })?.message || "Error, try Again"
+          //   }`,
+          //   'bottom'
+          // );
         }
       }
     } else {
-      Toast.error("An Error Occurred: Please try again later", 'bottom');
+      // Toast.errror("An Error Occurred: Please try again later", 'bottom');
     }
 
     throw error;

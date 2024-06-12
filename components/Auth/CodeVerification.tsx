@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { TouchableOpacity, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
@@ -12,13 +18,19 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { useMutation } from "@tanstack/react-query";
+import { VerifytOTP } from "../../lib/api/functions/register";
+import Loader from "../loader/Loader";
+import { setLocalData } from "../../utils/localStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const { width } = Dimensions.get("window");
-const CELL_COUNT = 4;
+const CELL_COUNT = 6;
 
 const CodeVerification = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<AuthStackParamList, "Login">>();
+    useNavigation<
+      NativeStackNavigationProp<AuthStackParamList, "Verification">
+    >();
   const [value, setValue] = useState("");
   const [isCodeComplete, setIsCodeComplete] = useState(false);
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
@@ -26,6 +38,7 @@ const CodeVerification = () => {
     value,
     setValue,
   });
+
   const renderCell = ({
     index,
     symbol,
@@ -36,13 +49,11 @@ const CodeVerification = () => {
     isFocused: boolean;
   }) => {
     let textChild = null;
-
     if (symbol) {
       textChild = symbol;
     } else if (isFocused) {
       textChild = <Cursor />;
     }
-
     return (
       <Text
         key={index}
@@ -64,19 +75,28 @@ const CodeVerification = () => {
     setIsCodeComplete(value.length === CELL_COUNT);
   }, [value]);
 
-  const handleSubmit = () => {
-    console.log("Code submitted: ", value);
+  const { mutateAsync, status } = useMutation({
+    mutationFn: (payload: any) => VerifytOTP(payload),
+    onSuccess: async (data) => {
+      await AsyncStorage.setItem("userData", JSON.stringify(data));
+      navigation.replace("Home");
+    },
+    onError: (error) => {
+      console.error("Verification error:", error);
+      Alert.alert("Error", "An error occurred, please try again");
+    },
+  });
+
+  const handleSubmit = async () => {
+    const payload = { otp: value };
+    await mutateAsync(payload);
   };
 
   return (
     <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
+      {status === "pending" && <Loader />}
       <View style={{ flex: 1, alignItems: "center" }}>
-        <View
-          style={{
-            width: "100%",
-            paddingHorizontal: 22,
-          }}
-        >
+        <View style={{ width: "100%", paddingHorizontal: 22 }}>
           <View
             style={{
               flexDirection: "row",
@@ -121,13 +141,12 @@ const CodeVerification = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            disabled={!isCodeComplete} // Disable button if code is not complete
-            onPress={() => navigation.navigate("Home")}
-            // onPress={handleSubmit}
+            disabled={!isCodeComplete}
+            onPress={handleSubmit}
             style={[
               tw`p-3`,
               {
-                backgroundColor: isCodeComplete ? "#F25B3E" : "#D3D3D3", // Change color based on code completion
+                backgroundColor: isCodeComplete ? "#F25B3E" : "#D3D3D3",
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: 8,
