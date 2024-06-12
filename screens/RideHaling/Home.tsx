@@ -7,12 +7,14 @@ import {
   Dimensions,
   StatusBar,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import { Icon } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { getLocalData } from "../../utils/localStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthStackParamList = {
   RideSchedule: undefined;
@@ -45,6 +47,26 @@ const data = [
 const Home = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+
+  useEffect(() => {
+    const checkOnboard = async () => {
+      try {
+        const isOnboard = await AsyncStorage.getItem("userData");
+        // const isOnboard = await getLocalData("userData");
+        if (isOnboard) {
+          isOnboard !== null ? JSON.parse(isOnboard) : null;
+
+          console.log("home place  is onboarded", isOnboard);
+        } else {
+          console.log("User is not onboarded", isOnboard);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    };
+    checkOnboard();
+  }, []);
 
   return (
     <SafeAreaView

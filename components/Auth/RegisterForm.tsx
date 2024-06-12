@@ -20,7 +20,7 @@ import Loader from "../loader/Loader";
 const RegisterForm = () => {
   const navigation =
     useNavigation<
-      NativeStackNavigationProp<AuthStackParamList, "CreatAccount">
+      NativeStackNavigationProp<AuthStackParamList, "CreateAccount">
     >();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,8 +31,15 @@ const RegisterForm = () => {
 
   const toggleCheckbox = () => setChecked(!checked);
 
-  const { mutateAsync, status, isSuccess, data } = useMutation({
-    mutationFn: (payload: any) => RegisterUser(payload), // Assuming RegisterUser is an async function returning a Promise
+  const { mutateAsync, status } = useMutation({
+    mutationFn: (payload: any) => RegisterUser(payload),
+    onSuccess: () => {
+      Alert.alert("Success", "Registration successful");
+      navigation.replace("Login");
+    },
+    onError: (error) => {
+      Alert.alert(error.message);
+    },
   });
 
   const handleSignUp = async () => {
@@ -62,15 +69,6 @@ const RegisterForm = () => {
     // If all validations passed, call the mutation
     await mutateAsync(payload);
   };
-
-  useEffect(() => {
-    if (data && data?.code === 400) {
-      Alert.alert(data?.message);
-    } else if (isSuccess) {
-      Alert.alert("Registration successful");
-      navigation.navigate("Login");
-    }
-  }, [data, isSuccess, navigation]);
 
   return (
     <View>
@@ -161,6 +159,17 @@ const RegisterForm = () => {
           Create Account
         </Text>
       </TouchableOpacity>
+      <View style={tw`flex flex-row items-center justify-center`}>
+        <Text style={[tw`text-center`, { fontFamily: "Poppins-Regular" }]}>
+          Already have an account?{" "}
+          <Text
+            style={[tw`text-[#F25B3E]`, { fontFamily: "Poppins-bold" }]}
+            onPress={() => navigation.replace("Login")}
+          >
+            Login
+          </Text>
+        </Text>
+      </View>
       <View style={tw`flex flex-row items-center py-2 px-10 justify-center`}>
         <View style={tw`flex-1 h-px bg-[#F25B3E] `} />
         <Text

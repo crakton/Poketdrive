@@ -28,8 +28,15 @@ const PhoneNumberInput = () => {
 
   // const handleSubmit = () => {
 
-  const { mutateAsync, status, isSuccess, data } = useMutation({
-    mutationFn: (payload: any) => RequestOTP(payload), // Assuming RegisterUser is an async function returning a Promise
+  const { mutateAsync, status, isSuccess } = useMutation({
+    mutationFn: (payload: any) => RequestOTP(payload),
+    onSuccess: (data) => {
+      Alert.alert("Success", data?.message);
+      navigation.replace("Verification");
+    },
+    onError: (error) => {
+      Alert.alert("Error", "An error occurred, please try again");
+    },
   });
   //   const isValid = phoneInput.current?.isValidNumber(formattedValue);
   //   setValid(isValid as boolean);
@@ -53,15 +60,6 @@ const PhoneNumberInput = () => {
     // If all validations passed, call the mutation
     await mutateAsync(payload);
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      Alert.alert("Success", "OTP sent successfully!");
-      navigation.navigate("Verification");
-    } else if (status == "error") {
-      Alert.alert("Error", "An error occurred, please try again");
-    }
-  }, [isSuccess, status]);
 
   return (
     <View style={styles.container}>
@@ -89,7 +87,7 @@ const PhoneNumberInput = () => {
         </Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Your email address"
           value={email}
           onChangeText={setEmail}
         />

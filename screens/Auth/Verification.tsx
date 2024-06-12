@@ -26,9 +26,7 @@ const Verification = () => {
           onPress={() => {
             navigation.goBack();
           }}
-        >
-          <Icon name="arrow-back-outline" type="ionicon" color="black" />
-        </TouchableOpacity>
+        ></TouchableOpacity>
       </View>
       <ScrollView>
         <View style={tw`flex px-3`}>

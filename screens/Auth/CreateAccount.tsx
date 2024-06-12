@@ -19,11 +19,8 @@ const CreateAccount = () => {
     >
       <StatusBar translucent backgroundColor="transparent" />
       <View
-        style={tw`flex flex-row items-center justify-between px-5 mt-[-1rem]`}
+        style={tw`flex flex-row items-center justify-center px-5 mt-[-1rem]`}
       >
-        <TouchableOpacity>
-          <Icon name="close-outline" type="ionicon" color="black" />
-        </TouchableOpacity>
         <Image
           style={{
             width: 250,
@@ -32,7 +29,6 @@ const CreateAccount = () => {
           }}
           source={require("../../assets/logo.png")}
         />
-        <Text>{""}</Text>
       </View>
       <ScrollView>
         <View style={tw`flex px-3`}>

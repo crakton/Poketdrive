@@ -1,3 +1,4 @@
+import axios from "axios";
 import { baseUrl } from "../../../utils/constant";
 import { request } from "../request";
 
@@ -23,26 +24,18 @@ export const RequestOTP = async (OTPEmail: any) => {
   return res;
 };
 
-export const VerifytOTP = async (OTP: any) => {
+// Function to verify OTP
+export const VerifytOTP = async (otpData: number) => {
   try {
-    const res = await request("POST", `${baseUrl}/auth/verify-otp`, {
+    const res = await axios.post(`${baseUrl}/auth/verify-otp`, otpData, {
       headers: {
         "Content-Type": "application/json",
       },
-      data: OTP,
     });
-
     return res.data;
-  } catch (error: any) {
+  } catch (error) {
     let errorMessage = "Failed to verify OTP";
-    if (
-      error &&
-      error.response &&
-      error.response.data &&
-      error.response.data.message
-    ) {
-      errorMessage = error.response.data.message;
-    }
+
     throw new Error(errorMessage);
   }
 };

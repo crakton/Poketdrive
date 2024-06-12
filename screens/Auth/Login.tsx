@@ -26,7 +26,6 @@ const Login = () => {
             navigation.goBack();
           }}
         >
-          <Icon name="arrow-back-outline" type="ionicon" color="black" />
         </TouchableOpacity>
         <Text style={[tw``, { fontFamily: "Poppins-Black" }]}>Login</Text>
       </View>
@@ -36,7 +35,7 @@ const Login = () => {
             Login Title
           </Text>
           <Text style={[tw`text-lg py-5`, { fontFamily: "Poppins-Regular" }]}>
-            Put your registered phone number below.
+            Enter your registered phone number below.
           </Text>
         </View>
         <CountryPhoneNumber />
