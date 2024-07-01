@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const client = axios.create({
-  baseURL: "http://142.4.9.152:3033/api/v1/",
+  baseURL: "http://142.93.40.82:3033/api/v1",
 });
 
 // Function to handle navigation
@@ -16,13 +16,13 @@ const shownErrors = new Set();
 
 export const fetch = async (config: AxiosRequestConfig<any>) => {
   try {
-    let access = await AsyncStorage.getItem('accessToken');
+    let userData = (await AsyncStorage.getItem("userData")) as string;
+    let access = JSON.parse(userData).Bearer_token;
 
     if (access) {
       config.headers = {
         ...config.headers,
-        "X-Api-Key": access ? access : "",
-        "uRideAccess": access ? access : "",
+        Authorization: access ? `Bearer ${access}` : "",
       };
     }
 
@@ -31,7 +31,7 @@ export const fetch = async (config: AxiosRequestConfig<any>) => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const { status, data } = error.response || {};
-
+      // console.log(status, data, 'status')
       // Generate a unique key for the error message
       const errorKey = `${status}-${data?.message || "Network Error"}`;
 
@@ -69,7 +69,5 @@ export const fetch = async (config: AxiosRequestConfig<any>) => {
     } else {
       // Toast.errror("An Error Occurred: Please try again later", 'bottom');
     }
-
-    throw error;
   }
 };
