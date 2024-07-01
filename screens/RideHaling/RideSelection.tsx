@@ -9,10 +9,11 @@ import {
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import tailwind from "twrnc";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Card from "../../components/RideHailing/Card";
+import { Icon } from "@rneui/base";
 
 type AuthStackParamList = {
   MapScreen: undefined;
@@ -69,27 +70,43 @@ const cardData = [
 const RideSelection = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const route = useRoute();
+  const { data }: any = route.params;
 
+  console.log(data, "data");
   return (
-    <SafeAreaView
-  style={[
-    tailwind`bg-[#FFFFFF] flex-1`,
-    { paddingTop: StatusBar.currentHeight },
-  ]}
->
+    <View
+      style={[
+        tailwind`bg-white flex-1 h-full `,
+        // { paddingTop: StatusBar.currentHeight },
+      ]}
+    >
       <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Search results" />
       </View>
-     
-        <Text
+
+      <Text style={[tailwind`text-2xl px-5 pb-2 pl-[5%]`]}>Today</Text>
+
+      {data.content.length === 0 ? (
+        <View
           style={[
-            tailwind`text-2xl px-5 pb-2`,
-            { fontFamily: "Poppins-Regular" },
+            tailwind`flex-1 h-full flex items-center bg-[#FFFFF] justify-center `,
           ]}
         >
-          Today
-        </Text>
+          <Icon
+            name="remove-circle-outline"
+            type="ionicon"
+            color="red"
+            size={40}
+          />
+          <Text
+            style={[tailwind`text-[20px]`, { fontFamily: "Poppins-Regular" }]}
+          >
+            No rides available
+          </Text>
+        </View>
+      ) : (
         <FlatList
           data={cardData}
           renderItem={({ item }) => (
@@ -118,8 +135,8 @@ const RideSelection = () => {
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         />
-      
-    </SafeAreaView>
+      )}
+    </View>
   );
 };
 
@@ -129,5 +146,3 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
-

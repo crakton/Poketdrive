@@ -7,7 +7,7 @@ import { Icon } from "@rneui/base";
 import { SvgXml } from "react-native-svg";
 
 interface CardProps {
-  date: string;
+  departure_time: string;
   fromLocation: string;
   fromDescription: string;
   toLocation: string;
@@ -16,9 +16,10 @@ interface CardProps {
   carDescription: string;
   price: string;
   seatsTaken: number;
-  onDelete: () => void; // onDelete prop function
+  onDelete: () => any; // onDelete prop function
   onEdit: () => void; // onEdit prop function
   isEmpty?: boolean;
+  rideId: string;
 }
 
 const carSeatSelectedSvg = `
@@ -35,7 +36,7 @@ const formatPrice = (price: number) => {
 };
 
 const DriverCard: React.FC<CardProps> = ({
-  date,
+  departure_time,
   fromLocation,
   fromDescription,
   toLocation,
@@ -46,6 +47,7 @@ const DriverCard: React.FC<CardProps> = ({
   seatsTaken,
   onDelete,
   onEdit,
+  rideId,
   isEmpty,
 }: CardProps) => {
   return (
@@ -53,9 +55,9 @@ const DriverCard: React.FC<CardProps> = ({
       <View>
         <View style={tailwind`flex flex-row items-center justify-between`}>
           <Text
-            style={[tailwind`text-lg py-5`, { fontFamily: "Poppins-Bold" }]}
+            style={[tailwind`text-[14px] py-5`, { fontFamily: "Poppins-Bold" }]}
           >
-            {date}
+            {departure_time}
           </Text>
           <View
             style={tailwind`flex flex-row gap-2 items-center  justify-center`}
@@ -67,7 +69,7 @@ const DriverCard: React.FC<CardProps> = ({
                   isEmpty ? tailwind`bg-[#FF0000]` : tailwind`bg-[#049813]`,
                 ]}
               >
-                <View style={tailwind`p-2`}>
+                <View style={tailwind`p-1`}>
                   <Text
                     style={[
                       tailwind`text-[10px] text-center text-white pb-2`,
@@ -105,7 +107,9 @@ const DriverCard: React.FC<CardProps> = ({
               { fontFamily: "Poppins-Bold", alignItems: "center" },
             ]}
           >
-            <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+            <Text
+              style={[tailwind`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
+            >
               {fromLocation}
             </Text>
             <View style={{ flex: 1 }}>
@@ -134,7 +138,9 @@ const DriverCard: React.FC<CardProps> = ({
               { fontFamily: "Poppins-Bold", alignItems: "center" },
             ]}
           >
-            <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+            <Text
+              style={[tailwind`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
+            >
               {toLocation}
             </Text>
             <View style={{ flex: 1 }}>
@@ -154,13 +160,20 @@ const DriverCard: React.FC<CardProps> = ({
       <View style={tailwind`flex flex-row justify-between items-center`}>
         <View style={tailwind`flex flex-row gap-4`}>
           <View>
-            <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+            <Text
+              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}
+            >
               {driverName}
             </Text>
             <Text
-              style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
+              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Light" }]}
             >
               {carDescription}
+            </Text>
+            <Text
+              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Light" }]}
+            >
+              {rideId}
             </Text>
           </View>
         </View>

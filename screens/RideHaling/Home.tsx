@@ -56,9 +56,9 @@ const Home = () => {
         if (isOnboard) {
           isOnboard !== null ? JSON.parse(isOnboard) : null;
 
-          console.log("home place  is onboarded", isOnboard);
+          // console.log("home place  is onboarded", isOnboard);
         } else {
-          console.log("User is not onboarded", isOnboard);
+          // console.log("User is not onboarded", isOnboard);
         }
       } catch (error) {
         console.log(error);

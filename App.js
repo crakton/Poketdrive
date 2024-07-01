@@ -180,7 +180,7 @@ export default function App() {
                       headerShown: false,
                     }}
                   />
-                  <Stack.Screen
+                  {/* <Stack.Screen
                     name="VehicleDetails"
                     component={VehicleDetails}
                     options={{
@@ -207,7 +207,7 @@ export default function App() {
                     options={{
                       headerShown: false,
                     }}
-                  />
+                  /> */}
 
                   <Stack.Screen
                     name="ManageTrips"

@@ -37,7 +37,7 @@ const TripSelection = () => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView
+    <View
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
     >
       <StatusBar translucent backgroundColor="transparent" />
@@ -73,7 +73,7 @@ const TripSelection = () => {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

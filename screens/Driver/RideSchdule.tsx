@@ -1,69 +1,150 @@
+import React, { useState } from "react";
 import {
   SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
   ScrollView,
-  TouchableOpacity,
+  StyleSheet,
+  View,
   StatusBar,
+  Alert,
+  TouchableOpacity,
+  Text,
 } from "react-native";
-import React from "react";
 import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
-import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
-import RideScheduleForm from "../../components/Driver/RideScheduleForm";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
+import HeaderBackButton from "../../components/common/HeaderBackButton";
+import RideScheduleForm from "../../components/Driver/RideScheduleForm";
+import VehicleDetails from "../../components/Driver/VehicleDetails";
+import RidePreference from "../../components/Driver/RidePreference";
+import BackRowSeating from "../../components/Driver/BackRowSeating";
+import PriceSetting from "../../components/Driver/PriceSetting";
+import NextButton from "../../components/common/NextButton";
+import { useSchedule } from "../../hooks/reactQuery/useSchedule";
+
+interface Schedule {
+  origin: string;
+  destination: string;
+  stops: string[];
+  type: string;
+  other: string;
+  price: number;
+  brs: number;
+  departure_time: string;
+  total_capacity: string;
+  remaining_capacity: string;
+  creator: string;
+  riders: string[];
+  luggage_type: string;
+  carName: string;
+  carColor: string;
+  carNumber: string;
+}
 
 const RideSchedule = () => {
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "RidePreference">
     >();
+
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState<Schedule>({
+    origin: "",
+    destination: "",
+    stops: [],
+    type: "",
+    other: "",
+    price: 0,
+    brs: 0,
+    departure_time: "",
+    total_capacity: "",
+    remaining_capacity: "",
+    creator: "",
+    riders: [],
+    luggage_type: "",
+    carName: "",
+    carColor: "",
+    carNumber: "",
+  });
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const steps = [
+    {
+      component: (
+        <RideScheduleForm
+          formData={formData}
+          setFormData={setFormData}
+          handleNext={handleNext}
+        />
+      ),
+      title: "Ride Schedule",
+    },
+    {
+      component: (
+        <VehicleDetails
+          formData={formData}
+          setFormData={setFormData}
+          handleNext={handleNext}
+        />
+      ),
+      title: "Vehicle Details",
+    },
+    {
+      component: (
+        <RidePreference
+          formData={formData}
+          setFormData={setFormData}
+          handleNext={handleNext}
+        />
+      ),
+      title: "Ride Preferences",
+    },
+    {
+      component: (
+        <BackRowSeating
+          formData={formData}
+          setFormData={setFormData}
+          handleNext={handleNext}
+        />
+      ),
+      title: "Back Row Seating",
+    },
+    {
+      component: (
+        <PriceSetting
+          formData={formData}
+          setFormData={setFormData}
+          handleNext={handleNext}
+        />
+      ),
+      title: "Price Setting",
+    },
+  ];
+
   return (
     <SafeAreaView
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
     >
-      <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
         <View style={tw`flex gap-[1]`}>
-          <HeaderWithBackButton
-            navigation={navigation}
-            title={"Ride Schedule"}
+          <HeaderBackButton
+            title={steps[currentStep].title}
+            onBack={handleBack}
           />
-          <View style={tw`flex flex-row items-center justify-end px-5`}>
-            <TouchableOpacity
-              style={tw`bg-red-500 rounded-md`}
-              onPress={() => navigation.navigate("ManageTrips")}
-            >
-              <Text
-                style={[
-                  tw`px-2 text-white  py-1`,
-                  { fontFamily: "Poppins-Regular" },
-                ]}
-              >
-                Manage trip
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={tw`flex px-3 mb-5 items-start`}>
-            <Text style={[tw`text-2xl px-5`, { fontFamily: "Poppins-Bold" }]}>
-              uRide schedule
-            </Text>
-            <Text
-              style={[
-                tw`text-[16px] px-5 pt-2`,
-                { fontFamily: "Poppins-Light" },
-              ]}
-            >
-              Your origin, destination, and stops you are willing to make along
-              the way
-            </Text>
-          </View>
-        </View>
-        <View style={tw`px-5`}>
-          <RideScheduleForm />
+          <View style={tw`px-5 mt-5`}>{steps[currentStep].component}</View>
         </View>
       </ScrollView>
     </SafeAreaView>
