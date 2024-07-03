@@ -104,21 +104,22 @@ const ManageTrips = () => {
   // Transform trip data function to match CardProps interface
   const transformTripData = (trip: any): CardProps => ({
     departure_time: formatDepartureTimeAlt(trip.departure_time),
-    fromLocation: trip.origin.name,
-    fromDescription: trip.origin.name,
-    toLocation: trip.destination.name,
-    toDescription: trip.destination.name,
-    driverName: trip.creator,
+    fromLocation: trip?.origin.name,
+    fromDescription: trip?.origin.name,
+    toLocation: trip?.destination.name,
+    toDescription: trip?.destination.name,
+    driverName: trip?.creator,
     carDescription: `Luggage Type: ${trip.luggage_type}`,
-    price: trip.price.toString(),
-    rideId: trip?.stops[0]?._id,
-    seatsTaken: trip.total_capacity - trip.remaining_capacity,
+    price: trip?.price?.toString(),
+    rideId: trip?.mainID,
+    seatsTaken: trip?.total_capacity - trip?.remaining_capacity,
     onDelete: () => {
-      setSelectedTripId(trip?.stops[0]?._id);
+      setSelectedTripId(trip?.mainID);
       setOpenDeleteModal(true);
+      console.log(selectedTripId);
     },
     onEdit: () => handleEdit(trip),
-    isEmpty: trip.remaining_capacity === trip.total_capacity,
+    isEmpty: trip?.remaining_capacity === trip?.total_capacity,
   });
   // console.log(trip, "trip");
   // Fetch user data on component mount
@@ -163,15 +164,20 @@ const ManageTrips = () => {
 
   // Handle delete trip function
   const handleDelete = async () => {
-    if (!selectedTripId) return; // Ensure we have a rideId to delete
-    console.log(selectedTripId, "selectedTripId");
+    if (!selectedTripId) return;
     deleteRideMutate(
-      { id: selectedTripId }, // Pass the ride ID as an object
+      { id: selectedTripId },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           Alert.alert("Success", "Trip deleted successfully");
-          setOpenDeleteModal(false); // Close the modal on success
-          setSelectedTripId(null); // Clear the selected trip ID
+          setOpenDeleteModal(false);
+          setSelectedTripId(null);
+          const jsonValue = await AsyncStorage.getItem("userData");
+          if (jsonValue !== null) {
+            const userData = JSON.parse(jsonValue);
+
+            handleContinue(userData);
+          }
         },
         onError: () => {
           Alert.alert("Error", "Failed to delete trip");
