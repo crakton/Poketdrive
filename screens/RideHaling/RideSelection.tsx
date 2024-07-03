@@ -88,7 +88,7 @@ const RideSelection = () => {
 
       <Text style={[tailwind`text-2xl px-5 pb-2 pl-[5%]`]}>Today</Text>
 
-      {data.content.length === 0 ? (
+      {data?.content?.length === 0 ? (
         <View
           style={[
             tailwind`flex-1 h-full flex items-center bg-[#FFFFF] justify-center `,
