@@ -35,9 +35,10 @@ export const createRide = async (data: Schedule) => {
 
   try {
     const response = await fetch(options);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error in createRide:", error);
+    throw error;
   }
 };
 export const manageRide = async (data: ManageRide) => {

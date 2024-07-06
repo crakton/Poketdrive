@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -14,64 +14,40 @@ import tailwind from "twrnc";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Card from "../../components/RideHailing/Card";
 import { Icon } from "@rneui/base";
+import { format, isToday, isTomorrow, parseISO } from "date-fns";
 
 type AuthStackParamList = {
-  MapScreen: undefined;
+  MapScreen: { data: any };
 };
+const formatDate = (dateString: string) => {
+  const date = parseISO(dateString);
 
-const cardData = [
-  {
-    date: "Today at 1:00pm",
-    seatsLeft: 4,
-    fromLocation: "Wuse",
-    fromDescription: "Opposite NNPC Mega Station",
-    toLocation: "Area 1",
-    toDescription: "Behind the market",
-    driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
-    driverName: "Favour",
-    carDescription: "Toyota Corolla 2024",
-    price: "7600",
-    link: "MapScreen",
-    rating: 4.9,
-    driven: "35 driven",
-  },
-  {
-    date: "Today at 1:00pm",
-    seatsLeft: 2,
-    fromLocation: "Wuse",
-    fromDescription: "Opposite NNPC Mega Station",
-    toLocation: "Area 1",
-    toDescription: "Behind the market",
-    driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
-    driverName: "Favour",
-    carDescription: "Toyota Corolla 2024",
-    price: "5000",
-    link: "MapScreen",
-    rating: 4.8,
-    driven: "25 driven",
-  },
-  {
-    date: "Today at 1:00pm",
-    seatsLeft: 3,
-    fromLocation: "Wuse",
-    fromDescription: "Opposite NNPC Mega Station",
-    toLocation: "Area 1",
-    toDescription: "Behind the market",
-    driverImage: "https://randomuser.me/api/portraits/men/36.jpg",
-    driverName: "Favour",
-    carDescription: "Toyota Corolla 2024",
-    price: "3500",
-    link: "MapScreen",
-    rating: 4.4,
-    driven: "25 driven",
-  },
-];
+  if (isToday(date)) {
+    return "Today";
+  } else if (isTomorrow(date)) {
+    return "Tomorrow";
+  } else {
+    return format(date, "PPPPpp");
+  }
+};
 
 const RideSelection = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const route = useRoute();
   const { data }: any = route.params;
+  const [rideData, setRideData] = useState([]);
+
+  useEffect(() => {
+    const formattedData = data.content.map(
+      (ride: { departure_time: string }) => ({
+        ...ride,
+        formattedDate: formatDate(ride.departure_time),
+      })
+    );
+
+    setRideData(formattedData);
+  }, [data]);
 
   console.log(data, "data");
   return (
@@ -108,27 +84,30 @@ const RideSelection = () => {
         </View>
       ) : (
         <FlatList
-          data={cardData}
+          data={data.content}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.cardContainer}
               onPress={() => {
-                navigation.navigate(item.link as keyof AuthStackParamList);
+                navigation.navigate("MapScreen", { data });
               }}
             >
               <Card
-                date={item.date}
-                seatsLeft={item.seatsLeft}
-                fromLocation={item.fromLocation}
-                fromDescription={item.fromDescription}
-                toLocation={item.toLocation}
-                toDescription={item.toDescription}
-                driverImage={item.driverImage}
-                driverName={item.driverName}
-                carDescription={item.carDescription}
-                price={item.price}
-                rating={item.rating}
-                driven={item.driven}
+                date={new Date(item.departure_time).toLocaleString()}
+                seatsLeft={item.remaining_capacity}
+                fromLocation={item.origin.name}
+                fromDescription={item.origin.name}
+                toLocation={item.destination.name}
+                toDescription={item.destination.name}
+                driverImage={
+                  item.creator.profilePicture ||
+                  "https://randomuser.me/api/portraits/men/36.jpg"
+                }
+                driverName={`${item.creator.name.firstName} ${item.creator.name.lastName}`}
+                carDescription={`${item.carName} ${item.carNumber}`}
+                price={`${item.price}`}
+                rating={4.9}
+                driven={`35 driven`}
               />
             </TouchableOpacity>
           )}

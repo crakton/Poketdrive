@@ -1,33 +1,36 @@
-import { StyleSheet, View } from "react-native";
 import React from "react";
+import { View } from "react-native";
 import tw from "twrnc";
-import Map from "../../components/Map";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NavigateCard from "../../components/RideHailing/NavigateCard";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
+import Map from "../../components/Map";
 
-const MapScreen = () => {
+type MapScreenProps = {
+  route: { params: { data: any } };
+};
+
+const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
   const stack = createNativeStackNavigator();
   const navigation = useNavigation();
+  const { data } = route.params;
+
   return (
-    <View>
-      <View style={tw`z-50 absolute top-2 `}>
+    <View style={{ flex: 1 }}>
+      <View style={tw`z-50 absolute top-2`}>
         <HeaderWithBackButton navigation={navigation} />
       </View>
 
-      <View style={tw`h-1/2`}>
+      <View style={tw`flex-1`}>
         <Map />
       </View>
-      <View style={tw`h-1/2`}>
+
+      <View style={tw`flex-1`}>
         <stack.Navigator>
-          <stack.Screen
-            name="NavigateCard"
-            component={NavigateCard}
-            options={{
-              headerShown: false,
-            }}
-          />
+          <stack.Screen name="NavigateCard" options={{ headerShown: false }}>
+            {(props) => <NavigateCard {...props} data={data} />}
+          </stack.Screen>
         </stack.Navigator>
       </View>
     </View>
@@ -35,5 +38,3 @@ const MapScreen = () => {
 };
 
 export default MapScreen;
-
-const styles = StyleSheet.create({});
