@@ -9,13 +9,18 @@ import {
   Linking,
 } from "react-native";
 import tailwind from "twrnc";
-import { Avatar, Icon, Image } from "@rneui/base";
+import { Avatar, Icon } from "@rneui/base";
 import { SvgXml } from "react-native-svg";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
+import { useNavigation } from "@react-navigation/native";
 
-const NavigateCard = () => {
+type NavigateCardProps = {
+  data: any; // Define the type of data you expect to receive
+};
+
+const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
+  console.log(data?.content?.origin?.name, "data");
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList, "MapScreen">>();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
@@ -71,12 +76,12 @@ const NavigateCard = () => {
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
               <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                Wuse
+                maraba
               </Text>
               <Text
                 style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
               >
-                NNPC Filling Station
+                maraba
               </Text>
             </View>
           </View>
@@ -96,12 +101,12 @@ const NavigateCard = () => {
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
               <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                Area 1
+                wuse
               </Text>
               <Text
                 style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
               >
-                Total Filling Station
+                wuse
               </Text>
             </View>
           </View>
@@ -169,7 +174,7 @@ const NavigateCard = () => {
       </View>
       <TouchableOpacity
         style={tailwind`flex flex-row items-center justify-between px-5 mt-1 bg-white`}
-        onPress={() =>navigation.navigate("DriverDetails")}
+        onPress={() => navigation.navigate("DriverDetails")}
       >
         <View
           style={tailwind`flex flex-row items-center justify-start gap-5 py-1`}
