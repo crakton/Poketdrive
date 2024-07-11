@@ -11,18 +11,27 @@
       "resizeMode": "contain",
       "backgroundColor": "#FF6633"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.omenvc.urride"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/SplashNew.png",
         "backgroundColor": "#FF6633"
-      }
+      },
+      "package": "com.omenvc.urride"
     },
     "web": {
       "favicon": "./assets/SplashNew.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0c7cd1c9-d32d-4672-b431-89cb793f3ec7"
+      }
     }
   }
 }

@@ -16,6 +16,9 @@ const AccountVerification = () => {
 
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
+  const handleWallet = () => {
+    navigation.navigate("WalletHome");
+  };
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
@@ -69,7 +72,10 @@ const AccountVerification = () => {
           Account Settings
         </Text>
       </View>
-      <TouchableOpacity style={tw`flex-row justify-between p-[15] px-[25]`}>
+      <TouchableOpacity
+        style={tw`flex-row justify-between p-[15] px-[25]`}
+        onPress={handleWallet}
+      >
         <Text style={[tw` text-[16px] `, { fontFamily: "Poppins-Regular" }]}>
           Wallet{" "}
         </Text>

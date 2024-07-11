@@ -163,7 +163,7 @@ const RegisterForm = () => {
         <Text style={[tw`text-center`, { fontFamily: "Poppins-Regular" }]}>
           Already have an account?{" "}
           <Text
-            style={[tw`text-[#F25B3E]`, { fontFamily: "Poppins-bold" }]}
+            style={[tw`text-[#F25B3E]`, { fontFamily: "Poppins-Bold" }]}
             onPress={() => navigation.replace("Login")}
           >
             Login

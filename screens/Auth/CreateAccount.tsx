@@ -32,9 +32,7 @@ const CreateAccount = () => {
       </View>
       <ScrollView>
         <View style={tw`flex px-3`}>
-          <Text style={[tw`text-2xl`, { fontFamily: "Poppins-Black" }]}>
-            Create an Account
-          </Text>
+          <Text style={[tw`text-2xl`]}>Create an Account</Text>
         </View>
 
         <View style={tw`px-3 py-5`}>

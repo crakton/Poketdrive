@@ -26,16 +26,18 @@ const WalletHome = () => {
     >();
 
   return (
-    <SafeAreaView style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}>
-    <StatusBar translucent backgroundColor="transparent" />
+    <View
+      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+    >
+      {/* <StatusBar translucent backgroundColor="transparent" /> */}
       <View>
         <HeaderWithBackButton navigation={navigation} />
         <View
-          style={tw`flex-row h-[50px]  mt-5 mb-2 mx-5 items-center justify-between`}
+          style={tw`flex-row h-[50px] -mt-5   mb-2 mx-5 items-center justify-between`}
         >
           <View>
             <Text
-              style={[tw`text-[30px] `, { fontFamily: "Poppins-SemiBold" }]}
+              style={[tw`text-[26px] `, { fontFamily: "Poppins-SemiBold" }]}
             >
               My Wallet
             </Text>
@@ -46,7 +48,7 @@ const WalletHome = () => {
           >
             <Text
               style={[
-                tw`text-white text-[15px] `,
+                tw`text-white text-[12px] `,
                 { fontFamily: "Poppins-SemiBold" },
               ]}
             >
@@ -58,18 +60,18 @@ const WalletHome = () => {
       <CardDetails />
       <TouchableOpacity
         style={tw`bg-[#FF4E00] rounded-[20px] mx-4 items-center py-4 px-4`}
-        onPress={() => navigation.navigate("PaymentSucessful")}
+        onPress={() => navigation.navigate("AddPaymentMethod")}
       >
         <Text
           style={[
-            tw`text-white text-[24px] `,
+            tw`text-white text-[18px] `,
             { fontFamily: "Poppins-SemiBold" },
           ]}
         >
-          Pay
+          Top up Wallet
         </Text>
       </TouchableOpacity>
-      <View style={tw`items-center my-3`}>
+      {/* <View style={tw`items-center my-3`}>
         <Text
           style={[tw`h-[30px] text-[22px] `, { fontFamily: "Poppins-Medium" }]}
         >
@@ -125,8 +127,8 @@ const WalletHome = () => {
         >
           Add Payment Method
         </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      </TouchableOpacity> */}
+    </View>
   );
 };
 

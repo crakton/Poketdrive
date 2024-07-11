@@ -40,10 +40,12 @@ import TripItinerary from "./screens/Driver/DriverItinerary/TripItinerary";
 import DriverDetails from "./screens/Driver/DriverDetails";
 import QueryClientProvider from "./utils/ReactQueryProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import registerNNPushToken from "native-notify";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  registerNNPushToken(22387, "Wl0rlWhlSiad3m2ob0v2aB");
   const [fontsLoaded] = useFonts({
     "Poppins-Light": require("./assets/fonts/Poppins/Poppins-Light.ttf"),
     "Poppins-Regular": require("./assets/fonts/Poppins/Poppins-Regular.ttf"),
