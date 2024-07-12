@@ -6,19 +6,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Payment = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList, "Payment">>();
 
-  // Price formatter function
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -26,9 +27,37 @@ const Payment = () => {
       minimumFractionDigits: 0,
     }).format(price);
   };
+  const [rideDetails, setRideDetails] = useState<any>();
+
+  const handlePayment = () => {
+    axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+      subID: `${rideDetails?.creator?.id}`,
+      appId: 22440,
+      appToken: "0llbsX0iYcWIkLzcRFDzew",
+      title: "Passenger ride request",
+      message: ``,
+    });
+    navigation.navigate("Confirmation");
+  };
+  const fetchRideDetails = async () => {
+    try {
+      const storedDetails = await AsyncStorage.getItem("rideDetails");
+      if (storedDetails) {
+        // If rideDetails exist in AsyncStorage, parse and set it
+        const parsedDetails = JSON.parse(storedDetails);
+        setRideDetails(parsedDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching ride details:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRideDetails();
+  }, []);
 
   return (
-    <SafeAreaView
+    <View
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
     >
       <StatusBar translucent backgroundColor="transparent" />
@@ -50,14 +79,14 @@ const Payment = () => {
       <View style={tw`mt-50`}>
         <View style={tw`border-b-2 pb-2 border-[#D9D9D9]`}>
           <Text
-            style={[tw`text-3xl text-center`, { fontFamily: "Poppins-Black" }]}
+            style={[tw`text-3xl text-center`, { fontFamily: "Poppins-Bold" }]}
           >
-            {formatPrice(5000)}
+            {formatPrice(rideDetails?.price)}
           </Text>
         </View>
 
         <View style={tw`border-b-2 py-3 border-[#D9D9D9]`}>
-          <TouchableOpacity onPress={() => navigation.navigate("Confirmation")}>
+          <TouchableOpacity onPress={handlePayment}>
             <Text
               style={[tw`text-xl text-center`, { fontFamily: "Poppins-Bold" }]}
             >
@@ -107,7 +136,7 @@ const Payment = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

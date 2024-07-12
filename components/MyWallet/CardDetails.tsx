@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useWalletDetails } from "../../hooks/reactQuery/useWallet";
+import Loader from "../loader/Loader";
 
 const CardDetails = () => {
   const [userData, setUserData] = useState<any>(null);
   const [balance, setBalance] = useState<number | null>(null);
 
-  // const {  isLoading, data} = useWalletDetails()
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -24,28 +24,18 @@ const CardDetails = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [setUserData]);
 
-  // useEffect(() => {
-  //   if (userData) {
-  //     mutate(
-  //       { id: userData.id },
-  //       {
-  //         onSuccess: (response) => {
-  //           setBalance(response);
-  //           // console.log(response, "data");
-  //           // console.log(userData.id, "parsedData");
-  //         },
-  //         onError: (error) => {
-  //           console.error("Error fetching wallet details:", error);
-  //           console.log(userData.id, "parsedData");
-  //         },
-  //       }
-  //     );
-  //   } else {
-  //     console.error("Error fetching wallet details val:", Error);
-  //   }
-  // }, [userData]);
+  const { isLoading, data } = useWalletDetails(userData?.id as string);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!data) {
+    return;
+  }
+
   return (
     <View>
       <View style={[tw`rounded-[10]`, styles.container]}>
@@ -68,7 +58,7 @@ const CardDetails = () => {
                 </Text>
                 <Text style={tw`text-white text-[36px]`}>
                   {" "}
-                  {balance !== null ? `₦${balance}` : "Loading..."}
+                  {data ? `₦${data?.content?.balance}` : "Loading..."}
                 </Text>
               </View>
               <View style={tw`h-[15px] w-[40px] bg-gray-400`}></View>

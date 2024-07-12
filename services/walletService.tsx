@@ -22,14 +22,11 @@ export const walletPayment = async (data: WalletPayment) => {
   }
 };
 
-export const walletDetails = async (params: { id: string }) => {
+export const walletDetails = async (id: string) => {
   const options: AxiosRequestConfig = {
     method: "GET",
-    url: `wallet/wallet_details?userId=${params}`,
+    url: `wallet/wallet_details?userId=${id}`,
   };
-  // console.log(, "response");
   const response = await fetch(options);
-  // console.log(options, "response");
-
   return response;
 };

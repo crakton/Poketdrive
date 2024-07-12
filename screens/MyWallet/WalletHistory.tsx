@@ -31,14 +31,12 @@ const WalletHistory = () => {
   }));
 
   return (
-    <SafeAreaView
+    <View
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
     >
       <StatusBar translucent backgroundColor="transparent" />
       <HeaderWithBackButton navigation={navigation} />
-      <View
-        style={tw`flex-row h-[50px]  mt-1 mb-2 mx-5 items-center justify-between`}
-      >
+      <View style={tw`flex-row  mb-2 mx-5 -mt-5 `}>
         <View>
           <Text style={[tw`text-[25px] `, { fontFamily: "Poppins-SemiBold" }]}>
             Detail Activity
@@ -80,7 +78,7 @@ const WalletHistory = () => {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
