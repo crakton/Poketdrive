@@ -7,14 +7,12 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import Map from "../../components/Map";
 
-type MapScreenProps = {
-  route: { params: { data: any } };
-};
-
-const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
+const MapScreen = ({ route }: any) => {
   const stack = createNativeStackNavigator();
   const navigation = useNavigation();
-  const { data } = route.params;
+
+  const { rideDetails } = route.params;
+  console.log(rideDetails, "rideDetails");
 
   return (
     <View style={{ flex: 1 }}>
@@ -29,7 +27,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
       <View style={tw`flex-1`}>
         <stack.Navigator>
           <stack.Screen name="NavigateCard" options={{ headerShown: false }}>
-            {(props) => <NavigateCard {...props} data={data} />}
+            {(props) => <NavigateCard {...props} rideDetails={rideDetails} />}
           </stack.Screen>
         </stack.Navigator>
       </View>

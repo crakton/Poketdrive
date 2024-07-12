@@ -17,7 +17,8 @@ export const useWalletPayment = () => {
 };
 export const useWalletDetails = (id: string) => {
   return useQuery({
-    queryKey: ["listing", id],
-    queryFn: () => walletDetails({ id }),
+    queryKey: ["cardDetails", id],
+    queryFn: () => walletDetails(id),
+    enabled: !!id,
   });
 };

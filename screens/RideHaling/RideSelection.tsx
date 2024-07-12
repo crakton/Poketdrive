@@ -17,7 +17,7 @@ import { Icon } from "@rneui/base";
 import { format, isToday, isTomorrow, parseISO } from "date-fns";
 
 type AuthStackParamList = {
-  MapScreen: { data: any };
+  MapScreen: { rideDetails?: any }; // Updated to include rideDetails as optional
 };
 const formatDate = (dateString: string) => {
   const date = parseISO(dateString);
@@ -89,7 +89,7 @@ const RideSelection = () => {
             <TouchableOpacity
               style={styles.cardContainer}
               onPress={() => {
-                navigation.navigate("MapScreen", { data });
+                navigation.navigate("MapScreen", { rideDetails: item });
               }}
             >
               <Card

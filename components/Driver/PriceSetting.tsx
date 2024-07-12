@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import tw from "twrnc";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Schedule, useSchedule } from "../../hooks/reactQuery/useSchedule";
+import { useSchedule } from "../../hooks/reactQuery/useSchedule";
 import Loader from "../loader/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -36,7 +36,7 @@ const PriceSetting: React.FC<PricingProps> = ({
     navigation.navigate("ManageTrips" as never);
   };
 
-  const { data, mutate, isPending } = useSchedule();
+  const { data, mutate, isPending, isError, error } = useSchedule();
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
@@ -62,16 +62,21 @@ const PriceSetting: React.FC<PricingProps> = ({
   });
 
   const Pricing = () => {
+    console.log(formData, "formData");
     mutate(formData, {
       onSuccess: () => {
         Alert.alert("Success", "Ride scheduled successfully!");
         handleNavigation();
       },
-      onError: () => {
+      onError: (error) => {
+        console.error("Error in mutate:", error); // Log mutate errors
         Alert.alert("Error", "Failed to schedule ride");
       },
     });
   };
+  if (isPending || isError) {
+    return <Loader />; // Show loader or error message while fetching data
+  }
 
   return (
     <View style={[tw`bg-[#FFFFFF]`, { paddingTop: StatusBar.currentHeight }]}>
@@ -84,7 +89,7 @@ const PriceSetting: React.FC<PricingProps> = ({
             setFormData({
               ...formData,
               price: Number(values.price),
-              creator: userData.email,
+              creator: userData?.email,
             });
             Pricing();
           }}

@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { fetch } from "../lib/api";
 
 export interface Schedule {
@@ -34,7 +34,7 @@ export const createRide = async (data: Schedule) => {
   };
 
   try {
-    const response = await fetch(options);
+    const response = await axios(options);
     return response.data;
   } catch (error) {
     console.error("Error in createRide:", error);

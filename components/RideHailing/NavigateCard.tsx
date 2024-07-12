@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,16 +14,20 @@ import { SvgXml } from "react-native-svg";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type NavigateCardProps = {
-  data: any; // Define the type of data you expect to receive
+  rideDetails: any; // Define the type of data you expect to receive
 };
 
-const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
-  console.log(data?.content?.origin?.name, "data");
+const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
+  console.log(rideDetails.creator.id, "data");
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList, "MapScreen">>();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  useEffect(() => {
+    AsyncStorage.setItem("rideDetails", JSON.stringify(rideDetails));
+  }, [rideDetails]);
 
   const carSeatSvg = `
     <svg width="30" height="30" viewBox="0 0 17 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,7 +68,7 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
   };
 
   return (
-    <ScrollView style={tailwind`bg-[#F3F3F3] flex-1`}>
+    <ScrollView style={tailwind`bg-white h-full flex-1`}>
       <View style={tailwind`px-5 py-5 bg-[#FFFF]`}>
         <View style={tailwind`flex flex-row justify-between`}>
           <View style={tailwind`flex flex-row`}>
@@ -76,18 +80,18 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
               <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                maraba
+                {rideDetails.origin.name}
               </Text>
               <Text
                 style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
               >
-                maraba
+                {rideDetails.origin.name}
               </Text>
             </View>
           </View>
           <View>
             <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-              Sun. Sep 3 at 10am
+              {new Date(rideDetails.departure_time).toLocaleString()}
             </Text>
           </View>
         </View>
@@ -101,12 +105,12 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
               <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                wuse
+                {rideDetails.destination.name}
               </Text>
               <Text
                 style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
               >
-                wuse
+                {rideDetails.destination.name}
               </Text>
             </View>
           </View>
@@ -118,15 +122,15 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
         </View>
         <View style={tailwind`flex flex-row justify-center pt-1 items-center`}>
           <Text style={[tailwind`text-sm`, { fontFamily: "Poppins-Bold" }]}>
-            4 Seats left
+            {rideDetails.remaining_capacity} Seats left
           </Text>
           <View style={styles.verticalLine} />
 
           <Text style={[tailwind`text-sm`, { fontFamily: "Poppins-Bold" }]}>
-            {formatPrice(700)} per seat
+            {formatPrice(rideDetails.price)} per seat
           </Text>
         </View>
-        <View
+        {/* <View
           style={tailwind`flex flex-row items-center justify-center gap-5 pt-5`}
         >
           <View>
@@ -170,7 +174,7 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </View>
       <TouchableOpacity
         style={tailwind`flex flex-row items-center justify-between px-5 mt-1 bg-white`}
@@ -187,7 +191,7 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
             }}
           />
           <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-            Florence
+            {rideDetails.creator.name.firstName}
           </Text>
         </View>
         <View>
@@ -210,7 +214,7 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ data }) => {
             style={styles.icon}
           />
           <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Regular" }]}>
-            Medium Luggage
+            {rideDetails.luggage_type}
           </Text>
         </View>
         <View style={tailwind`flex flex-row items-center justify-center gap-5`}>
