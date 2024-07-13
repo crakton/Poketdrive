@@ -23,7 +23,7 @@ import { VerifytOTP } from "../../lib/api/functions/register";
 import Loader from "../loader/Loader";
 import { setLocalData } from "../../utils/localStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import { registerIndieID } from "native-notify";
 import axios from "axios";
 
 const CELL_COUNT = 6;
@@ -82,8 +82,7 @@ const CodeVerification = () => {
     onSuccess: async (data) => {
       await AsyncStorage.setItem("userData", JSON.stringify(data));
       navigation.replace("Home");
-      // console.log(data, "userData");
-      registerIndieID(`${data.Bearer_token}`, 22387, "Wl0rlWhlSiad3m2ob0v2aB");
+      registerIndieID(`${data.id}`, 22387, "Wl0rlWhlSiad3m2ob0v2aB");
     },
     onError: (error) => {
       Alert.alert(error.message);

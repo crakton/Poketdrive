@@ -11,8 +11,8 @@ const MapScreen = ({ route }: any) => {
   const stack = createNativeStackNavigator();
   const navigation = useNavigation();
 
-  const { rideDetails } = route.params;
-  console.log(rideDetails, "rideDetails");
+  // Provide a default value for rideDetails
+  const { rideDetails = {} } = route.params || {};
 
   return (
     <View style={{ flex: 1 }}>

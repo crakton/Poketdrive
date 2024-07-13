@@ -42,7 +42,7 @@ const Confirmation = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={tw`h-[100%]`}>
+      {/* <View style={tw`h-[100%]`}>
         <stack.Navigator>
           <stack.Screen
             name="MapScreen"
@@ -52,7 +52,7 @@ const Confirmation = () => {
             }}
           />
         </stack.Navigator>
-      </View>
+      </View> */}
       <Modal
         animationType="slide"
         transparent={true}
