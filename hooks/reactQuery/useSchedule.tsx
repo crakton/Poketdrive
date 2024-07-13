@@ -7,11 +7,18 @@ import {
   deleteRide,
   Schedule,
 } from "../../services/scheduleService";
+import { fetch } from "../../lib/api";
 
 const queryClient = new QueryClient();
 export const useSchedule = () => {
   return useMutation({
-    mutationFn: (data: Schedule) => createRide(data),
+    mutationFn: (data: Schedule) => {
+      return fetch({
+        method: "POST",
+        url: "rides/book_ride",
+        data: data,
+      });
+    },
   });
 };
 

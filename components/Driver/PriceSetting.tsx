@@ -10,8 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../nav";
 import { useNavigation } from "@react-navigation/native";
 import tw from "twrnc";
 import { Formik } from "formik";
@@ -36,7 +34,7 @@ const PriceSetting: React.FC<PricingProps> = ({
     navigation.navigate("ManageTrips" as never);
   };
 
-  const { data, mutate, isPending, isError, error } = useSchedule();
+  const { data, mutate, isPending } = useSchedule();
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
@@ -62,107 +60,109 @@ const PriceSetting: React.FC<PricingProps> = ({
   });
 
   const Pricing = () => {
-    console.log(formData, "formData");
+    console.log("FormData being sent:", formData);
     mutate(formData, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        console.log("Success Response:", data);
         Alert.alert("Success", "Ride scheduled successfully!");
         handleNavigation();
       },
       onError: (error) => {
-        console.error("Error in mutate:", error); // Log mutate errors
+        console.log("Error Response:", error);
         Alert.alert("Error", "Failed to schedule ride");
       },
     });
   };
-  if (isPending || isError) {
-    return <Loader />; // Show loader or error message while fetching data
-  }
 
   return (
     <View style={[tw`bg-[#FFFFFF]`, { paddingTop: StatusBar.currentHeight }]}>
       <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
-        <Formik
-          initialValues={{ price: formData.price || "" }}
-          validationSchema={validationSchema}
-          onSubmit={(values) => {
-            setFormData({
-              ...formData,
-              price: Number(values.price),
-              creator: userData?.email,
-            });
-            Pricing();
-          }}
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View style={tw`px-5`}>
-              <View>
-                <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                  Pricing
-                </Text>
-                <Text
-                  style={[
-                    tw`text-[16px]  pt-2`,
-                    { fontFamily: "Poppins-Light" },
-                  ]}
-                >
-                  Set a price that each seat would pay to cover your fuel and
-                  other expenses{" "}
-                </Text>
-                <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                  Prices are in naira
-                </Text>
-              </View>
-
-              <View style={tw`flex mt-5 justify-center`}>
-                <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                  Enter a price in naira
-                </Text>
-                <View
-                  style={tw`flex flex-row items-center border rounded-lg  my-5 py-2 px-2  justify-center w-[13rem]`}
-                >
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter a Price"
-                    keyboardType="numeric"
-                    value={values.price}
-                    onChangeText={handleChange("price")}
-                    onBlur={handleBlur("price")}
-                  />
-                  <TouchableOpacity>
-                    <Text style={[tw``, { fontFamily: "Poppins-Bold" }]}>
-                      Naira
-                    </Text>
-                  </TouchableOpacity>
+        {isPending ? (
+          <Loader /> // Show loader while fetching data
+        ) : (
+          <Formik
+            initialValues={{ price: formData.price || "" }}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              setFormData({
+                ...formData,
+                price: Number(values.price),
+                creator: userData?.email,
+              });
+              Pricing();
+            }}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={tw`px-5`}>
+                <View>
+                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                    Pricing
+                  </Text>
+                  <Text
+                    style={[
+                      tw`text-[16px]  pt-2`,
+                      { fontFamily: "Poppins-Light" },
+                    ]}
+                  >
+                    Set a price that each seat would pay to cover your fuel and
+                    other expenses{" "}
+                  </Text>
+                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                    Prices are in naira
+                  </Text>
                 </View>
-                {touched.price && typeof errors.price === "string" && (
-                  <Text style={tw`text-red-500 ml-2`}>{errors.price}</Text>
-                )}
-              </View>
 
-              <TouchableOpacity
-                style={tw`rounded-[1rem] bg-[#404040] p-3 mt-[19rem] mx-5`}
-                onPress={handleSubmit}
-              >
-                <Text
-                  style={[
-                    tw`text-center text-xl text-white`,
-                    { fontFamily: "Poppins-Bold" },
-                  ]}
+                <View style={tw`flex mt-5 justify-center`}>
+                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                    Enter a price in naira
+                  </Text>
+                  <View
+                    style={tw`flex flex-row items-center border rounded-lg  my-5 py-2 px-2  justify-center w-[13rem]`}
+                  >
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter a Price"
+                      keyboardType="numeric"
+                      value={values.price}
+                      onChangeText={handleChange("price")}
+                      onBlur={handleBlur("price")}
+                    />
+                    <TouchableOpacity>
+                      <Text style={[tw``, { fontFamily: "Poppins-Bold" }]}>
+                        Naira
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {touched.price && typeof errors.price === "string" && (
+                    <Text style={tw`text-red-500 ml-2`}>{errors.price}</Text>
+                  )}
+                </View>
+
+                <TouchableOpacity
+                  style={tw`rounded-[1rem] bg-[#404040] p-3 mt-[19rem] mx-5`}
+                  onPress={handleSubmit}
                 >
-                  Post a Trip
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </Formik>
+                  <Text
+                    style={[
+                      tw`text-center text-xl text-white`,
+                      { fontFamily: "Poppins-Bold" },
+                    ]}
+                  >
+                    Post a Trip
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Formik>
+        )}
       </ScrollView>
     </View>
   );

@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// import PushNotification from "react-native-push-notification";
 
 const Payment = () => {
   const navigation =
@@ -28,17 +29,8 @@ const Payment = () => {
     }).format(price);
   };
   const [rideDetails, setRideDetails] = useState<any>();
+  console.log(rideDetails?.creator?.id, "rideDetails?.creator?.id");
 
-  const handlePayment = () => {
-    axios.post(`https://app.nativenotify.com/api/indie/notification`, {
-      subID: `${rideDetails?.creator?.id}`,
-      appId: 22440,
-      appToken: "0llbsX0iYcWIkLzcRFDzew",
-      title: "Passenger ride request",
-      message: ``,
-    });
-    navigation.navigate("Confirmation");
-  };
   const fetchRideDetails = async () => {
     try {
       const storedDetails = await AsyncStorage.getItem("rideDetails");
@@ -55,6 +47,29 @@ const Payment = () => {
   useEffect(() => {
     fetchRideDetails();
   }, []);
+  const handlePayment = () => {
+    axios
+      .post(`https://app.nativenotify.com/api/indie/notification`, {
+        subID: "668ea3a612e45f56dce0c12b",
+        appId: 22387,
+        appToken: "Wl0rlWhlSiad3m2ob0v2aB",
+        title: "Passenger ride request",
+        message: `how far please help me`,
+        data: {
+          screen: "ManageTrips",
+          params: {
+            rideId: "67890",
+          },
+        },
+      })
+      .then((response) => {
+        console.log("Notification sent successfully:", response.data);
+        navigation.navigate("Confirmation");
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+  };
 
   return (
     <View
