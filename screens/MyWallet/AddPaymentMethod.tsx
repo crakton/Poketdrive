@@ -35,6 +35,7 @@ const AddPaymentMethod = () => {
   const [userData, setUserData] = useState<any>(null);
   const [payLink, setPayLink] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  // console.log(userData.id, "data");
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
@@ -46,7 +47,7 @@ const AddPaymentMethod = () => {
         const jsonValue = await AsyncStorage.getItem("userData");
         if (jsonValue !== null) {
           const parsedData = JSON.parse(jsonValue);
-          // console.log(parsedData, "parsedData");
+          console.log(parsedData, "parsedData");
           setUserData(parsedData);
         }
       } catch (e) {
@@ -56,22 +57,21 @@ const AddPaymentMethod = () => {
 
     fetchUserData();
   }, []);
-  // console.log(data, "data");
 
   const handleSubmit = (values: any) => {
     setLoading(true);
     mutate(
       {
-        userId: "${userData.id}",
+        userId: `${userData.id}`,
         amount: values.amount,
         email: `${userData.email}`,
       },
       {
         onSuccess: async (data) => {
           setLoading(false);
-          setPayLink(data.content); // Store the link
-          console.log(data, "data");
-          if (data.content) {
+          setPayLink(data?.content); // Store the link
+          // console.log(data, "data");
+          if (data?.content) {
             await openBrowserAsync(data.content); // Open the link in the browser
           }
         },

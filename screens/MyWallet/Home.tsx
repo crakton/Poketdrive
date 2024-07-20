@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   StatusBar,
+  RefreshControl,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,107 +30,70 @@ const WalletHome = () => {
     <View
       style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
     >
-      {/* <StatusBar translucent backgroundColor="transparent" /> */}
-      <View>
-        <HeaderWithBackButton navigation={navigation} />
-        <View
-          style={tw`flex-row h-[50px] -mt-5   mb-2 mx-5 items-center justify-between`}
-        >
-          <View>
-            <Text
-              style={[tw`text-[26px] `, { fontFamily: "Poppins-SemiBold" }]}
-            >
-              My Wallet
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={tw`bg-[#FF4E00] rounded-xl py-2 mb-2 px-4`}
-            onPress={() => navigation.navigate("WalletHistory")}
-          >
-            <Text
-              style={[
-                tw`text-white text-[12px] `,
-                { fontFamily: "Poppins-SemiBold" },
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
+      <HeaderWithBackButton navigation={navigation} />
+      <View
+        style={tw`flex-row h-[50px] -mt-5   mb-2 mx-5 items-center justify-between`}
+      >
+        <View>
+          <Text style={[tw`text-[26px] `, { fontFamily: "Poppins-SemiBold" }]}>
+            My Wallet
+          </Text>
         </View>
+        <TouchableOpacity
+          style={tw`bg-[#FF4E00] rounded-xl py-2 mb-2 px-4`}
+          onPress={() => navigation.navigate("WalletHistory")}
+        >
+          <Text
+            style={[
+              tw`text-white text-[12px] `,
+              { fontFamily: "Poppins-SemiBold" },
+            ]}
+          >
+            History
+          </Text>
+        </TouchableOpacity>
       </View>
-      <CardDetails />
-      <TouchableOpacity
-        style={tw`bg-[#FF4E00] rounded-[20px] mx-4 items-center py-4 px-4`}
-        onPress={() => navigation.navigate("AddPaymentMethod")}
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20 }}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={() => {}} />
+        }
       >
-        <Text
-          style={[
-            tw`text-white text-[18px] `,
-            { fontFamily: "Poppins-SemiBold" },
-          ]}
+        <CardDetails />
+        <TouchableOpacity
+          style={tw`bg-[#FF4E00] rounded-[20px] mx-4 items-center py-4 px-4`}
+          onPress={() => navigation.navigate("AddPaymentMethod")}
         >
-          Top up Wallet
-        </Text>
-      </TouchableOpacity>
-      {/* <View style={tw`items-center my-3`}>
-        <Text
-          style={[tw`h-[30px] text-[22px] `, { fontFamily: "Poppins-Medium" }]}
-        >
-          {" "}
-          Top up Wallet
-        </Text>
-      </View>
-      <View style={tw`mt-2`}>
-        <Text
-          style={[
-            tw`h-[35px] text-[18px] font-black mx-4`,
-            { fontFamily: "Poppins-Medium" },
-          ]}
-        >
-          {" "}
-          Other payment method
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={tw`flex-row flex rounded-[20px] bg-white mx-4 items-center py-4 px-4 mt-2`}
-      >
-        <Icon
-          name="plus"
-          color="white"
-          type="antdesign"
-          style={tw`p-1 bg-[#FF4E00] rounded-lg w-10`}
-        />
-        <Text
-          style={[
-            tw`text-black text-[15px]   ml-[80px]`,
-            { fontFamily: "Poppins-Medium" },
-          ]}
-        >
-          Pay with Bank
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={tw`rounded-[20px] bg-white mx-4 items-center py-4 px-4 mt-2 flex-row flex`}
-        onPress={() => navigation.navigate("AddPaymentMethod")}
-      >
-        <Icon
-          name="plus"
-          color="white"
-          type="antdesign"
-          style={tw`p-1 bg-[#FF4E00] rounded-lg w-10`}
-        />
-        <Text
-          style={[
-            tw`text-black text-[15px]   ml-[80px]`,
-            { fontFamily: "Poppins-Medium" },
-          ]}
-        >
-          Add Payment Method
-        </Text>
-      </TouchableOpacity> */}
+          <Text
+            style={[
+              tw`text-white text-[18px] `,
+              { fontFamily: "Poppins-SemiBold" },
+            ]}
+          >
+            Top up Wallet
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    height: 200,
+    marginRight: 15,
+    marginLeft: 15,
+  },
+  imageContainer: {
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  backgroundImage: {
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+});
 
 export default WalletHome;
