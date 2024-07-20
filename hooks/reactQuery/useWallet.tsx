@@ -3,6 +3,7 @@ import {
   WalletPayment,
   walletPayment,
   walletDetails,
+  walletHistory,
 } from "../../services/walletService";
 import { string } from "yup";
 
@@ -19,6 +20,14 @@ export const useWalletDetails = (id: string) => {
   return useQuery({
     queryKey: ["cardDetails", id],
     queryFn: () => walletDetails(id),
+    enabled: !!id,
+  });
+};
+
+export const useWalletHistory = (id: string) => {
+  return useQuery({
+    queryKey: ["walletHistory", id],
+    queryFn: () => walletHistory(id),
     enabled: !!id,
   });
 };

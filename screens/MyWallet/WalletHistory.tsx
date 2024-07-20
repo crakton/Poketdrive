@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Text,
@@ -14,6 +14,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import CardDetails from "../../components/MyWallet/CardDetails";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import HistoryCard from "../../components/MyWallet/HistoryCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useWalletHistory } from "../../hooks/reactQuery/useWallet";
+import Loader from "../../components/loader/Loader";
 
 const WalletHistory = () => {
   const navigation =
@@ -21,14 +24,33 @@ const WalletHistory = () => {
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
 
-  // Generate dummy data for transactions
-  const transactionData = Array.from({ length: 20 }, (_, index) => ({
-    id: index.toString(),
-    date: "22 May 2021",
-    from: "Kubwa",
-    to: "Lokogoma",
-    amount: 2000,
-  }));
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem("userData");
+        if (jsonValue !== null) {
+          const parsedData = JSON.parse(jsonValue);
+          setUserData(parsedData);
+        }
+      } catch (e) {
+        console.log("Error fetching user data:", e);
+      }
+    };
+
+    fetchUserData();
+  }, [setUserData]);
+
+  const { isLoading, data } = useWalletHistory(userData?.id as string);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <View
@@ -36,9 +58,9 @@ const WalletHistory = () => {
     >
       <StatusBar translucent backgroundColor="transparent" />
       <HeaderWithBackButton navigation={navigation} />
-      <View style={tw`flex-row  mb-2 mx-5 -mt-5 `}>
+      <View style={tw`flex-row mb-2 mx-5 -mt-5`}>
         <View>
-          <Text style={[tw`text-[25px] `, { fontFamily: "Poppins-SemiBold" }]}>
+          <Text style={[tw`text-[25px]`, { fontFamily: "Poppins-SemiBold" }]}>
             Detail Activity
           </Text>
         </View>
@@ -49,10 +71,10 @@ const WalletHistory = () => {
       {/* Transaction Details */}
       <View style={tw`px-5`}>
         <View style={tw`flex-row items-center justify-between mb-2`}>
-          <Text style={[tw`text-[18px] `, { fontFamily: "Poppins-SemiBold" }]}>
+          <Text style={[tw`text-[18px]`, { fontFamily: "Poppins-SemiBold" }]}>
             Recent Transaction
           </Text>
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text
               style={[
                 tw`underline text-gray-500`,
@@ -61,18 +83,21 @@ const WalletHistory = () => {
             >
               See All
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={tw`pb-[400px] h-full`}>
           <FlatList
-            data={transactionData}
-            keyExtractor={(item) => item.id}
+            data={data.content}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <HistoryCard
-                date={item.date}
-                from={item.from}
-                to={item.to}
-                amount={item.amount}
+                transactionDate={item.data.transactionDate}
+                from="Source"
+                to="Destination"
+                amount={item.data.amount}
+                status={item.data.status}
+                transactionType={item.transactionType}
+                reference={item.data.reference}
               />
             )}
           />
