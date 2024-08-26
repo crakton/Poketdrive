@@ -1,4 +1,6 @@
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -6,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
@@ -15,60 +16,100 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import PushNotification from "react-native-push-notification";
+import { useRequestRide } from "../../hooks/reactQuery/useTrips";
 
 const Payment = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList, "Payment">>();
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
+  const { data, mutate } = useRequestRide();
   const [rideDetails, setRideDetails] = useState<any>();
-  console.log(rideDetails?.creator?.id, "rideDetails?.creator?.id");
-
-  const fetchRideDetails = async () => {
-    try {
-      const storedDetails = await AsyncStorage.getItem("rideDetails");
-      if (storedDetails) {
-        // If rideDetails exist in AsyncStorage, parse and set it
-        const parsedDetails = JSON.parse(storedDetails);
-        setRideDetails(parsedDetails);
-      }
-    } catch (error) {
-      console.error("Error fetching ride details:", error);
-    }
-  };
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    const fetchRideDetails = async () => {
+      try {
+        const storedDetails = await AsyncStorage.getItem("rideDetails");
+        if (storedDetails) {
+          setRideDetails(JSON.parse(storedDetails));
+        }
+      } catch (error) {
+        console.error("Error fetching ride details:", error);
+      }
+    };
+
     fetchRideDetails();
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem("userData");
+        if (jsonValue != null) {
+          setUserData(JSON.parse(jsonValue));
+        }
+      } catch (e) {
+        console.log("Error fetching user data:", e);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+  console.log(rideDetails);
+
   const handlePayment = () => {
-    axios
-      .post(`https://app.nativenotify.com/api/indie/notification`, {
-        subID: "668ea3a612e45f56dce0c12b",
-        appId: 22387,
-        appToken: "Wl0rlWhlSiad3m2ob0v2aB",
-        title: "Passenger ride request",
-        message: `how far please help me`,
-        data: {
-          screen: "ManageTrips",
-          params: {
-            rideId: "67890",
-          },
+    setLoading(true);
+
+    mutate(
+      {
+        price: rideDetails?.price,
+        rideId: rideDetails?.id,
+        riderId: userData?.id,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            // Notify user of success
+            Alert.alert("Success", "Ride scheduled successfully!");
+
+            // Send notification
+            axios
+              .post(`https://app.nativenotify.com/api/indie/notification`, {
+                subID: rideDetails?.creator?.id || "defaultSubID",
+                appId: 22387,
+                appToken: "Wl0rlWhlSiad3m2ob0v2aB",
+                title: "Passenger ride request",
+                message: `${userData?.firstName} ${userData?.lastName} Was sucessfully added to your ride from ${rideDetails?.origin?.name} to ${rideDetails?.destination?.name} `,
+                data: {
+                  screen: "ManageTrips",
+                  params: {
+                    rideId: "67890",
+                  },
+                },
+              })
+              .then((response) => {
+                console.log("Notification sent successfully:", response.data);
+                navigation.navigate("Confirmation");
+              })
+              .catch((error) => {
+                console.error("Error sending notification:", error);
+                Alert.alert("Error", "Failed to send notification");
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          } else {
+            setLoading(false);
+            Alert.alert("Error", "Failed to schedule ride");
+          }
         },
-      })
-      .then((response) => {
-        console.log("Notification sent successfully:", response.data);
-        navigation.navigate("Confirmation");
-      })
-      .catch((error) => {
-        console.error("Error sending notification:", error);
-      });
+        onError: (error) => {
+          setLoading(false);
+          Alert.alert("Error", "Failed to schedule ride");
+          console.error("Error Response:", error);
+        },
+      }
+    );
   };
 
   return (
@@ -81,11 +122,11 @@ const Payment = () => {
       </View>
       <View style={tw`flex flex-row mx-5 items-center justify-end`}>
         <TouchableOpacity
-          style={tw` px-5 py-2  bg-red-500 rounded-full`}
+          style={tw` px-5 py-2 bg-red-500 rounded-full`}
           onPress={() => navigation.navigate("WalletHome")}
         >
           <Text
-            style={[tw`text-lg  text-white `, { fontFamily: "Poppins-Bold" }]}
+            style={[tw`text-lg text-white`, { fontFamily: "Poppins-Bold" }]}
           >
             Wallet
           </Text>
@@ -96,16 +137,16 @@ const Payment = () => {
           <Text
             style={[tw`text-3xl text-center`, { fontFamily: "Poppins-Bold" }]}
           >
-            {formatPrice(rideDetails?.price)}
+            {rideDetails?.price}
           </Text>
         </View>
 
         <View style={tw`border-b-2 py-3 border-[#D9D9D9]`}>
-          <TouchableOpacity onPress={handlePayment}>
+          <TouchableOpacity onPress={handlePayment} disabled={loading}>
             <Text
               style={[tw`text-xl text-center`, { fontFamily: "Poppins-Bold" }]}
             >
-              Pay with wallet
+              {loading ? "Processing..." : "Pay with wallet"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -116,9 +157,7 @@ const Payment = () => {
             Token/Voucher
           </Text>
         </View>
-        <View
-          style={tw` py-3 flex flex-row items-center gap-1 justify-center `}
-        >
+        <View style={tw`py-3 flex flex-row items-center gap-1 justify-center`}>
           <Text
             style={[
               tw`text-[16px] text-center`,
@@ -143,10 +182,10 @@ const Payment = () => {
       </View>
       <View style={tw`flex flex-row mx-5 items-center justify-end`}>
         <TouchableOpacity
-          style={tw` px-5 py-2`}
+          style={tw`px-5 py-2`}
           onPress={() => navigation.navigate("FAQs")}
         >
-          <Text style={[tw`text-lg `, { fontFamily: "Poppins-Medium" }]}>
+          <Text style={[tw`text-lg`, { fontFamily: "Poppins-Medium" }]}>
             Need help?
           </Text>
         </TouchableOpacity>
@@ -156,5 +195,4 @@ const Payment = () => {
 };
 
 export default Payment;
-
 const styles = StyleSheet.create({});

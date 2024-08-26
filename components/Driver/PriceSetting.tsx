@@ -30,12 +30,11 @@ const PriceSetting: React.FC<PricingProps> = ({
   handleNext,
 }) => {
   const navigation = useNavigation();
-  const handleNavigation = () => {
-    navigation.navigate("ManageTrips" as never);
-  };
-
-  const { data, mutate, isPending } = useSchedule();
+  const { mutate, isPending } = useSchedule();
   const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(false); // Loading state
+  const [retryCount, setRetryCount] = useState(0); // Retry counter
+  const [retrying, setRetrying] = useState(false); // Retry state
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,6 +51,12 @@ const PriceSetting: React.FC<PricingProps> = ({
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (retrying) {
+      Pricing();
+    }
+  }, [retrying]);
+
   const validationSchema = yup.object().shape({
     price: yup
       .number()
@@ -60,16 +65,38 @@ const PriceSetting: React.FC<PricingProps> = ({
   });
 
   const Pricing = () => {
+    setLoading(true); // Start loading
     console.log("FormData being sent:", formData);
     mutate(formData, {
       onSuccess: (data) => {
-        console.log("Success Response:", data);
-        Alert.alert("Success", "Ride scheduled successfully!");
-        handleNavigation();
+        if (data.success) {
+          console.log("Success Response:", data);
+          setLoading(false); // Stop loading on success
+          Alert.alert("Success", "Ride scheduled successfully!");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "ManageTrips" as never }],
+          });
+        } else {
+          console.log("First attempt failed, retrying...");
+          setLoading(false); // Stop loading before retry
+          setRetryCount((prev) => prev + 1);
+          if (retryCount < 1) {
+            setRetrying(true); // Trigger retry
+          } else {
+            Alert.alert("Error", "Failed to schedule ride after retry");
+          }
+        }
       },
       onError: (error) => {
         console.log("Error Response:", error);
-        Alert.alert("Error", "Failed to schedule ride");
+        setLoading(false); // Stop loading before retry
+        setRetryCount((prev) => prev + 1);
+        if (retryCount < 1) {
+          setRetrying(true); // Trigger retry
+        } else {
+          Alert.alert("Error", "Failed to schedule ride after retry");
+        }
       },
     });
   };
@@ -78,8 +105,8 @@ const PriceSetting: React.FC<PricingProps> = ({
     <View style={[tw`bg-[#FFFFFF]`, { paddingTop: StatusBar.currentHeight }]}>
       <StatusBar translucent backgroundColor="transparent" />
       <ScrollView>
-        {isPending ? (
-          <Loader /> // Show loader while fetching data
+        {loading || isPending ? (
+          <Loader /> // Show loader while mutation is pending
         ) : (
           <Formik
             initialValues={{ price: formData.price || "" }}

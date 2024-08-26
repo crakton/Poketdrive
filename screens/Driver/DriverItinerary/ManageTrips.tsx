@@ -51,11 +51,14 @@ const ManageTrips = () => {
   const { mutate: deleteRideMutate } = useDeleteRide();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
-  // Render function for FlatList items
   const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={tw`my-5`}
-      onPress={() => navigation.navigate("TripItinerary")}
+      onPress={() => {
+        navigation.navigate("TripItinerary", {
+          tripId: item.mainID,
+        });
+      }}
     >
       <DriverCard {...transformTripData(item)} />
     </TouchableOpacity>
@@ -199,7 +202,7 @@ const ManageTrips = () => {
       <StatusBar translucent backgroundColor="transparent" />
       <View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Icon name="menu" />
+          <Icon name="home" size={28} />
         </TouchableOpacity>
         <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
           Manage trips

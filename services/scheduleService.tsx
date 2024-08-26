@@ -26,6 +26,11 @@ export interface DeleteRide {
   id: string;
 }
 
+export interface DeleteRider {
+  rideId: string;
+  riderId: string;
+}
+
 export const createRide = async (data: Schedule) => {
   const options: AxiosRequestConfig = {
     method: "POST",
@@ -59,6 +64,28 @@ export const deleteRide = async (data: DeleteRide) => {
   const options: AxiosRequestConfig = {
     method: "POST",
     url: "rides/delete_ride",
+    data,
+  };
+
+  try {
+    const response = await fetch(options);
+    return response;
+  } catch (error) {
+    console.error("Error in deleteRide:", error);
+  }
+};
+export const RequestedRiders = async (id: string) => {
+  const options: AxiosRequestConfig = {
+    method: "GET",
+    url: `rides/waiting_list?rideId=${id}`,
+  };
+  const response = await fetch(options);
+  return response;
+};
+export const deleteRider = async (data: DeleteRider) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: "rides/remove_rider",
     data,
   };
 

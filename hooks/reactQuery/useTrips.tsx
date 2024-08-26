@@ -1,5 +1,10 @@
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
-import { searchRide, Trip } from "../../services/tripService";
+import {
+  RequestRide,
+  searchRide,
+  Trip,
+  Request,
+} from "../../services/tripService";
 
 const queryClient = new QueryClient();
 
@@ -10,18 +15,19 @@ const queryClient = new QueryClient();
 //   });
 // };
 
-// export const useGetListingById = (id: string) => {
-//   return useQuery({
-//     queryKey: ["listing", id],
-//     queryFn: () => getList(id),
-//   });
-// };
-
 export const useSearchRide = () => {
   return useMutation({
     mutationFn: (data: Trip) => searchRide(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
+    },
+  });
+};
+export const useRequestRide = () => {
+  return useMutation({
+    mutationFn: (data: Request) => RequestRide(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["request"] });
     },
   });
 };
