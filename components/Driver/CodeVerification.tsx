@@ -42,12 +42,19 @@ const renderCell = ({
   );
 };
 
-const CodeVerification: React.FC = () => {
-  const [value, setValue] = useState("");
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+interface CodeVerificationProps {
+  code: string;
+  setCode: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const CodeVerification: React.FC<CodeVerificationProps> = ({
+  code,
+  setCode,
+}) => {
+  const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
+    value: code,
+    setValue: setCode,
   });
 
   return (
@@ -55,8 +62,8 @@ const CodeVerification: React.FC = () => {
       <CodeField
         ref={ref}
         {...props}
-        value={value}
-        onChangeText={setValue}
+        value={code}
+        onChangeText={setCode}
         cellCount={CELL_COUNT}
         keyboardType="number-pad"
         textContentType="oneTimeCode"

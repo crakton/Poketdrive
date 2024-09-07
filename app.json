@@ -16,15 +16,18 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.omenvc.urride"
+      "bundleIdentifier": "com.omenvc.urride",
+      "userInterfaceStyle": "automatic" 
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/SplashNew.png",
+         "userInterfaceStyle": "automatic",
         "backgroundColor": "#FF6633"
       },
       "package": "com.omenvc.urride"
     },
+    
     "web": {
       "favicon": "./assets/SplashNew.png"
     },
@@ -32,6 +35,22 @@
       "eas": {
         "projectId": "0c7cd1c9-d32d-4672-b431-89cb793f3ec7"
       }
-    }
+    },
+    "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoib21lbnZjIiwiYSI6ImNtMGU3am5yajBobnEya3M2cWY5Ymp0ZTEifQ.k8HFNbmLcjpcsvsaKpVMGA",
+          "RNMapboxMapsVersion": "11.0.0"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Show current location on map."
+        }
+      ]
+    ]
   }
 }
+  

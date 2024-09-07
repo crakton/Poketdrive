@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
 import tw, { style } from "twrnc";
-import Map from "../../components/Map";
 import RideVerification from "../../components/Extras/RideVerification";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
+import Map from "../../components/Map/Map";
 
 const CarIdentification = () => {
   const navigation =

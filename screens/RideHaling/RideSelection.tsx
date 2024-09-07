@@ -49,7 +49,6 @@ const RideSelection = () => {
     setRideData(formattedData);
   }, [data]);
 
-  console.log(data, "data");
   return (
     <View
       style={[
@@ -83,37 +82,39 @@ const RideSelection = () => {
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={data.content}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.cardContainer}
-              onPress={() => {
-                navigation.navigate("MapScreen", { rideDetails: item });
-              }}
-            >
-              <Card
-                date={new Date(item.departure_time).toLocaleString()}
-                seatsLeft={item.remaining_capacity}
-                fromLocation={item.origin.name}
-                fromDescription={item.origin.name}
-                toLocation={item.destination.name}
-                toDescription={item.destination.name}
-                driverImage={
-                  item.creator.profilePicture ||
-                  "https://randomuser.me/api/portraits/men/36.jpg"
-                }
-                driverName={`${item.creator.name.firstName} ${item.creator.name.lastName}`}
-                carDescription={`${item.carName} ${item.carNumber}`}
-                price={`${item.price}`}
-                rating={4.9}
-                driven={`35 driven`}
-              />
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-        />
+        <View style={tailwind`h-full pb-40`}>
+          <FlatList
+            data={data.content}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.cardContainer}
+                onPress={() => {
+                  navigation.navigate("MapScreen", { rideDetails: item });
+                }}
+              >
+                <Card
+                  date={new Date(item.departure_time).toLocaleString()}
+                  seatsLeft={item.remaining_capacity}
+                  fromLocation={item.origin.name}
+                  fromDescription={item.origin.name}
+                  toLocation={item.destination.name}
+                  toDescription={item.destination.name}
+                  driverImage={
+                    item.creator.profilePicture ||
+                    "https://randomuser.me/api/portraits/men/36.jpg"
+                  }
+                  driverName={`${item.creator.name.firstName} ${item.creator.name.lastName}`}
+                  carDescription={`${item.carName} ${item.carNumber}`}
+                  price={`${item.price}`}
+                  rating={4.9}
+                  driven={`35 driven`}
+                />
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+          />
+        </View>
       )}
     </View>
   );
@@ -122,6 +123,6 @@ const RideSelection = () => {
 export default RideSelection;
 const styles = StyleSheet.create({
   cardContainer: {
-    marginBottom: 10,
+    marginBottom: 20,
   },
 });

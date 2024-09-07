@@ -41,4 +41,5 @@ export type AuthStackParamList = {
   PriceSetting: any;
   ManageTrips: any;
   TripItinerary: any;
+  ManagaRide: any;
 };

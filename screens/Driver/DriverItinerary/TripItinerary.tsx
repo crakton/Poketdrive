@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -19,9 +19,14 @@ import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
 import { useGetRequest } from "../../../hooks/reactQuery/useSchedule";
 import { useDeleteRider } from "../../../hooks/reactQuery/useSchedule";
+import {
+  useVerifyRider,
+  useStartRide,
+} from "../../../hooks/reactQuery/useSchedule";
 import TripItineraryCard from "../../../components/RideHailing/TripItineraryCard";
 import { Modal } from "../../../components/modal";
 import CodeVerification from "../../../components/Driver/CodeVerification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Passenger {
   id: string;
@@ -42,25 +47,41 @@ const TripItinerary = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItem, setSelectedItem] = useState<Passenger | null>(null);
   const { tripId } = route.params || {};
-  const { mutate, isPending } = useDeleteRider();
+  const { mutate } = useDeleteRider();
+  const { mutate: verifyRider } = useVerifyRider();
+  const { mutate: startRide } = useStartRide();
   const { data, isSuccess, refetch } = useGetRequest(tripId as string);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const [confirmModal, setConfirmModal] = React.useState(false);
   const [selectedPassenger, setSelectedPassenger] =
     React.useState<Passenger | null>(null);
-
+  const [userData, setUserData] = useState<any>(null);
   const requestedRiders = data?.content?.riders;
-  // console.log(requestedRiders);
-
-  const phoneNumber = "1234567890"; // Replace this with the desired phone number
-
-  // funtion to make call
+  const phoneNumber = "1234567890";
   const handlePhoneCall = () => {
     const phoneUrl = `tel:${phoneNumber}`;
     Linking.openURL(phoneUrl);
   };
+  const handleNavigation = () => {
+    navigation.navigate("EndTrip");
+  };
 
-  // Define the onDelete and onEdit functions
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem("userData");
+        if (jsonValue !== null) {
+          const parsedData = JSON.parse(jsonValue);
+          setUserData(parsedData);
+        }
+      } catch (e) {
+        console.log("Error fetching user data:", e);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleDelete = () => {
     if (selectedItem) {
       // Start loading
@@ -76,17 +97,17 @@ const TripItinerary = () => {
             if (data.success) {
               console.log("Success Response:", data);
               setOpenDeleteModal(false);
-              setIsLoading(false); // Stop loading on success
+              setIsLoading(false);
               Alert.alert("Success", "Rider deleted successfully!");
               refetch();
             } else {
               Alert.alert("Error", "Failed to delete rider.");
-              setIsLoading(false); // Stop loading on failure
+              setIsLoading(false);
             }
           },
           onError: (error) => {
-            console.log("Error Response:", error); // Log the error
-            setIsLoading(false); // Stop loading on error
+            console.log("Error Response:", error);
+            setIsLoading(false);
             Alert.alert(
               "Error",
               "Failed to delete rider. Please try again later."
@@ -96,17 +117,81 @@ const TripItinerary = () => {
       );
     }
   };
+  const [successModal, setSuccessModal] = useState(false);
+  const handleVerify = (code: string) => {
+    const numericCode = parseInt(code, 10);
+    if (selectedItem) {
+      setIsLoading(true);
+      console.log(numericCode, tripId, selectedItem.id);
+
+      verifyRider(
+        {
+          rideId: tripId,
+          userId: selectedItem.id,
+          code: numericCode,
+        },
+        {
+          onSuccess: (data) => {
+            if (data.success) {
+              console.log("Success Response:", data);
+              setConfirmModal(false);
+              setIsLoading(false);
+              setSuccessModal(true);
+              refetch();
+            } else {
+              Alert.alert("Error", "Failed to verify rider.");
+              setIsLoading(false);
+            }
+          },
+          onError: (error) => {
+            setIsLoading(false);
+            Alert.alert(
+              "Error",
+              "Failed to verify rider. Please try again later."
+            );
+          },
+        }
+      );
+    }
+  };
+  const handleStart = () => {
+    startRide(
+      {
+        driverID: userData.id,
+        rideID: tripId,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            Alert.alert("Success", "Rider deleted successfully!");
+            handleNavigation();
+          } else {
+            Alert.alert("Error", "Start Trip.");
+            setIsLoading(false);
+          }
+        },
+        onError: (error) => {
+          console.log("Error Response:", error);
+          setIsLoading(false);
+          console.log(userData.id, tripId);
+          Alert.alert(
+            "Error",
+            "Failed to delete rider. Please try again later."
+          );
+        },
+      }
+    );
+  };
   const handleConfirm = (item: Passenger) => {
     setSelectedItem(item);
     setConfirmModal(true);
   };
+
   const handleDeleteModal = (item: Passenger) => {
     setSelectedItem(item);
     setOpenDeleteModal(true);
   };
-  const handleResendCode = () => {
-    // Logic for resending the code
-  };
+  const handleResendCode = () => {};
 
   const handleChat = (item: Passenger) => {
     console.log("Chat action", item?.id);
@@ -126,9 +211,18 @@ const TripItinerary = () => {
         onDelete={() => handleDeleteModal(item)}
         onCall={handlePhoneCall}
         onChat={() => handleChat(item)}
+        isVerified={item?.isVerified} // Pass the verification status
       />
     </TouchableOpacity>
   );
+  const [code, setCode] = useState("");
+  const handleVerifyButtonClick = () => {
+    if (!isNaN(Number(code))) {
+      handleVerify(code);
+    } else {
+      Alert.alert("Invalid Code", "Please enter a valid numeric code.");
+    }
+  };
 
   return (
     <SafeAreaView
@@ -149,15 +243,14 @@ const TripItinerary = () => {
         </Text>
         <Text>{""}</Text>
       </View>
-
       {/* Render the FlatList */}
       <FlatList
         data={requestedRiders}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-
       <TouchableOpacity
+        onPress={handleStart}
         style={tailwind`rounded-[1rem] bg-[#FF4E00] p-3 my-2 mx-5`}
       >
         <Text
@@ -169,8 +262,6 @@ const TripItinerary = () => {
           Start Trip
         </Text>
       </TouchableOpacity>
-
-      {/* modal to delete a passenger */}
       <Modal isOpen={openDeleteModal}>
         <View style={tailwind`bg-white p-4 w-full rounded-xl`}>
           <Pressable
@@ -262,33 +353,62 @@ const TripItinerary = () => {
                 </Text>
               </View>
 
-              <CodeVerification />
+              <CodeVerification code={code} setCode={setCode} />
+
               <View style={tailwind`flex flex-row items-center`}>
-                <Text style={[tailwind`px-1 text-center py-5 text-[13px]`, ,]}>
+                <Text style={tailwind`px-1 text-center py-5 text-[13px]`}>
                   Didn’t receive code?{" "}
                 </Text>
                 <TouchableOpacity onPress={handleResendCode}>
-                  <Text
-                    style={{ color: "#F25B3E", fontFamily: "Poppins-SemiBold" }}
-                  >
+                  <Text style={tailwind`text-[#F25B3E] font-semibold`}>
                     Resend Code
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View
+
+              <TouchableOpacity
+                onPress={handleVerifyButtonClick}
                 style={tailwind`bg-[#F25B3E] w-full rounded-[12px] flex justify-center items-center`}
               >
                 <Text
                   style={[
-                    tailwind`px-1 text-center py-5 text-[24px] py-4 text-white font-bold `,
-                    ,
+                    tailwind`px-1 text-center py-5 text-[24px] py-4 text-white font-bold`,
                   ]}
                 >
                   Verify
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </Pressable>
+        </View>
+      </Modal>
+      {/* // Success Modal after verification */}
+      <Modal isOpen={successModal}>
+        <View style={tailwind`bg-white p-6 w-full rounded-xl items-center`}>
+          <Icon
+            name="checkmark-circle-outline"
+            type="ionicon"
+            color="green"
+            size={80}
+          />
+          <Text
+            style={[tailwind`text-xl mt-4`, { fontFamily: "Poppins-Bold" }]}
+          >
+            Rider Verified!
+          </Text>
+          <TouchableOpacity
+            style={tailwind`rounded-[1rem] bg-[#F25B3E] p-3 mt-5 w-full`}
+            onPress={() => setSuccessModal(false)}
+          >
+            <Text
+              style={[
+                tailwind`text-center text-xl text-white`,
+                { fontFamily: "Poppins-Bold" },
+              ]}
+            >
+              Continue
+            </Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     </SafeAreaView>

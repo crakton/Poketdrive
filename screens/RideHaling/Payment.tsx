@@ -55,7 +55,7 @@ const Payment = () => {
 
     fetchUserData();
   }, []);
-  console.log(rideDetails);
+  console.log(rideDetails?.id);
 
   const handlePayment = () => {
     setLoading(true);
@@ -87,9 +87,10 @@ const Payment = () => {
                   },
                 },
               })
+
               .then((response) => {
                 console.log("Notification sent successfully:", response.data);
-                navigation.navigate("Confirmation");
+                navigation.navigate("CarIdentification");
               })
               .catch((error) => {
                 console.error("Error sending notification:", error);
@@ -114,19 +115,24 @@ const Payment = () => {
 
   return (
     <View
-      style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+      style={[
+        tw`bg-[#FFFFFF] h-full relative`,
+        { paddingTop: StatusBar.currentHeight },
+      ]}
     >
       <StatusBar translucent backgroundColor="transparent" />
       <View>
         <HeaderWithBackButton navigation={navigation} title="Payment" />
       </View>
-      <View style={tw`flex flex-row mx-5 items-center justify-end`}>
+      <View
+        style={tw`flex flex-row mx-5 items-center justify-end absolute top-20 right-0`}
+      >
         <TouchableOpacity
-          style={tw` px-5 py-2 bg-red-500 rounded-full`}
+          style={tw` px-3 py-1 bg-red-500 rounded-lg `}
           onPress={() => navigation.navigate("WalletHome")}
         >
           <Text
-            style={[tw`text-lg text-white`, { fontFamily: "Poppins-Bold" }]}
+            style={[tw`text-[14px] text-white`, { fontFamily: "Poppins-Bold" }]}
           >
             Wallet
           </Text>

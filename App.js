@@ -41,6 +41,7 @@ import DriverDetails from "./screens/Driver/DriverDetails";
 import QueryClientProvider from "./utils/ReactQueryProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import registerNNPushToken from "native-notify";
+import ManageRide from "./screens/RideHaling/ManageRide";
 
 const Stack = createNativeStackNavigator();
 
@@ -304,6 +305,11 @@ export default function App() {
                   <Stack.Screen
                     name="TripConfirmation"
                     component={TripConfirmation}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ManageRide"
+                    component={ManageRide}
                     options={{ headerShown: false }}
                   />
                 </Stack.Navigator>

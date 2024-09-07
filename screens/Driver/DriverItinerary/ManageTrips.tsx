@@ -133,7 +133,8 @@ const ManageTrips = () => {
         if (jsonValue !== null) {
           const parsedData = JSON.parse(jsonValue);
           setUserData(parsedData);
-          handleContinue(parsedData); // Call handleContinue with parsed user data
+          handleContinue(parsedData);
+          // console.log(parsedData, "parsedData");
         }
       } catch (e) {
         console.log("Error fetching user data:", e);

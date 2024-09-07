@@ -162,39 +162,36 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                 </Text>
               </View>
               <View
-                style={tw`flex flex-row items-center justify-start gap-10 px-5 pb-5 `}
+                style={tw`flex flex-row items-center justify-center gap-10 px-5 pb-5 `}
               >
-                {carImageUri ? (
-                  <View style={tw`border p-1 rounded-md w-[10rem] `}>
-                    <Image
-                      source={{ uri: carImageUri }}
-                      style={{ flex: 1 }}
-                      resizeMode="cover"
-                    />
+                {/* {carImageUri ? ( */}
+                <View style={tw`border p-1 rounded-md w-[40%] h-25  `}>
+                  <Image
+                    source={require("../../assets/urideCar.png")}
+                    // style={{ flex: 1 }}
+                    style={tw`w-full h-full`}
+                    resizeMode="cover"
+                  />
+                </View>
+                {/* ) : ( */}
+                {/* <View style={tw`flex flex-row items-center justify-center`}>
+                  <View style={tw`border rounded-lg w-[10rem]`}>
+                    <Icon name="car" type="ionicon" size={100} color="black" />
                   </View>
-                ) : (
-                  <View style={tw`flex flex-row items-center justify-center`}>
-                    <View style={tw`border rounded-lg w-[10rem]`}>
-                      <Icon
-                        name="car"
-                        type="ionicon"
-                        size={100}
-                        color="black"
-                      />
-                    </View>
-                  </View>
-                )}
+                </View> */}
+                {/* )} */}
                 <View>
                   <TouchableOpacity
                     onPress={openImagePicker}
-                    style={tw`border p-1 rounded-lg w-[10rem] items-center justify-center`}
+                    style={tw`border p-1 rounded-lg w-[8rem] h-25 items-center justify-center`}
                   >
                     <Icon
                       name="add-outline"
                       type="ionicon"
-                      size={100}
+                      size={60}
                       color="black"
                     />
+                    <Text style={tw`text-[12px]`}>Add Car Image</Text>
                   </TouchableOpacity>
                 </View>
               </View>

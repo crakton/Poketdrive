@@ -42,7 +42,33 @@ const TripSelection = () => {
     >
       <StatusBar translucent backgroundColor="transparent" />
       <View>
-        <HeaderWithBackButton navigation={navigation} title="Find a trip" />
+        <SafeAreaView
+          style={tw`flex flex-row items-center justify-between px-5 pt-3 w-full`}
+        >
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-back-outline" type="ionicon" color="black" />
+          </TouchableOpacity>
+
+          <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+            Find a trip
+          </Text>
+
+          <TouchableOpacity
+            style={tw`bg-red-500 rounded-md`}
+            onPress={() => {
+              navigation.navigate("ManageRide" as never);
+            }}
+          >
+            <Text
+              style={[
+                tw`px-2 text-white text-[12px] py-1`,
+                { fontFamily: "Poppins-Regular" },
+              ]}
+            >
+              rides
+            </Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       </View>
       <View style={tw`px-3 py-5`}>
         <TripForm />

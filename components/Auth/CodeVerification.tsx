@@ -81,6 +81,7 @@ const CodeVerification = () => {
     mutationFn: (payload: any) => VerifytOTP(payload),
     onSuccess: async (data) => {
       await AsyncStorage.setItem("userData", JSON.stringify(data));
+      console.log(data);
       navigation.replace("Home");
       registerIndieID(`${data.id}`, 22387, "Wl0rlWhlSiad3m2ob0v2aB");
     },

@@ -25,8 +25,7 @@ const Login = () => {
           onPress={() => {
             navigation.goBack();
           }}
-        >
-        </TouchableOpacity>
+        ></TouchableOpacity>
         <Text style={[tw``, { fontFamily: "Poppins-Black" }]}>Login</Text>
       </View>
       <ScrollView>
@@ -35,7 +34,7 @@ const Login = () => {
             Login Title
           </Text>
           <Text style={[tw`text-lg py-5`, { fontFamily: "Poppins-Regular" }]}>
-            Enter your registered phone number below.
+            Enter your registered email below.
           </Text>
         </View>
         <CountryPhoneNumber />

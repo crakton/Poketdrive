@@ -30,6 +30,15 @@ export interface DeleteRider {
   rideId: string;
   riderId: string;
 }
+export interface VerifyRider {
+  rideId: string;
+  userId: string;
+  code: number;
+}
+export interface StartRide {
+  driverID: string;
+  rideID: string;
+}
 
 export const createRide = async (data: Schedule) => {
   const options: AxiosRequestConfig = {
@@ -95,4 +104,40 @@ export const deleteRider = async (data: DeleteRider) => {
   } catch (error) {
     console.error("Error in deleteRide:", error);
   }
+};
+export const verifyRider = async (data: VerifyRider) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: "rides/verify_code",
+    data,
+  };
+
+  try {
+    const response = await fetch(options);
+    return response;
+  } catch (error) {
+    console.error("Error in Verify Rider:", error);
+  }
+};
+export const startRide = async (data: StartRide) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: "rides/start_ride",
+    data,
+  };
+
+  try {
+    const response = await fetch(options);
+    return response;
+  } catch (error) {
+    console.error("Error in start Ride:", error);
+  }
+};
+export const getRides = async (id: string) => {
+  const options: AxiosRequestConfig = {
+    method: "GET",
+    url: `rides/user_ride?userId=${id}`,
+  };
+  const response = await fetch(options);
+  return response;
 };

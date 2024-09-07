@@ -9,6 +9,11 @@ import {
   RequestedRiders,
   deleteRider,
   DeleteRider,
+  VerifyRider,
+  verifyRider,
+  StartRide,
+  startRide,
+  getRides,
 } from "../../services/scheduleService";
 import { fetch } from "../../lib/api";
 
@@ -46,7 +51,6 @@ export const useGetRequest = (id: string) => {
     queryKey: ["RequestedRiders", id],
     queryFn: () => RequestedRiders(id),
     enabled: !!id,
-    
   });
 };
 
@@ -56,6 +60,30 @@ export const useDeleteRider = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deleteRider"] });
     },
+  });
+};
+
+export const useVerifyRider = () => {
+  return useMutation({
+    mutationFn: (data: VerifyRider) => verifyRider(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["verifyRider"] });
+    },
+  });
+};
+export const useStartRide = () => {
+  return useMutation({
+    mutationFn: (data: StartRide) => startRide(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["startRide"] });
+    },
+  });
+};
+export const useGetRides = (id: string) => {
+  return useQuery({
+    queryKey: ["RequestedRiders", id],
+    queryFn: () => getRides(id),
+    enabled: !!id,
   });
 };
 export type { Schedule };

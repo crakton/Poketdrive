@@ -9,11 +9,8 @@ import {
 } from "react-native";
 import tailwind from "twrnc";
 import { Icon } from "@rneui/base";
-import { SvgXml } from "react-native-svg";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
-import { AuthStackParamList } from "../../nav";
+import UserAvatar from "react-native-user-avatar";
 
 interface CardProps {
   name: string;
@@ -22,24 +19,32 @@ interface CardProps {
   onDelete: () => void;
   onCall: () => void;
   onChat: () => void;
+  isVerified: boolean; // New prop to handle verification status
 }
 
 const TripItineraryCard: React.FC<CardProps> = ({
   name,
-  avatarUri,
+
   carDescription,
   onDelete,
   onCall,
   onChat,
-}: CardProps) => {
+  isVerified, // Add this prop
+}) => {
   return (
     <View style={styles.card}>
-      <View style={styles.horizontalLine} />
+      {isVerified && (
+        <Icon
+          name="checkmark-circle"
+          type="ionicon"
+          color="green"
+          size={20}
+          containerStyle={tailwind`absolute top-2 right-2`}
+        />
+      )}
       <View style={tailwind`flex flex-row justify-between items-center`}>
         <View style={tailwind`flex flex-row gap-4`}>
-          <View>
-            <Avatar size={50} rounded source={{ uri: avatarUri }} />
-          </View>
+          <UserAvatar size={50} name={name} bgColor="#F25B3E" />
           <View>
             <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
               {name}
@@ -89,30 +94,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     paddingHorizontal: 15,
     paddingBottom: 10,
+    paddingTop: 10,
     backgroundColor: "#FFF",
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  icon: {
-    marginRight: 10,
-  },
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  verticalLine: {
-    width: 1.5,
-    backgroundColor: "#D9D9D9",
-    marginHorizontal: 11.3,
-    height: 20,
-  },
-  horizontalLine: {
-    height: 3,
-    backgroundColor: "#D9D9D9",
-    marginVertical: 15,
-    marginHorizontal: 10,
+    position: "relative", // Make sure the card is positioned relatively
   },
 });

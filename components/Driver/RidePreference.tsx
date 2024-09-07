@@ -112,7 +112,7 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
           }) => (
             <View>
               <ImageBackground
-                source={carImageUri ? { uri: carImageUri } : { uri: imageURL }}
+                source={require("../../assets/urideCar.png")}
                 style={[styles.backgroundImage, { height: windowHeight / 4 }]}
               >
                 {/* Overlay text or components */}
@@ -166,7 +166,14 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
                             selectedCarDetails === item ? "white" : "black"
                           }
                         />
-                        <Text style={tw`text-center`}>{item}</Text>
+                        <Text
+                          style={[
+                            tw`text-center`,
+                            selectedCarDetails === item && tw`text-white`,
+                          ]}
+                        >
+                          {item}
+                        </Text>
                       </TouchableOpacity>
                     )}
                   />
