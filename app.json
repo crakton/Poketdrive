@@ -17,17 +17,23 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.omenvc.urride",
-      "userInterfaceStyle": "automatic" 
+      "userInterfaceStyle": "automatic",
+      "config": {
+        "googleMapsApiKey": "GOOGLE_MAPS_APIKEY"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/SplashNew.png",
-         "userInterfaceStyle": "automatic",
         "backgroundColor": "#FF6633"
       },
-      "package": "com.omenvc.urride"
+      "package": "com.omenvc.urride",
+      "config": {
+        "googleMaps": {
+          "apiKey": "GOOGLE_MAPS_APIKEY"
+        }
+      }
     },
-    
     "web": {
       "favicon": "./assets/SplashNew.png"
     },
@@ -38,13 +44,6 @@
     },
     "plugins": [
       [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoib21lbnZjIiwiYSI6ImNtMGU3am5yajBobnEya3M2cWY5Ymp0ZTEifQ.k8HFNbmLcjpcsvsaKpVMGA",
-          "RNMapboxMapsVersion": "11.0.0"
-        }
-      ],
-      [
         "expo-location",
         {
           "locationWhenInUsePermission": "Show current location on map."
@@ -53,4 +52,3 @@
     ]
   }
 }
-  

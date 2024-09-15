@@ -14,25 +14,31 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 
-
 interface RideVerificationProps {
   title: string;
+  destinationName: any;
   classes?: any;
-  direction:string;
+  direction: string;
 }
 
-const RideVerification: React.FC<RideVerificationProps> = ({ title, classes, direction }) => {
+const RideVerification: React.FC<RideVerificationProps> = ({
+  title,
+  classes,
+  destinationName,
+  direction,
+}) => {
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
-  
+
   return (
     <View>
       <TouchableOpacity
-       style={[styles.container, classes?.cardContainer]}
-       onPress={() => navigation.navigate(direction as keyof AuthStackParamList)}
-
+        style={[styles.container, classes?.cardContainer]}
+        onPress={() =>
+          navigation.navigate(direction as keyof AuthStackParamList)
+        }
       >
         <Text
           style={[
@@ -54,7 +60,7 @@ const RideVerification: React.FC<RideVerificationProps> = ({ title, classes, dir
         </Text>
       </View>
       <TouchableOpacity
-        style={tw`bg-[#E3E3E3] h-[53px] items-center justify-center flex-row  rounded-[2]`}
+        style={tw`bg-[#E3E3E3] h-[53px] items-center justify-between flex-row  rounded-[2] px-3 pr-5`}
       >
         <Icon
           name="arrowright"
@@ -66,8 +72,9 @@ const RideVerification: React.FC<RideVerificationProps> = ({ title, classes, dir
           style={[tw`px-[80] text-[17px]`, { fontFamily: "Poppins-Regular" }]}
         >
           {" "}
-          Area 1 shopping mall
+          {destinationName}
         </Text>
+        <View></View>
       </TouchableOpacity>
       <TouchableOpacity
         style={tw`h-[53px] items-center justify-center flex-row  rounded-[2]`}
@@ -106,7 +113,8 @@ const styles = StyleSheet.create({
   container: {
     // Define your container styles here
     backgroundColor: "black",
-    justifyContent:"center",
-  alignItems:"center",
-padding:3}
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 3,
+  },
 });

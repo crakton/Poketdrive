@@ -123,6 +123,7 @@ const RideSelection = () => {
 export default RideSelection;
 const styles = StyleSheet.create({
   cardContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: -20,
   },
 });

@@ -1,21 +1,20 @@
+import React, { useEffect, useState } from "react";
 import {
-  FlatList,
   SafeAreaView,
   StatusBar,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import tw from "twrnc";
+import tailwind from "twrnc";
 import { Icon } from "@rneui/base";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
-import DriverCard from "../../components/RideHailing/DriverCard";
 import { useGetRides } from "../../hooks/reactQuery/useSchedule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RideCard from "../../components/RideHailing/RideCard";
 
 const ManageRide = () => {
   const navigation =
@@ -41,39 +40,7 @@ const ManageRide = () => {
   }, []);
 
   const { data } = useGetRides(userData?.id);
-
-  // Transform the trip data to the structure needed by the DriverCard
-  const transformTripData = (trip: any) => ({
-    fromLocation: trip?.origin || "Unknown Origin", // Adjusting as per your data structure
-    fromDescription: trip?.origin || "Unknown Origin",
-    toLocation: trip?.destination || "Unknown Destination",
-    toDescription: trip?.destination || "Unknown Destination",
-    driverName: trip?.creator?.name || "Unknown Driver",
-    carDescription: `Luggage Type: ${trip?.LuggageType || "Not specified"}`,
-    price: trip?.price?.toString() || "0",
-    rideId: trip?.mainID || "N/A",
-    seatsTaken: (trip?.totalCapacity || 0) - (trip?.remainingCapacity || 0),
-    isEmpty: trip?.remainingCapacity === trip?.totalCapacity,
-    onDelete: () => {
-      // Add your delete logic here
-    },
-    onEdit: () => {
-      // Add your edit logic here
-    },
-  });
-
-  const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={tw`my-5`}
-      onPress={() => {
-        navigation.navigate("TripItinerary", {
-          tripId: item.mainID,
-        });
-      }}
-    >
-      <DriverCard departure_time={""} {...transformTripData(item)} />
-    </TouchableOpacity>
-  );
+  const ride = data?.content?.ride;
 
   return (
     <SafeAreaView
@@ -94,12 +61,8 @@ const ManageRide = () => {
         </Text>
         <Text>{""}</Text>
       </View>
-      {data?.content?.ride ? (
-        <FlatList
-          data={data.content.ride} // Accessing the array of rides
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
+      {ride ? (
+        <RideCard ride={ride} />
       ) : (
         <Text style={tw`text-center mt-5`}>No rides available</Text>
       )}
@@ -108,5 +71,3 @@ const ManageRide = () => {
 };
 
 export default ManageRide;
-
-const styles = StyleSheet.create({});

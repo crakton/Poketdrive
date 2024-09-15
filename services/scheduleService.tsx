@@ -133,6 +133,20 @@ export const startRide = async (data: StartRide) => {
     console.error("Error in start Ride:", error);
   }
 };
+export const endRide = async (data: StartRide) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: "rides/end_ride",
+    data,
+  };
+
+  try {
+    const response = await fetch(options);
+    return response;
+  } catch (error) {
+    console.error("Error in end Ride:", error);
+  }
+};
 export const getRides = async (id: string) => {
   const options: AxiosRequestConfig = {
     method: "GET",

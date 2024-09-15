@@ -62,8 +62,8 @@ const TripItinerary = () => {
     const phoneUrl = `tel:${phoneNumber}`;
     Linking.openURL(phoneUrl);
   };
-  const handleNavigation = () => {
-    navigation.navigate("EndTrip");
+  const handleNavigation = (data: any) => {
+    navigation.navigate("DriverEndTrip", { rideData: data });
   };
 
   useEffect(() => {
@@ -84,7 +84,6 @@ const TripItinerary = () => {
 
   const handleDelete = () => {
     if (selectedItem) {
-      // Start loading
       setIsLoading(true);
 
       mutate(
@@ -163,8 +162,8 @@ const TripItinerary = () => {
       {
         onSuccess: (data) => {
           if (data.success) {
-            Alert.alert("Success", "Rider deleted successfully!");
-            handleNavigation();
+            Alert.alert("Success", "Ride started successfully!");
+            handleNavigation(data);
           } else {
             Alert.alert("Error", "Start Trip.");
             setIsLoading(false);
@@ -174,10 +173,7 @@ const TripItinerary = () => {
           console.log("Error Response:", error);
           setIsLoading(false);
           console.log(userData.id, tripId);
-          Alert.alert(
-            "Error",
-            "Failed to delete rider. Please try again later."
-          );
+          Alert.alert("Error", "Failed to start ride. Please try again later.");
         },
       }
     );

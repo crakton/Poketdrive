@@ -14,6 +14,7 @@ import {
   StartRide,
   startRide,
   getRides,
+  endRide,
 } from "../../services/scheduleService";
 import { fetch } from "../../lib/api";
 
@@ -76,6 +77,14 @@ export const useStartRide = () => {
     mutationFn: (data: StartRide) => startRide(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["startRide"] });
+    },
+  });
+};
+export const useEndRide = () => {
+  return useMutation({
+    mutationFn: (data: StartRide) => endRide(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["endRide"] });
     },
   });
 };

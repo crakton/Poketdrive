@@ -90,7 +90,7 @@ const Payment = () => {
 
               .then((response) => {
                 console.log("Notification sent successfully:", response.data);
-                navigation.navigate("CarIdentification");
+                navigation.navigate("ManageRide");
               })
               .catch((error) => {
                 console.error("Error sending notification:", error);
