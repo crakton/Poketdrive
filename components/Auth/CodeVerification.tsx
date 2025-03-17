@@ -25,6 +25,7 @@ import { setLocalData } from "../../utils/localStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { registerIndieID } from "native-notify";
 import axios from "axios";
+import ContinueButton from "../ui/ContinueButton";
 
 const CELL_COUNT = 6;
 
@@ -97,7 +98,6 @@ const CodeVerification = () => {
 
   return (
     <SafeAreaView style={tw`bg-[#FFFFFF] h-full`}>
-      {status === "pending" && <Loader />}
       <View style={{ flex: 1, alignItems: "center" }}>
         <View style={{ width: "100%", paddingHorizontal: 22 }}>
           <View
@@ -143,29 +143,12 @@ const CodeVerification = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            disabled={!isCodeComplete}
+          <ContinueButton
+            text="Verify"
             onPress={handleSubmit}
-            style={[
-              tw`p-3`,
-              {
-                backgroundColor: isCodeComplete ? "#F25B3E" : "#D3D3D3",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 8,
-                marginVertical: 32,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                tw`text-center text-2xl text-white`,
-                { fontFamily: "Poppins-Bold" },
-              ]}
-            >
-              Verify
-            </Text>
-          </TouchableOpacity>
+            disabled={!isCodeComplete}
+            loading={status === "pending"}
+          />
         </View>
       </View>
     </SafeAreaView>

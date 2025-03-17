@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { baseUrl } from "../utils/constant";
 
 const client = axios.create({
-  baseURL: "http://142.93.40.82:3033/api/v1/",
+  baseURL: baseUrl,
 });
 
 // Function to handle navigation

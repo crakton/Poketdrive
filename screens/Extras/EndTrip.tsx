@@ -15,47 +15,47 @@ const EndTrip = () => {
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
 
-  const [originLocation, setOriginLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-  const [destination, setDestination] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-  const [rideDetails, setRideDetails] = useState<null>(null);
-  const [loading, setLoading] = useState(true);
+  // const [originLocation, setOriginLocation] = useState<{
+  //   lat: number;
+  //   lng: number;
+  // } | null>(null);
+  // const [destination, setDestination] = useState<{
+  //   lat: number;
+  //   lng: number;
+  // } | null>(null);
+  // const [rideDetails, setRideDetails] = useState<null>(null);
+  // const [loading, setLoading] = useState(true);
 
-  const destinationName = rideDetails?.destination?.name;
+  // const destinationName = rideDetails?.destination?.name;
 
-  useEffect(() => {
-    const fetchRideDetails = async () => {
-      try {
-        // Retrieve saved ride details
-        const rideDetailsString = await AsyncStorage.getItem("rideDetails");
+  // useEffect(() => {
+  //   const fetchRideDetails = async () => {
+  //     try {
+  //       // Retrieve saved ride details
+  //       const rideDetailsString = await AsyncStorage.getItem("rideDetails");
 
-        const rideDetails = rideDetailsString
-          ? JSON.parse(rideDetailsString)
-          : {};
-        const destination = rideDetails?.destination?.location?.coordinates;
-        const origin = rideDetails?.origin?.location?.coordinates;
-        setRideDetails(rideDetails);
-        setDestination(destination || null);
-        setOriginLocation(origin || null);
+  //       const rideDetails = rideDetailsString
+  //         ? JSON.parse(rideDetailsString)
+  //         : {};
+  //       const destination = rideDetails?.destination?.location?.coordinates;
+  //       const origin = rideDetails?.origin?.location?.coordinates;
+  //       setRideDetails(rideDetails);
+  //       setDestination(destination || null);
+  //       setOriginLocation(origin || null);
 
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching ride details: ", error);
-        setLoading(false);
-      }
-    };
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching ride details: ", error);
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchRideDetails();
-  }, []);
+  //   fetchRideDetails();
+  // }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,22 +63,20 @@ const EndTrip = () => {
         <HeaderWithBackButton navigation={navigation} />
       </View>
       <View style={tw`h-[65%]`}>
-        {originLocation && destination && (
-          <Map
-            origin={{
-              latitude: originLocation.lat,
-              longitude: originLocation.lng,
-            }}
-            destination={{
-              latitude: destination?.lat,
-              longitude: destination?.lng,
-            }}
-          />
-        )}
+        <Map
+          origin={{
+            latitude: 9.0752322,
+            longitude: 7.4767315,
+          }}
+          destination={{
+            latitude: 9.0641062,
+            longitude: 7.422939500000001,
+          }}
+        />
       </View>
       <View style={tw`h-[35%]`}>
         <RideVerification
-          destinationName={destinationName}
+          destinationName={"jabi"}
           title="End Trip"
           classes={{ cardContainer: styles.cardContainer }}
           direction="TripConfirmation"

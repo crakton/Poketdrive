@@ -1,19 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
 import tailwind from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import { RequestOTP } from "../../lib/api/functions/register";
-import Loader from "../loader/Loader";
+import ContinueButton from "../ui/ContinueButton";
 
 const PhoneNumberInput = () => {
   const navigation =
@@ -46,7 +39,6 @@ const PhoneNumberInput = () => {
 
   return (
     <View style={styles.container}>
-      {status === "pending" && <Loader />}
       <View style={styles.inputContainer}>
         <Text style={[tailwind`mb-2`, { fontFamily: "Poppins-Regular" }]}>
           Email
@@ -59,9 +51,12 @@ const PhoneNumberInput = () => {
           onChangeText={setEmail}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Verify</Text>
-      </TouchableOpacity>
+      <ContinueButton
+        text="Verify"
+        onPress={handleSignUp}
+        disabled={!email}
+        loading={status === "pending"}
+      />
     </View>
   );
 };

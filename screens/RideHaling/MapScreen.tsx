@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import tw from "twrnc";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NavigateCard from "../../components/RideHailing/NavigateCard";
@@ -13,8 +13,10 @@ const MapScreen = ({ route }: any) => {
   const navigation = useNavigation();
 
   const { rideDetails = {} } = route.params || {};
-  const destination = rideDetails?.destination?.location?.coordinates;
-  const origin = rideDetails?.origin?.location?.coordinates;
+  const destination = rideDetails?.destination?.location?.coordinates || [];
+  const origin = rideDetails?.origin?.location?.coordinates || [];
+  console.log(origin, "yyg");
+  console.log(destination, "yyssg");
 
   useEffect(() => {
     const saveRideDetails = async () => {
@@ -28,6 +30,11 @@ const MapScreen = ({ route }: any) => {
 
     saveRideDetails();
   }, [rideDetails]);
+
+  // Check if origin and destination are valid arrays with at least two elements
+  const isValidCoordinates = (coords: number[]) =>
+    Array.isArray(coords) && coords.length === 2;
+
   return (
     <View style={{ flex: 1 }}>
       <View style={tw`z-50 absolute top-2`}>
@@ -35,13 +42,19 @@ const MapScreen = ({ route }: any) => {
       </View>
 
       <View style={tw`flex-1`}>
-        <Map
-          origin={{ latitude: origin.lat, longitude: origin.lng }}
-          destination={{
-            latitude: destination.lat,
-            longitude: destination.lng,
-          }}
-        />
+        {isValidCoordinates(origin) && isValidCoordinates(destination) ? (
+          <Map
+            origin={{ latitude: origin[0], longitude: origin[1] }}
+            destination={{
+              latitude: destination[0],
+              longitude: destination[1],
+            }}
+          />
+        ) : (
+          <View style={tw`flex-1 justify-center items-center`}>
+            <Text>No valid location data available.</Text>
+          </View>
+        )}
       </View>
 
       <View style={tw`flex-1`}>

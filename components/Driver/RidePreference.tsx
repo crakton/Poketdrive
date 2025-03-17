@@ -143,7 +143,7 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
                 </Text>
                 <View style={tw`w-[100%] flex`}>
                   <FlatList
-                    data={["None", "Small", "M", "L"]}
+                    data={["None", "small", "medium", "large"]}
                     keyExtractor={(item, index) => index.toString()}
                     horizontal
                     renderItem={({ item }) => (

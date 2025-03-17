@@ -21,7 +21,6 @@ const IdDetails = () => {
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
     >();
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -57,15 +56,14 @@ const IdDetails = () => {
             style={tw`h-[100px] w-[147px] mx-[10] bg-[#D9D9D9] rounded-[2] justify-center items-center `}
             onPress={pickImage}
           >
-            <Text  style={tw`text-gray-500`}>front image</Text>
+            <Text style={tw`text-gray-500`}>front image</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={tw`h-[100px] mx-[10] w-[147px] bg-[#D9D9D9] rounded-[2] justify-center items-center`}
             onPress={pickImage}
           >
-          
-            <Text  style={tw`text-gray-500`}>back image</Text>
+            <Text style={tw`text-gray-500`}>back image</Text>
           </TouchableOpacity>
         </View>
       </View>

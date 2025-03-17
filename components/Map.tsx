@@ -32,11 +32,10 @@ const Map = ({ origin, destination }: MapProps) => {
       // provider={PROVIDER_GOOGLE}
       style={tw`flex-1`}
       region={{
-        latitude: (origin.latitude + destination.latitude) / 2,
-        longitude: (origin.longitude + destination.longitude) / 2,
-        latitudeDelta: Math.abs(origin.latitude - destination.latitude) * 1.5,
-        longitudeDelta:
-          Math.abs(origin.longitude - destination.longitude) * 1.5,
+        latitude: (9.075232 + 9.0641062) / 2,
+        longitude: (7.4767315 + 7.422939500000001) / 2,
+        latitudeDelta: Math.abs(9.075232 - 9.0641062) * 1.5,
+        longitudeDelta: Math.abs(7.4767315 - 7.422939500000001) * 1.5,
       }}
       mapType="mutedStandard"
     >

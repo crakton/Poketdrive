@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { CheckBox } from "@rneui/base";
 import tw from "twrnc";
@@ -15,7 +8,7 @@ import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useMutation } from "@tanstack/react-query";
 import { RegisterUser } from "../../lib/api/functions/register";
-import Loader from "../loader/Loader";
+import ContinueButton from "../ui/ContinueButton";
 
 const RegisterForm = () => {
   const navigation =
@@ -72,7 +65,6 @@ const RegisterForm = () => {
 
   return (
     <View>
-      {status == "pending" && <Loader />}
       <View style={styles.inputContainer}>
         <Text style={[tw`mb-2`, { fontFamily: "Poppins-Regular" }]}>
           First Name
@@ -145,20 +137,13 @@ const RegisterForm = () => {
           Send me email to get promo, offer and more
         </Text>
       </View>
-      <TouchableOpacity
-        // disabled={disEnableLogin}
-        style={tw`rounded-[1rem] bg-[#F25B3E] p-3 my-2`}
+      <ContinueButton
+        text="Create Account"
         onPress={handleSignUp}
-      >
-        <Text
-          style={[
-            tw`text-center text-2xl text-white`,
-            { fontFamily: "Poppins-Bold" },
-          ]}
-        >
-          Create Account
-        </Text>
-      </TouchableOpacity>
+        loading={status === "pending"}
+        disabled={false}
+      />
+
       <View style={tw`flex flex-row items-center justify-center`}>
         <Text style={[tw`text-center`, { fontFamily: "Poppins-Regular" }]}>
           Already have an account?{" "}

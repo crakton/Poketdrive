@@ -24,7 +24,6 @@ export const RequestOTP = async (OTPEmail: any) => {
   return res;
 };
 
-// Function to verify OTP
 export const VerifytOTP = async (otpData: number) => {
   try {
     const res = await axios.post(`${baseUrl}/auth/verify-otp`, otpData, {

@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, TextInput, StyleSheet, Alert } from "react-native";
 import { Icon, Text } from "@rneui/base";
-import tw from "twrnc";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +9,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { useSearchRide } from "../../hooks/reactQuery/useTrips";
 import Loader from "../loader/Loader";
+import ContinueButton from "../ui/ContinueButton";
 
 // Validation schema
 const TripFormSchema = Yup.object().shape({
@@ -35,7 +29,7 @@ const TripForm = () => {
 
   // const handleConfirm = (date: Date, setFieldValue: any) => {
   //   setSelectedDate(date);
-  //   setFieldValue("departureTime", date.toLocaleString()); 
+  //   setFieldValue("departureTime", date.toLocaleString());
   //   setDatePickerVisibility(false);
   // };
 
@@ -75,7 +69,6 @@ const TripForm = () => {
         setFieldValue,
       }) => (
         <View>
-          {loading && <Loader />}
           <View style={styles.inputContainer}>
             <Icon
               name="location"
@@ -88,6 +81,7 @@ const TripForm = () => {
               placeholder="From where?"
               onChangeText={handleChange("fromwhere")}
               onBlur={handleBlur("fromwhere")}
+              placeholderTextColor="gray"
               value={values.fromwhere}
             />
           </View>
@@ -106,6 +100,7 @@ const TripForm = () => {
               placeholder="To where?"
               onChangeText={handleChange("towhere")}
               onBlur={handleBlur("towhere")}
+              placeholderTextColor="gray"
               value={values.towhere}
             />
           </View>
@@ -132,19 +127,13 @@ const TripForm = () => {
           {errors.departureTime && touched.departureTime && (
             <Text style={styles.errorText}>{errors.departureTime}</Text>
           )} */}
-          <TouchableOpacity
-            style={tw`rounded-[1rem] bg-[#333333] p-3 my-2`}
+
+          <ContinueButton
+            text={"Search"}
             onPress={() => handleSubmit()}
-          >
-            <Text
-              style={[
-                tw`text-center text-xl text-white`,
-                { fontFamily: "Poppins-Bold" },
-              ]}
-            >
-              Search
-            </Text>
-          </TouchableOpacity>
+            disabled={false}
+            loading={loading}
+          />
         </View>
       )}
     </Formik>
