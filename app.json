@@ -29,6 +29,21 @@
         "backgroundColor": "#FF6633"
       },
       "package": "com.omenvc.urride",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "ur-ride"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "config": {
         "googleMaps": {
           "apiKey": "GOOGLE_MAPS_APIKEY"
