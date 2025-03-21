@@ -19,7 +19,7 @@ import ContinueButton from "../ui/ContinueButton";
 import * as WebBroswer from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session/providers/google";
 import { fetch } from "../../lib/api";
-import { CodeChallengeMethod, ResponseType } from "expo-auth-session";
+import { ResponseType } from "expo-auth-session";
 // import * as SecureStore from 'expo-secure-store'
 
 WebBroswer.maybeCompleteAuthSession();
@@ -51,12 +51,9 @@ const RegisterForm = () => {
 
 	const [request, response, promptAsync] = useAuthRequest(
 		{
-			// clientId:
-			// 	"463687535027-78j7gktapc8hoojubuk59q70td746lkt.apps.googleusercontent.com",// web client id
 			clientId:
 				"463687535027-cdhalaasercs9i92aslf424ekdujge8b.apps.googleusercontent.com", // android client id
-			// codeChallenge: "plain",
-			// codeChallengeMethod: CodeChallengeMethod.S256,
+
 			redirectUri: "com.omenvc.urride:/oauthredirect",
 			responseType: ResponseType.IdToken,
 			scopes: ["profile", "email"],
