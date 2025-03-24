@@ -37,6 +37,7 @@ const Onboarding = () => {
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity
+					onPress={() => navigate("AirTabBar")}
 					style={[
 						tw`bg-white p-3 rounded-full justify-center items-center w-full`,
 					]}

@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import StackContainer from "../Stack/Index";
 import Payment from "../../screens/RideHaling/Payment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,19 +46,20 @@ const DrawerContainer = () => {
 	}, [setUserData]);
 	return (
 		<MyDrawer.Navigator
-			drawerContent={(props) => <CustomDrawerContent {...props} />}
+			drawerContent={(props: DrawerContentComponentProps) => (
+				<CustomDrawerContent {...props} />
+			)}
 			screenOptions={{
 				headerShown: false,
 				swipeEdgeWidth: width * 0.95,
 				swipeEnabled: false,
 			}}
 		>
-			<MyDrawer.Screen component={StackContainer} name="Stack" />
 			<MyDrawer.Screen
 				component={Payment}
 				name="Payments"
 				options={{
-					drawerIcon: ({ color, size }) => (
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
 						<Ionicons name="card-outline" size={size} color={color} />
 					),
 				}}
@@ -67,7 +68,7 @@ const DrawerContainer = () => {
 				component={Payment}
 				name="Promotions"
 				options={{
-					drawerIcon: ({ color, size }) => (
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
 						<Ionicons name="pricetags-outline" size={size} color={color} />
 					),
 				}}
@@ -77,7 +78,7 @@ const DrawerContainer = () => {
 				name="Chat"
 				options={{
 					headerShown: true,
-					header: ({ navigation }) => {
+					header: ({ navigation }: { navigation: NavigationProp<any> }) => {
 						return (
 							<View style={tw`flex-row items-center justify-between py-2 px-3`}>
 								<View style={tw`flex-row items-center mt-6`}>
@@ -108,7 +109,7 @@ const DrawerContainer = () => {
 							</View>
 						);
 					},
-					drawerIcon: ({ color, size }) => (
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
 						<Ionicons name="chatbox" size={size} color={color} />
 					),
 				}}
@@ -117,7 +118,7 @@ const DrawerContainer = () => {
 				component={ManageRide}
 				name="My Rides"
 				options={{
-					drawerIcon: ({ color, size }) => (
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
 						<Ionicons name="car-outline" size={size} color={color} />
 					),
 				}}
@@ -126,7 +127,7 @@ const DrawerContainer = () => {
 				component={ManageTrips}
 				name="Work Rides"
 				options={{
-					drawerIcon: ({ color, size }) => (
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
 						<Ionicons name="bus-outline" size={size} color={color} />
 					),
 				}}
@@ -193,7 +194,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 								{ fontFamily: "Poppins-Regular" },
 							]}
 							onPress={() => navigation.navigate(route.name)}
-							icon={({ color, size }) => {
+							icon={({ color, size }: { color: string; size: number }) => {
 								switch (route.name) {
 									case "Payments":
 										return (

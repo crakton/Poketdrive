@@ -2,6 +2,25 @@ export type Dict = Record<string, string>;
 export type DictOf<T> = Record<string, T>;
 export type RootStackParamList = {
 	CreateAccount: undefined;
+	Air: undefined;
+	Home: undefined;
+	AirTabBar: undefined;
 	OnboardingSlide: undefined;
-	// Add other routes here
+	Onboarding: undefined;
+	PhoneNumberScreen: undefined;
+	NameScreen: undefined;
+	ConfirmationCodeScreen: undefined;
+	DateOfBirthScreen: undefined;
+	Dashboard: undefined;
+	TourDetails: undefined;
+	Login: undefined;
+	SeatSelectionScreen: undefined;
+	PaymentSuccessScreen: undefined;
+	FlightDetailsScreen: undefined;
+	PassengerDetailsScreen: undefined;
+	TicketConfirmation: undefined;
+	JetBooking: undefined;
+	ProfileScreen: undefined;
+	FlightBooking: undefined;
+	JetDetails: undefined;
 };
