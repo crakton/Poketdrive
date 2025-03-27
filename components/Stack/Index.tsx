@@ -35,9 +35,6 @@ import DriverEndTrip from "../../screens/Driver/DriverEndTrip";
 import OnboardingSlide from "../../screens/Onboarding/OnboardingSlide";
 import DrawerContainer from "../Drawer/Index"; // Already imported in App.js, but keeping for reference
 import Onboarding from "../../screens/Onboarding/Index";
-import TourDetailsScreen from "../../screens/Air/TourDetailScreen";
-import FlightDetailsScreen from "../../screens/Air/FlightDetailsScreen";
-import PassengerDetailsScreen from "../../screens/Air/PassengerDetailsScreen";
 
 // Create a stack navigator specifically for this component
 const Stack = createNativeStackNavigator();
@@ -115,13 +112,7 @@ const StackContainer = () => {
 			<Stack.Screen name="ManageRide" component={ManageRide} />
 			<Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
 
-			{/* Air Stack Screens */}
-			<Stack.Screen name="TourDetails" component={TourDetailsScreen} />
-			<Stack.Screen name="FlightDetails" component={FlightDetailsScreen} />
-			<Stack.Screen
-				name="PassengerDetails"
-				component={PassengerDetailsScreen}
-			/>
+			
 		</Stack.Navigator>
 	);
 };

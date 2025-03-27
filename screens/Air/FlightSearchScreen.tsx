@@ -1,4 +1,3 @@
-// JetSearchResultScreen.tsx
 import React from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,7 +6,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
 
-const JetSearchResultScreen = () => {
+const FlightSearchScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
@@ -31,7 +30,10 @@ const JetSearchResultScreen = () => {
 
 			<ScrollView>
 				{/* First Jet Card */}
-				<View style={tw`px-4 py-2`}>
+				<TouchableOpacity
+					onPress={() => navigation.navigate("FlightDetails")}
+					style={tw`px-4 py-2`}
+				>
 					<View style={tw`rounded-lg overflow-hidden mb-2`}>
 						<Image
 							source={require("../../assets/images/air/cassna.png")}
@@ -42,36 +44,16 @@ const JetSearchResultScreen = () => {
 					<View style={tw`flex-row justify-between items-center`}>
 						<TouchableOpacity
 							style={tw`bg-orange-500 px-6 py-2 rounded-lg`}
-							onPress={() => navigation.navigate("JetBooking")}
+							onPress={() => navigation.navigate("FlightBooking")}
 						>
 							<Text style={tw`text-white font-medium`}>Book</Text>
 						</TouchableOpacity>
 						<Text style={tw`text-gray-700`}>Jet Share option available</Text>
 					</View>
-				</View>
-
-				{/* Second Jet Card */}
-				<View style={tw`px-4 py-2`}>
-					<View style={tw`rounded-lg overflow-hidden mb-2`}>
-						<Image
-							source={require("../../assets/images/air/helsinki.png")}
-							style={tw`w-full h-40`}
-							resizeMode="cover"
-						/>
-					</View>
-					<View style={tw`flex-row justify-between items-center`}>
-						<Text style={tw`text-base font-medium`}>Jet Marc - 001</Text>
-						<TouchableOpacity
-							style={tw`bg-orange-500 px-6 py-2 rounded-lg`}
-							onPress={() => navigation.navigate("JetDetails")}
-						>
-							<Text style={tw`text-white font-medium`}>Book</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
+				</TouchableOpacity>
 			</ScrollView>
 		</SafeAreaView>
 	);
 };
 
-export default JetSearchResultScreen;
+export default FlightSearchScreen;

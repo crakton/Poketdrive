@@ -12,6 +12,12 @@ import QueryClientProvider from "./utils/ReactQueryProvider";
 import DrawerContainer from "./components/Drawer/Index";
 import StackContainer from "./components/Stack/Index";
 import AirRootTab from "./screens/Air/Index";
+import TourDetailsScreen from "./screens/Air/TourDetailScreen";
+import PassengerDetailsScreen from "./screens/Air/PassengerDetailsScreen";
+import FlightSearchScreen from "./screens/Air/FlightSearchScreen";
+import FlightBookingScreen from "./screens/Air/FlightBookingScreen";
+import FlightDetailsScreen from "./screens/Air/FlightDetailsScreen";
+
 
 export const RootStack = createNativeStackNavigator();
 
@@ -45,6 +51,29 @@ export default function App() {
 							<RootStack.Screen name="LandDrawer" component={DrawerContainer} />
 							{/* Air Tab Bar */}
 							<RootStack.Screen name="AirTabBar" component={AirRootTab} />
+							{/* Air Stack Screens */}
+							<RootStack.Screen
+								name="TourDetails"
+								component={TourDetailsScreen}
+							/>
+							
+							<RootStack.Screen
+								name="PassengerDetails"
+								component={PassengerDetailsScreen}
+							/>
+							<RootStack.Screen
+								name="FlightSearch"
+								component={FlightSearchScreen}
+							/>
+							<RootStack.Screen
+								name="FlightDetails"
+								component={FlightDetailsScreen}
+							/>
+							<RootStack.Screen
+								name="FlightBooking"
+								component={FlightBookingScreen}
+							/>
+							
 						</RootStack.Navigator>
 					</NavigationContainer>
 					<Toast />

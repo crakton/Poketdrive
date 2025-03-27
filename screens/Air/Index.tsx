@@ -2,19 +2,22 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import ExploreScreen from "./ExploreScreen";
-import ShareScreen from "./ShareScreen";
+import ShareScreen from "./TravelsScreen";
 import ProfileScreen from "./ProfileScreen";
 import TourScreen from "./TourScreen";
 import AirContextProvider from "../../context/air/AirContextProvider";
-import JetSearchResultScreen from "./JetSearchResultScreen";
+import JetSearchResultScreen from "./FlightSearchScreen";
 import TourDetailsScreen from "./TourDetailScreen";
+import TravelsScreen from "./TravelsScreen";
 
 const Tab = createBottomTabNavigator();
 
 const AirRootTab = () => {
 	return (
 		<AirContextProvider>
-			<Tab.Navigator screenOptions={{ headerShown: false }}>
+			<Tab.Navigator
+				screenOptions={{ headerShown: false, tabBarHideOnKeyboard: true }}
+			>
 				<Tab.Screen
 					name="Explore"
 					options={{
@@ -31,7 +34,7 @@ const AirRootTab = () => {
 					component={ExploreScreen}
 				/>
 				<Tab.Screen
-					name="TourDetails"
+					name="Travels"
 					options={{
 						tabBarLabel: "Travels",
 						tabBarIcon(props) {
@@ -44,7 +47,7 @@ const AirRootTab = () => {
 							);
 						},
 					}}
-					component={TourScreen}
+					component={TravelsScreen}
 				/>
 
 				<Tab.Screen

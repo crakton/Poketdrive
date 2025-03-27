@@ -1,138 +1,296 @@
 import React from "react";
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	SafeAreaView,
-	StatusBar,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
+import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "../../types";
-import { useAirContext } from "../../hooks/air/useAirContext";
 
 const FlightDetailsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-	const { selectedSeat, setFlightDetails } = useAirContext();
+	const [passengers, setPassengers] = React.useState(4);
+	const [selectedTime, setSelectedTime] = React.useState("9:00");
+	const [isRoundTrip, setIsRoundTrip] = React.useState(true);
 
-	const flightDetails = {
-		flightNumber: "Jet Marc - 001",
-		departureTime: "5.50",
-		departureCode: "LAG",
-		departureAirport: "Murtala International",
-		arrivalTime: "7.30",
-		arrivalCode: "ABJ",
-		arrivalAirport: "Murtala International",
-		price: "N23000",
+	const decreasePassengers = () => {
+		if (passengers > 1) setPassengers(passengers - 1);
 	};
 
-	const handleConfirm = () => {
-		// Navigate to passenger details screen
-		setFlightDetails(flightDetails);
-		navigation.navigate("PassengerDetailsScreen");
+	const increasePassengers = () => {
+		if (passengers < 8) setPassengers(passengers + 1);
 	};
 
-	const handleCancel = () => {
-		navigation.goBack();
-	};
+	const timeOptions = ["7:00", "9:00", "11:00", "13:00", "15:00"];
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
-			<StatusBar barStyle="dark-content" />
-			<View style={tw`flex-1 p-4`}>
-				<View style={tw`flex-row items-center mb-6`}>
+			<ScrollView>
+				{/* Header with back button */}
+				<View style={tw`relative`}>
+					<Image
+						source={require("../../assets/images/air/cassna.png")}
+						style={tw`w-full h-56`}
+						resizeMode="cover"
+					/>
 					<TouchableOpacity
+						style={tw`absolute top-4 left-4 bg-white rounded-full p-2`}
 						onPress={() => navigation.goBack()}
-						style={tw`mr-4`}
 					>
-						<Ionicons name="arrow-back" size={24} color="black" />
+						<AntDesign name="arrowleft" size={24} color="#000" />
 					</TouchableOpacity>
-					<Text style={tw`text-2xl font-bold`}>Flight details</Text>
-				</View>
 
-				<View style={tw`bg-white rounded-xl p-4 shadow-md mb-6`}>
-					<Text style={tw`text-lg font-bold text-center mb-4`}>
-						{flightDetails.flightNumber}
-					</Text>
-
-					<View style={tw`flex-row justify-between items-center mb-6`}>
-						<View style={tw`items-center`}>
-							<Text style={tw`text-xl font-bold`}>
-								{flightDetails.departureTime}
-							</Text>
-							<Text style={tw`text-lg font-bold`}>
-								{flightDetails.departureCode}
-							</Text>
-							<Text style={tw`text-sm text-gray-500`}>
-								{flightDetails.departureAirport}
+					{/* Rating and jet info */}
+					<View
+						style={tw`flex-row items-center justify-between px-4 py-2 bg-white`}
+					>
+						<View style={tw`flex-row items-center`}>
+							<AntDesign name="star" size={16} color="#FFD700" />
+							<Text style={tw`ml-1 text-gray-700`}>4.9</Text>
+						</View>
+						<Text style={tw`font-medium`}>Jet Marc</Text>
+						<View style={tw`flex-row items-center`}>
+							<FontAwesome name="users" size={16} color="#000" />
+							<Text style={tw`ml-1 text-gray-700`}>
+								Passengers: {passengers}
 							</Text>
 						</View>
+					</View>
+				</View>
 
-						<View style={tw`flex-1 items-center`}>
-							<View style={tw`flex-row items-center w-full`}>
-								<View style={tw`flex-1 h-px bg-gray-300`}></View>
-								<View style={tw`mx-2 bg-orange-500 p-2 rounded-full`}>
-									<Ionicons name="airplane" size={16} color="white" />
-								</View>
-								<View style={tw`flex-1 h-px bg-gray-300`}></View>
+				{/* Jet title */}
+				<View style={tw`px-4 py-2 border-b border-gray-200`}>
+					<Text style={tw`text-xl font-bold`}>Jet Marc - 001</Text>
+				</View>
+
+				{/* Date picker */}
+				<View
+					style={tw`flex-row items-center justify-between px-4 py-4 border-b border-gray-100`}
+				>
+					<View style={tw`flex-row items-center`}>
+						<AntDesign name="calendar" size={20} color="#000" />
+						<Text style={tw`ml-2`}>Sunday, July 30</Text>
+					</View>
+				</View>
+
+				{/* Passengers */}
+				<View
+					style={tw`flex-row items-center justify-between px-4 py-4 border-b border-gray-100`}
+				>
+					<Text>Passengers</Text>
+					<View style={tw`flex-row items-center`}>
+						<TouchableOpacity
+							style={tw`px-3 py-1 border border-gray-300 rounded-lg`}
+							onPress={decreasePassengers}
+						>
+							<Text style={tw`text-lg`}>−</Text>
+						</TouchableOpacity>
+						<Text style={tw`mx-4`}>{passengers}</Text>
+						<TouchableOpacity
+							style={tw`px-3 py-1 border border-gray-300 rounded-lg`}
+							onPress={increasePassengers}
+						>
+							<Text style={tw`text-lg`}>+</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+
+				{/* Trip type */}
+				<View
+					style={tw`flex-row justify-between px-4 py-4 border-b border-gray-100`}
+				>
+					<TouchableOpacity
+						style={tw`flex-row items-center`}
+						onPress={() => setIsRoundTrip(true)}
+					>
+						<View
+							style={tw`${
+								isRoundTrip ? "bg-blue-500" : "border border-gray-300"
+							} w-5 h-5 rounded-full items-center justify-center mr-2`}
+						>
+							{isRoundTrip && (
+								<View style={tw`bg-white w-2 h-2 rounded-full`} />
+							)}
+						</View>
+						<Text>Round Trip</Text>
+					</TouchableOpacity>
+
+					<TouchableOpacity
+						style={tw`flex-row items-center`}
+						onPress={() => setIsRoundTrip(false)}
+					>
+						<View
+							style={tw`${
+								!isRoundTrip ? "bg-blue-500" : "border border-gray-300"
+							} w-5 h-5 rounded-full items-center justify-center mr-2`}
+						>
+							{!isRoundTrip && (
+								<View style={tw`bg-white w-2 h-2 rounded-full`} />
+							)}
+						</View>
+						<Text>One way</Text>
+						<AntDesign
+							name="arrowright"
+							size={16}
+							color="#000"
+							style={tw`ml-2`}
+						/>
+					</TouchableOpacity>
+				</View>
+
+				{/* Departure time */}
+				<View style={tw`px-4 py-4 border-b border-gray-100`}>
+					<Text style={tw`text-base font-medium mb-3`}>Departure time</Text>
+					<View style={tw`flex-row justify-between`}>
+						{timeOptions.map((time) => (
+							<TouchableOpacity
+								key={time}
+								style={tw`px-4 py-2 rounded-md ${
+									selectedTime === time ? "bg-orange-500" : "bg-gray-100"
+								}`}
+								onPress={() => setSelectedTime(time)}
+							>
+								<Text
+									style={tw`${
+										selectedTime === time ? "text-white" : "text-black"
+									}`}
+								>
+									{time}
+								</Text>
+							</TouchableOpacity>
+						))}
+					</View>
+				</View>
+
+				{/* Flight route */}
+				<View style={tw`px-4 py-4`}>
+					<Text style={tw`text-base font-medium mb-3`}>Flight route</Text>
+					<View style={tw`bg-gray-100 p-4 rounded-lg mb-4`}>
+						<View style={tw`flex-row items-center mb-2`}>
+							<Ionicons name="airplane-outline" size={20} color="#FF6347" />
+							<Text style={tw`ml-2`}>Airfield: Krasnaya Polyana</Text>
+						</View>
+
+						<View style={tw`flex-row items-start mt-4`}>
+							<View style={tw`items-center mr-3`}>
+								<View style={tw`w-3 h-3 rounded-full bg-orange-500 mb-1`} />
+								<View style={tw`w-0.5 h-12 bg-gray-300`} />
+								<View style={tw`w-3 h-3 rounded-full bg-orange-500`} />
+							</View>
+
+							<View style={tw`flex-1`}>
+								<Text style={tw`mb-10`}>Novosibirsk</Text>
+								<Text>Baikal</Text>
+							</View>
+						</View>
+					</View>
+				</View>
+
+				{/* Jet information */}
+				<View style={tw`px-4 py-2 border-t border-gray-200`}>
+					<Text style={tw`text-base font-medium mb-1`}>Jet information</Text>
+					<View style={tw`bg-gray-100 p-3 rounded-lg`}>
+						<Text>in good condition</Text>
+					</View>
+				</View>
+
+				{/* Pilot information */}
+				<View style={tw`px-4 py-4 border-t border-gray-200`}>
+					<Text style={tw`text-base font-medium mb-3`}>Pilot information</Text>
+					<View style={tw`flex-row items-center mb-3`}>
+						<Image
+							source={require("../../assets/Profile.png")}
+							style={tw`w-12 h-12 rounded-full`}
+							defaultSource={require("../../assets/Profile.png")}
+						/>
+						<View style={tw`ml-3`}>
+							<Text style={tw`font-medium`}>Oleg Samsonov</Text>
+							<View style={tw`flex-row`}>
+								{[1, 2, 3, 4, 5].map((star) => (
+									<AntDesign key={star} name="star" size={14} color="#FFD700" />
+								))}
+								<Text style={tw`ml-1`}>5</Text>
+							</View>
+						</View>
+					</View>
+
+					<View style={tw`flex-row mb-2`}>
+						<View style={tw`bg-gray-100 p-2 rounded-lg mr-2 flex-1`}>
+							<Text style={tw`text-gray-500 text-xs`}>Airplane</Text>
+							<Text>Cessna 172</Text>
+						</View>
+						<View style={tw`bg-gray-100 p-2 rounded-lg flex-1`}>
+							<Text style={tw`text-gray-500 text-xs`}>Hours flown</Text>
+							<Text>1 250 hours</Text>
+						</View>
+					</View>
+
+					<View style={tw`bg-gray-100 p-2 rounded-lg`}>
+						<Text style={tw`text-gray-500 text-xs`}>License</Text>
+						<Text>Commercial Pilot's License - CPL</Text>
+					</View>
+				</View>
+
+				{/* Customer reviews */}
+				<View style={tw`px-4 py-4 border-t border-gray-200 mb-20`}>
+					<Text style={tw`text-base font-medium mb-3`}>Customer reviews</Text>
+
+					<View style={tw`mb-4`}>
+						<View style={tw`flex-row items-center mb-1`}>
+							<Image
+								source={require("../../assets/Profile.png")}
+								style={tw`w-8 h-8 rounded-full mr-2`}
+								defaultSource={require("../../assets/Profile.png")}
+							/>
+							<View>
+								<Text style={tw`font-medium`}>Ivan</Text>
+								<Text style={tw`text-xs text-gray-500`}>May 21, 2022</Text>
 							</View>
 						</View>
 
-						<View style={tw`items-center`}>
-							<Text style={tw`text-xl font-bold`}>
-								{flightDetails.arrivalTime}
-							</Text>
-							<Text style={tw`text-lg font-bold`}>
-								{flightDetails.arrivalCode}
-							</Text>
-							<Text style={tw`text-sm text-gray-500`}>
-								{flightDetails.arrivalAirport}
-							</Text>
+						<View style={tw`flex-row mb-2`}>
+							{[1, 2, 3, 4, 5].map((star) => (
+								<AntDesign key={star} name="star" size={14} color="#FFD700" />
+							))}
+						</View>
+
+						<Text style={tw`text-gray-700`}>
+							The flights are excellent! The airfield is located in a
+							picturesque place and there is a lot to admire from above.
+						</Text>
+					</View>
+
+					<View>
+						<View style={tw`flex-row items-center mb-1`}>
+							<Image
+								source={require("../../assets/Profile.png")}
+								style={tw`w-8 h-8 rounded-full mr-2`}
+								defaultSource={require("../../assets/Profile.png")}
+							/>
+							<Text style={tw`font-medium`}>Alexander</Text>
 						</View>
 					</View>
 
-					<View style={tw`flex-row mb-4`}>
-						<View style={tw`flex-1 mr-2`}>
-							<Text style={tw`text-sm text-gray-500 mb-1`}>Date</Text>
-							<TouchableOpacity
-								style={tw`border border-gray-300 rounded-md p-3 flex-row items-center`}
-							>
-								<Ionicons name="calendar-outline" size={20} color="gray" />
-							</TouchableOpacity>
-						</View>
-						<View style={tw`flex-1 ml-2`}>
-							<Text style={tw`text-sm text-gray-500 mb-1`}>Time</Text>
-							<TouchableOpacity
-								style={tw`border border-gray-300 rounded-md p-3 flex-row items-center`}
-							>
-								<Ionicons name="time-outline" size={20} color="gray" />
-							</TouchableOpacity>
-						</View>
-					</View>
-
-					<Text style={tw`text-xl font-bold text-center mt-4`}>
-						Price {flightDetails.price}
-					</Text>
-				</View>
-
-				<View style={tw`flex-1`}></View>
-
-				<View style={tw`flex-row`}>
 					<TouchableOpacity
-						style={tw`flex-1 border border-orange-500 rounded-md py-4 items-center mr-2`}
-						onPress={handleCancel}
+						style={tw`border border-gray-300 rounded-lg py-3 items-center mt-4`}
 					>
-						<Text style={tw`text-orange-500 font-medium text-lg`}>Cancel</Text>
+						<Text style={tw`text-gray-700`}>All reviews</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
-						style={tw`flex-1 bg-orange-500 rounded-md py-4 items-center ml-2`}
-						onPress={handleConfirm}
+						onPress={() => navigation.navigate("FlightBooking")}
+						style={tw`bg-[#F05A22] -bottom-10 rounded-lg py-3 items-center my-3`}
 					>
-						<Text style={tw`text-white font-medium text-lg`}>Confirm</Text>
+						<Text
+							style={[
+								tw`text-white font-medium`,
+								{ fontFamily: "Poppins-Bold" },
+							]}
+						>
+							Next
+						</Text>
 					</TouchableOpacity>
 				</View>
-			</View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 };
