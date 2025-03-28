@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
 	View,
 	Text,
@@ -14,60 +14,65 @@ import { RootStackParamList } from "../../types";
 import { TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-const ShareScreen = () => {
+const TravelsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 	const [passengers, setPassengers] = useState(1);
 	const [fromLocation, setFromLocation] = useState("");
 	const [toLocation, setToLocation] = useState("");
-
-	const handleDecreasePassenger = () => {
-		if (passengers > 1) {
-			setPassengers(passengers - 1);
-		}
-	};
-
-	const handleIncreasePassenger = () => {
-		setPassengers(passengers + 1);
-	};
-
-	const handleSwapLocations = () => {
-		setFromLocation(toLocation);
-		setToLocation(fromLocation);
-	};
-
 	// Date picker states
 	const [departureDate, setDepartureDate] = useState<Date | null>(null);
 	const [arrivalDate, setArrivalDate] = useState<Date | null>(null);
 	const [showDeparturePicker, setShowDeparturePicker] = useState(false);
 	const [showArrivalPicker, setShowArrivalPicker] = useState(false);
 
-	const onChangeDepartureDate = (
-		event: any,
-		selectedDate: Date | undefined
-	) => {
-		const currentDate = selectedDate || new Date();
-		setShowDeparturePicker(Platform.OS === "ios");
-		setDepartureDate(currentDate);
-	};
+	const handleDecreasePassenger = useCallback(() => {
+		if (passengers > 1) {
+			setPassengers(passengers - 1);
+		}
+	}, [passengers]);
 
-	const onChangeArrivalDate = (event: any, selectedDate: Date | undefined) => {
-		const currentDate = selectedDate || new Date();
-		setShowArrivalPicker(Platform.OS === "ios");
-		setArrivalDate(currentDate);
-	};
+	const handleIncreasePassenger = useCallback(() => {
+		if (passengers < 8) {
+			setPassengers(passengers + 1);
+		}
+		return;
+	}, [passengers]);
 
-	const showDepartureMode = () => {
+	const handleSwapLocations = useCallback(() => {
+		setFromLocation(toLocation);
+		setToLocation(fromLocation);
+	}, []);
+
+	const onChangeDepartureDate = useCallback(
+		(event: any, selectedDate: Date | undefined) => {
+			const currentDate = selectedDate || new Date();
+			setShowDeparturePicker(Platform.OS === "ios");
+			setDepartureDate(currentDate);
+		},
+		[]
+	);
+
+	const onChangeArrivalDate = useCallback(
+		(event: any, selectedDate: Date | undefined) => {
+			const currentDate = selectedDate || new Date();
+			setShowArrivalPicker(Platform.OS === "ios");
+			setArrivalDate(currentDate);
+		},
+		[]
+	);
+
+	const showDepartureMode = useCallback(() => {
 		setShowDeparturePicker(true);
-	};
+	}, []);
 
-	const showArrivalMode = () => {
+	const showArrivalMode = useCallback(() => {
 		setShowArrivalPicker(true);
-	};
+	}, []);
 
-	const formatDate = (date: Date | null) => {
+	const formatDate = useCallback((date: Date | null) => {
 		if (!date) return "Select Date";
 		return date.toLocaleDateString();
-	};
+	}, []);
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
@@ -83,7 +88,7 @@ const ShareScreen = () => {
 
 					{/* Location selection */}
 					<View
-						style={tw`mt-4 flex-1 flex-row item-center justify-between bg-white p-4 rounded-lg`}
+						style={tw`mt-4 flex-1 flex-row items-center justify-between bg-white p-4 rounded-lg`}
 					>
 						<View style={tw`flex-col flex-1 items-center`}>
 							<TouchableOpacity style={tw`flex-row items-center`}>
@@ -200,6 +205,7 @@ const ShareScreen = () => {
 
 					{/* Find button */}
 					<TouchableOpacity
+						onPress={() => navigation.navigate("FlightSearch")}
 						style={tw`mt-4 bg-orange-500 p-4 rounded-lg items-center`}
 					>
 						<Text style={tw`text-white font-bold`}>Find</Text>
@@ -210,4 +216,4 @@ const ShareScreen = () => {
 	);
 };
 
-export default ShareScreen;
+export default TravelsScreen;

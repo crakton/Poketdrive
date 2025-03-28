@@ -5,7 +5,6 @@ export type RootStackParamList = {
   Air: undefined;
   Home: undefined;
   AirTabBar: undefined;
-  WaterTabBar: undefined;
   OnboardingSlide: undefined;
   Onboarding: undefined;
   PhoneNumberScreen: undefined;
@@ -15,14 +14,10 @@ export type RootStackParamList = {
   Dashboard: undefined;
   TourDetails: undefined;
   Login: undefined;
-  SeatSelectionScreen: undefined;
-  PaymentSuccessScreen: undefined;
-  FlightDetailsScreen: undefined;
-  PassengerDetailsScreen: undefined;
   TicketConfirmation: undefined;
-  JetBooking: undefined;
   ProfileScreen: undefined;
+  FlightSearch: undefined;
+  FlightDetails: undefined;
+  PassengerDetails: undefined;
   FlightBooking: undefined;
-  JetDetails: undefined;
-  RecieverInfo: undefined;
 };

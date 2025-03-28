@@ -33,7 +33,6 @@ import DriverDetails from "../../screens/Driver/DriverDetails";
 import ManageRide from "../../screens/RideHaling/ManageRide";
 import DriverEndTrip from "../../screens/Driver/DriverEndTrip";
 import OnboardingSlide from "../../screens/Onboarding/OnboardingSlide";
-import DrawerContainer from "../Drawer/Index"; // Already imported in App.js, but keeping for reference
 import Onboarding from "../../screens/Onboarding/Index";
 import TourDetailsScreen from "../../screens/Air/TourDetailScreen";
 import FlightDetailsScreen from "../../screens/Air/FlightDetailsScreen";
@@ -58,11 +57,7 @@ const StackContainer = () => {
       setIsLoading(true);
       try {
         const isOnboard = await AsyncStorage.getItem("userData");
-        if (isOnboard) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        setIsAuthenticated(!!isOnboard);
       } catch (error) {
         console.log(error);
       } finally {
@@ -84,7 +79,6 @@ const StackContainer = () => {
       )}
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
-
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Verification" component={Verification} />
 
@@ -134,6 +128,7 @@ const StackContainer = () => {
         name="PassengerDetails"
         component={PassengerDetailsScreen}
       />
+
       {/* Water Stack Screens */}
       <Stack.Screen name="RecieverInfo" component={RecieverInfo} />
       <Stack.Screen name="QuoteScreen" component={QuoteScreen} />

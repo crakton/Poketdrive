@@ -10,7 +10,6 @@ import {
 	ImageBackground,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SearchBar } from "@rneui/themed";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import tw from "twrnc";
 import BottomSheet from "@gorhom/bottom-sheet";
@@ -22,14 +21,15 @@ import { RootStackParamList } from "../../types";
 
 // Import components
 import TourCard from "../components/Air/TourCard";
+import { useAirContext } from "../../hooks/air/useAirContext";
 
 const ExploreScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 	const [activeTab, setActiveTab] = useState("Air");
-	const [searchQuery, setSearchQuery] = useState("");
 	const [passengers, setPassengers] = useState(1);
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [showDatePicker, setShowDatePicker] = useState(false);
+	const { tourSearchQueries, setTourPassengers } = useAirContext();
 
 	// References for bottom sheets
 	const filterBottomSheetRef = useRef<BottomSheet>(null);
@@ -59,15 +59,18 @@ const ExploreScreen = () => {
 		searchBottomSheetRef.current?.expand();
 	};
 
-	const handleDecreasePassenger = () => {
+	const handleDecreasePassenger = useCallback(() => {
 		if (passengers > 1) {
 			setPassengers(passengers - 1);
 		}
-	};
+	}, [passengers]);
 
-	const handleIncreasePassenger = () => {
-		setPassengers(passengers + 1);
-	};
+	const handleIncreasePassenger = useCallback(() => {
+		if (passengers < 8) {
+			setPassengers(passengers + 1);
+		}
+		return;
+	}, [passengers]);
 
 	const handleDateChange = useCallback((event: any, date?: Date) => {
 		setShowDatePicker(false);
@@ -85,6 +88,15 @@ const ExploreScreen = () => {
 		return date.toLocaleDateString("en-US", options);
 	};
 	const { width } = useWindowDimensions();
+
+	const handleFindTours = useCallback(() => {
+		if (tourSearchQueries?.currentSearch === undefined) {
+			// open search bottom sheet
+			openSearchBottomSheet();
+			setTourPassengers(passengers);
+		} else {
+		}
+	}, [tourSearchQueries?.currentSearch, passengers]);
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
@@ -159,7 +171,7 @@ const ExploreScreen = () => {
 					</View>
 
 					{/* Passengers selector */}
-					{/* 	<View
+					<View
 						style={tw`mt-2 bg-white p-4 rounded-lg flex-row items-center justify-between`}
 					>
 						<View style={tw`flex-row items-center`}>
@@ -173,25 +185,27 @@ const ExploreScreen = () => {
 						</View>
 						<View style={tw`flex-row items-center`}>
 							<TouchableOpacity
+								disabled={passengers === 1}
 								onPress={handleDecreasePassenger}
-								style={tw`p-2`}
+								style={[tw`p-2 ${passengers === 1 ? "opacity-50" : ""}`]}
 							>
 								<Text style={tw`text-lg font-bold`}>−</Text>
 							</TouchableOpacity>
 							<Text style={tw`mx-4`}>{passengers}</Text>
 							<TouchableOpacity
+								disabled={passengers === 8}
 								onPress={handleIncreasePassenger}
-								style={tw`p-2`}
+								style={[tw`p-2 ${passengers === 8 ? "opacity-50" : ""}`]}
 							>
 								<Text style={tw`text-lg font-bold`}>+</Text>
 							</TouchableOpacity>
 						</View>
-					</View> */}
+					</View>
 
 					{/* Find tour button */}
 					<TouchableOpacity
 						style={tw`mt-4 bg-orange-500 p-4 rounded-lg items-center`}
-						onPress={() => navigation.navigate("TourDetails")}
+						onPress={handleFindTours}
 					>
 						<Text style={tw`text-white font-bold`}>Find tour</Text>
 					</TouchableOpacity>
