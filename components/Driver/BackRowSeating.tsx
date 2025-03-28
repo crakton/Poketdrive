@@ -205,7 +205,7 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
               )}
               <TouchableOpacity
                 style={[tw`rounded-[1rem] bg-[#333333] p-3 mt-[19rem] mx-5`]}
-                onPress={handleSubmit}
+                onPress={() => handleSubmit}
               >
                 <Text
                   style={[

@@ -38,92 +38,111 @@ import Onboarding from "../../screens/Onboarding/Index";
 import TourDetailsScreen from "../../screens/Air/TourDetailScreen";
 import FlightDetailsScreen from "../../screens/Air/FlightDetailsScreen";
 import PassengerDetailsScreen from "../../screens/Air/PassengerDetailsScreen";
+import RecieverInfo from "../../screens/Water/RecieverInfo";
+import QuoteScreen from "../../screens/Water/QuoteScreen";
+import SummaryScreen from "../../screens/Water/SummaryScreen";
+import PaymentScreen from "../../screens/Water/PaymentScreen";
+import SuccessScreen from "../../screens/Water/SucessScreen";
+import TrackingScreen from "../../screens/Water/TrackingScreen";
+import WaterRootTab from "../../screens/Water/Index";
 
 // Create a stack navigator specifically for this component
 const Stack = createNativeStackNavigator();
 
 const StackContainer = () => {
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-	useEffect(() => {
-		const checkOnboard = async () => {
-			setIsLoading(true);
-			try {
-				const isOnboard = await AsyncStorage.getItem("userData");
-				if (isOnboard) {
-					setIsAuthenticated(true);
-				} else {
-					setIsAuthenticated(false);
-				}
-			} catch (error) {
-				console.log(error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+  useEffect(() => {
+    const checkOnboard = async () => {
+      setIsLoading(true);
+      try {
+        const isOnboard = await AsyncStorage.getItem("userData");
+        if (isOnboard) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-		checkOnboard();
-	}, []);
+    checkOnboard();
+  }, []);
 
-	// Return an actual Navigator component with screens
-	return (
-		<Stack.Navigator screenOptions={{ headerShown: false }}>
-			{/* Auth and Onboarding Screens */}
-			<Stack.Screen name="Onboarding" component={Onboarding} />
-			<Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
-			<Stack.Screen name="CreateAccount" component={CreateAccount} />
-			<Stack.Screen name="Login" component={Login} />
-			<Stack.Screen name="Verification" component={Verification} />
+  // Return an actual Navigator component with screens
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Auth and Onboarding Screens */}
+      {isAuthenticated ? (
+        <Stack.Screen name="WaterTabBar" component={WaterRootTab} />
+      ) : (
+        <Stack.Screen name="CreateAccount" component={CreateAccount} />
+      )}
+      <Stack.Screen name="Onboarding" component={Onboarding} />
+      <Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
 
-			{/* Main App Screens */}
-			<Stack.Screen name="Home" component={Home} />
-			<Stack.Screen name="TripSelection" component={TripSelection} />
-			<Stack.Screen name="RideSelection" component={RideSelection} />
-			<Stack.Screen name="MapScreen" component={MapScreen} />
-			<Stack.Screen name="Payment" component={Payment} />
-			<Stack.Screen name="Confirmation" component={Confirmation} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Verification" component={Verification} />
 
-			{/* Driver Screens */}
-			<Stack.Screen name="RideSchedule" component={RideSchedule} />
-			<Stack.Screen name="ManageTrips" component={ManageTrips} />
-			<Stack.Screen name="TripItinerary" component={TripItinerary} />
-			<Stack.Screen name="DriverDetails" component={DriverDetails} />
+      {/* Main App Screens */}
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="TripSelection" component={TripSelection} />
+      <Stack.Screen name="RideSelection" component={RideSelection} />
+      <Stack.Screen name="MapScreen" component={MapScreen} />
+      <Stack.Screen name="Payment" component={Payment} />
+      <Stack.Screen name="Confirmation" component={Confirmation} />
 
-			{/* Wallet Screens */}
-			<Stack.Screen name="WalletHome" component={WalletHome} />
-			<Stack.Screen name="WalletHistory" component={WalletHistory} />
-			<Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
-			<Stack.Screen name="PaymentSucessful" component={PaymentSucessful} />
+      {/* Driver Screens */}
+      <Stack.Screen name="RideSchedule" component={RideSchedule} />
+      <Stack.Screen name="ManageTrips" component={ManageTrips} />
+      <Stack.Screen name="TripItinerary" component={TripItinerary} />
+      <Stack.Screen name="DriverDetails" component={DriverDetails} />
 
-			{/* Settings Screens */}
-			<Stack.Screen
-				name="AccountVerification"
-				component={AccountVerification}
-			/>
-			<Stack.Screen name="IdVerification" component={IdVerification} />
-			<Stack.Screen name="IdDetails" component={IdDetails} />
-			<Stack.Screen name="Settings" component={Settings} />
-			<Stack.Screen name="FAQs" component={FAQs} />
+      {/* Wallet Screens */}
+      <Stack.Screen name="WalletHome" component={WalletHome} />
+      <Stack.Screen name="WalletHistory" component={WalletHistory} />
+      <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
+      <Stack.Screen name="PaymentSucessful" component={PaymentSucessful} />
 
-			{/* Extra Screens */}
-			<Stack.Screen name="CarIdentification" component={CarIdentification} />
-			<Stack.Screen name="RideIdentification" component={RideIdentification} />
-			<Stack.Screen name="RideProgress" component={RideProgress} />
-			<Stack.Screen name="EndTrip" component={EndTrip} />
-			<Stack.Screen name="TripConfirmation" component={TripConfirmation} />
-			<Stack.Screen name="ManageRide" component={ManageRide} />
-			<Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+      {/* Settings Screens */}
+      <Stack.Screen
+        name="AccountVerification"
+        component={AccountVerification}
+      />
+      <Stack.Screen name="IdVerification" component={IdVerification} />
+      <Stack.Screen name="IdDetails" component={IdDetails} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="FAQs" component={FAQs} />
 
-			{/* Air Stack Screens */}
-			<Stack.Screen name="TourDetails" component={TourDetailsScreen} />
-			<Stack.Screen name="FlightDetails" component={FlightDetailsScreen} />
-			<Stack.Screen
-				name="PassengerDetails"
-				component={PassengerDetailsScreen}
-			/>
-		</Stack.Navigator>
-	);
+      {/* Extra Screens */}
+      <Stack.Screen name="CarIdentification" component={CarIdentification} />
+      <Stack.Screen name="RideIdentification" component={RideIdentification} />
+      <Stack.Screen name="RideProgress" component={RideProgress} />
+      <Stack.Screen name="EndTrip" component={EndTrip} />
+      <Stack.Screen name="TripConfirmation" component={TripConfirmation} />
+      <Stack.Screen name="ManageRide" component={ManageRide} />
+      <Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+
+      {/* Air Stack Screens */}
+      <Stack.Screen name="TourDetails" component={TourDetailsScreen} />
+      <Stack.Screen name="FlightDetails" component={FlightDetailsScreen} />
+      <Stack.Screen
+        name="PassengerDetails"
+        component={PassengerDetailsScreen}
+      />
+      {/* Water Stack Screens */}
+      <Stack.Screen name="RecieverInfo" component={RecieverInfo} />
+      <Stack.Screen name="QuoteScreen" component={QuoteScreen} />
+      <Stack.Screen name="SummaryScreen" component={SummaryScreen} />
+      <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+      <Stack.Screen name="SucessScreen" component={SuccessScreen} />
+      <Stack.Screen name="TrackingScreen" component={TrackingScreen} />
+    </Stack.Navigator>
+  );
 };
 
 export default StackContainer;

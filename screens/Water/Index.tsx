@@ -1,20 +1,33 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import ExploreScreen from "./ExploreScreen";
-import ShareScreen from "./ShareScreen";
-import ProfileScreen from "./ProfileScreen";
-import TourScreen from "./TourScreen";
+import OrderScreen from "./OrderScreen";
+import SendScreen from "./SendScreen";
+import ProfileScreen from "../Air/ProfileScreen";
 import AirContextProvider from "../../context/air/AirContextProvider";
-import JetSearchResultScreen from "./JetSearchResultScreen";
-import TourDetailsScreen from "./TourDetailScreen";
+import Home from "./Home";
 
 const Tab = createBottomTabNavigator();
 
-const AirRootTab = () => {
+const WaterRootTab = () => {
   return (
     <AirContextProvider>
       <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen
+          name="Home"
+          options={{
+            tabBarIcon(props) {
+              return (
+                <FontAwesome5
+                  name="home"
+                  size={props.size}
+                  color={props.color}
+                />
+              );
+            },
+          }}
+          component={Home}
+        />
         <Tab.Screen
           name="Explore"
           options={{
@@ -28,23 +41,23 @@ const AirRootTab = () => {
               );
             },
           }}
-          component={ExploreScreen}
+          component={OrderScreen}
         />
         <Tab.Screen
           name="TourDetails"
           options={{
-            tabBarLabel: "Travels",
+            tabBarLabel: "send",
             tabBarIcon(props) {
               return (
                 <Ionicons
-                  name="train-outline"
+                  name="paper-plane-outline"
                   size={props.size}
                   color={props.color}
                 />
               );
             },
           }}
-          component={TourScreen}
+          component={SendScreen}
         />
 
         <Tab.Screen
@@ -67,4 +80,4 @@ const AirRootTab = () => {
   );
 };
 
-export default AirRootTab;
+export default WaterRootTab;
