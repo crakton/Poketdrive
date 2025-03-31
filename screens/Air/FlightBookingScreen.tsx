@@ -5,6 +5,7 @@ import {
 	TouchableOpacity,
 	SafeAreaView,
 	StatusBar,
+	ScrollView,
 } from "react-native";
 import tw from "twrnc";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -30,7 +31,7 @@ const FlightBookingScreen = () => {
 	const handleConfirm = () => {
 		// Navigate to passenger details screen
 		setFlightDetails(flightDetails);
-		// navigation.navigate("PassengerDetailsScreen");
+		navigation.navigate("SelectSeat");
 	};
 
 	const handleCancel = () => {
@@ -39,9 +40,8 @@ const FlightBookingScreen = () => {
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
-			<StatusBar barStyle="dark-content" />
-			<View style={tw`flex-1 p-4`}>
-				<View style={tw`flex-row items-center mb-6`}>
+			<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`flex-1 p-4`}>
+				{/* <View style={tw`flex-row items-center mb-6`}>
 					<TouchableOpacity
 						onPress={() => navigation.goBack()}
 						style={tw`mr-4`}
@@ -49,7 +49,7 @@ const FlightBookingScreen = () => {
 						<Ionicons name="arrow-back" size={24} color="black" />
 					</TouchableOpacity>
 					<Text style={tw`text-2xl font-bold`}>Flight details</Text>
-				</View>
+				</View> */}
 
 				<View style={tw`bg-white rounded-xl shadow-md mb-6`}>
 					<View style={tw`py-3`}>
@@ -124,19 +124,25 @@ const FlightBookingScreen = () => {
 
 				<View style={tw`flex-row gap-3`}>
 					<TouchableOpacity
-						style={tw`flex-1 border border-orange-500 rounded-md py-3 items-center`}
+						style={[
+							tw`p-3 border-[1px] border-[#F25b3e] items-center flex-1 justify-center rounded-lg my-8`,
+							{ backgroundColor: "#fff" },
+						]}
 						onPress={handleCancel}
 					>
-						<Text style={tw`text-orange-500 font-medium text-lg`}>Cancel</Text>
+						<Text style={tw`text-[#F25b3e] font-medium text-lg`}>Cancel</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
-						style={tw`flex-1 bg-orange-500 rounded-md py-3 items-center`}
+						style={[
+							tw`p-3 items-center flex-1 justify-center rounded-lg my-8`,
+							{ backgroundColor: "#F25B3E" },
+						]}
 						onPress={handleConfirm}
 					>
 						<Text style={tw`text-white font-medium text-lg`}>Confirm</Text>
 					</TouchableOpacity>
 				</View>
-			</View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 };

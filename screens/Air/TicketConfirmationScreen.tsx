@@ -12,6 +12,8 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAirContext } from "../../hooks/air/useAirContext";
 import { RootStackParamList } from "../../types";
+import { ScrollView } from "react-native";
+import ContinueButton from "../../components/ui/ContinueButton";
 
 const TicketConfirmationScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -34,22 +36,16 @@ const TicketConfirmationScreen = () => {
 
 	const handleBookAnother = () => {
 		// Navigate back to the home screen or flight search
-		navigation.navigate("Home");
+		navigation.reset({
+			index: 0,
+			routes: [{ name: "AirTabBar" }],
+		});
 	};
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
 			<StatusBar barStyle="dark-content" />
-			<View style={tw`flex-1 p-4`}>
-				<View style={tw`flex-row items-center mb-6`}>
-					<TouchableOpacity
-						onPress={() => navigation.goBack()}
-						style={tw`mr-4`}
-					>
-						<Ionicons name="arrow-back" size={24} color="black" />
-					</TouchableOpacity>
-				</View>
-
+			<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`flex-1 p-4`}>
 				<View style={tw`items-center mb-4`}>
 					<View style={tw`w-16 h-16 rounded-full overflow-hidden bg-gray-200`}>
 						<Image
@@ -140,19 +136,19 @@ const TicketConfirmationScreen = () => {
 
 				<View style={tw`flex-1`}></View>
 
-				<TouchableOpacity
-					style={tw`bg-orange-500 rounded-md py-4 items-center mb-4`}
+				<ContinueButton
+					text="Download"
 					onPress={handleDownload}
-				>
-					<Text style={tw`text-white font-medium text-lg`}>Download</Text>
-				</TouchableOpacity>
-
+					disabled={false}
+				/>
 				<TouchableOpacity onPress={handleBookAnother}>
 					<Text style={tw`text-pink-500 font-medium text-center`}>
 						Book another flight
 					</Text>
 				</TouchableOpacity>
-			</View>
+
+				<View style={tw`h-20`} />
+			</ScrollView>
 		</SafeAreaView>
 	);
 };

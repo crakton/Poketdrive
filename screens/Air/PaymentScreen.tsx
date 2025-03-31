@@ -7,12 +7,15 @@ import {
 	TextInput,
 	KeyboardAvoidingView,
 	Platform,
+	ScrollView,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
 import { CheckBox } from "react-native-elements";
 import { RootStackParamList } from "../../types";
+
+import ContinueButton from "../../components/ui/ContinueButton";
 
 const PaymentScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -40,7 +43,7 @@ const PaymentScreen = () => {
 
 	const handlePayment = () => {
 		// Process payment logic here
-		navigation.navigate("PaymentSuccessScreen");
+		navigation.navigate("TicketConfirmation");
 	};
 
 	return (
@@ -49,15 +52,15 @@ const PaymentScreen = () => {
 			style={tw`flex-1 bg-white`}
 		>
 			<SafeAreaView style={tw`flex-1`}>
-				<View style={tw`p-4`}>
-					<View style={tw`flex-row items-center mb-4`}>
+				<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`p-4`}>
+					{/* <View style={tw`flex-row items-center mb-4`}>
 						<TouchableOpacity onPress={() => navigation.goBack()}>
 							<Ionicons name="arrow-back" size={24} color="#000" />
 						</TouchableOpacity>
 						<Text style={tw`text-xl font-semibold ml-4`}>Payment</Text>
-					</View>
+					</View> */}
 
-					<View style={tw`mt-4`}>
+					<View style={tw`mt-4 flex-1`}>
 						<View
 							style={tw`border border-gray-200 rounded-lg p-4 mb-4 flex-row justify-between items-center`}
 						>
@@ -98,16 +101,16 @@ const PaymentScreen = () => {
 							/>
 							<Text style={tw`text-base ml-2`}>Save card</Text>
 						</View>
-
-						<TouchableOpacity
-							style={tw`bg-[#F05A22] rounded-lg py-4 items-center mt-4`}
-							onPress={handlePayment}
-						>
-							<Text style={tw`text-white text-lg font-medium`}>Pay</Text>
-						</TouchableOpacity>
 					</View>
-				</View>
+					<ContinueButton
+						text={"Pay"}
+						onPress={handlePayment}
+						disabled={false}
+					/>
+				</ScrollView>
 			</SafeAreaView>
 		</KeyboardAvoidingView>
 	);
 };
+
+export default PaymentScreen;

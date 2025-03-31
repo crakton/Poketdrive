@@ -13,6 +13,7 @@ import tw from "twrnc";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useAirContext } from "../../hooks/air/useAirContext";
 import { RootStackParamList } from "../../types";
+import ContinueButton from "../../components/ui/ContinueButton";
 
 const PassengerDetailsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -30,13 +31,12 @@ const PassengerDetailsScreen = () => {
 
 	const handleBook = useCallback(() => {
 		// Navigate to ticket confirmation screen
-		navigation.navigate("TicketConfirmation");
+		navigation.navigate("Payments");
 	}, []);
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
-			<StatusBar barStyle="dark-content" />
-			<ScrollView contentContainerStyle={tw`flex-grow`}>
+			<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`flex-1`}>
 				<View style={tw`flex-1 p-4`}>
 					<View style={tw`items-center mb-6`}>
 						<View
@@ -54,47 +54,35 @@ const PassengerDetailsScreen = () => {
 						<TextInput
 							style={tw`border border-gray-300 rounded-md p-4 mb-4`}
 							placeholder="Enter your Name"
-							value={passengerDetails!.name}
 							onChangeText={(text) => handleInputChange("name", text)}
 						/>
 
 						<TextInput
 							style={tw`border border-gray-300 rounded-md p-4 mb-4`}
 							placeholder="Enter your address"
-							value={passengerDetails!.address}
 							onChangeText={(text) => handleInputChange("address", text)}
 						/>
 
 						<TextInput
 							style={tw`border border-gray-300 rounded-md p-4 mb-4`}
 							placeholder="Enter your passport number"
-							value={passengerDetails!.passport}
 							onChangeText={(text) => handleInputChange("passport", text)}
 						/>
 
 						<TextInput
 							style={tw`border border-gray-300 rounded-md p-4 mb-4`}
 							placeholder="DOB"
-							value={passengerDetails!.dob}
 							onChangeText={(text) => handleInputChange("dob", text)}
 						/>
 
 						<TextInput
 							style={tw`border border-gray-300 rounded-md p-4 mb-4`}
 							placeholder="Country"
-							value={passengerDetails!.country}
 							onChangeText={(text) => handleInputChange("country", text)}
 						/>
 					</View>
 
-					<View style={tw`flex-1`}></View>
-
-					<TouchableOpacity
-						style={tw`bg-orange-500 rounded-md py-4 items-center mt-4`}
-						onPress={handleBook}
-					>
-						<Text style={tw`text-white font-medium text-lg`}>BOOK</Text>
-					</TouchableOpacity>
+					<ContinueButton text="Book" onPress={handleBook} disabled={false} />
 				</View>
 			</ScrollView>
 		</SafeAreaView>

@@ -8,6 +8,8 @@ import {
 	ScrollView,
 	useWindowDimensions,
 	ImageBackground,
+	StatusBar,
+	Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -99,7 +101,15 @@ const ExploreScreen = () => {
 	}, [tourSearchQueries?.currentSearch, passengers]);
 
 	return (
-		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
+		<View style={tw`flex-1 bg-gray-100`}>
+			<StatusBar
+				translucent={true}
+				backgroundColor="transparent"
+				barStyle={Platform.OS === "ios" ? "dark-content" : "dark-content"}
+			/>
+			<SafeAreaView
+				style={[tw`absolute top-0 left-0 right-0 z-10`]}
+			></SafeAreaView>
 			<ScrollView>
 				<View style={tw`p-4`}>
 					{activeTab === "Air" && (
@@ -256,7 +266,7 @@ const ExploreScreen = () => {
 			{/* Bottom sheets */}
 			<FilterBottomSheet ref={filterBottomSheetRef} />
 			<SearchBottomSheet ref={searchBottomSheetRef} />
-		</SafeAreaView>
+		</View>
 	);
 };
 

@@ -1,110 +1,170 @@
-import React, { useState } from "react";
+import React from "react";
 import {
 	View,
 	Text,
 	TouchableOpacity,
 	SafeAreaView,
-	StatusBar,
+	StyleSheet,
 } from "react-native";
 import tw from "twrnc";
-import Svg, { Polygon } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
 import { useAirContext } from "../../hooks/air/useAirContext";
+import ContinueButton from "../../components/ui/ContinueButton";
 
 const SeatSelectionScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 	const { selectedSeat, setSelectedSeat } = useAirContext();
 
-	// Seat layout data
-	const rows = [
-		["1A", "1A", null, "1A", "1B"],
-		["1A", "1A", null, "1A", "1B"],
-	];
+	// Seat layout data matching the image exactly
+	const [seatRows] = React.useState([
+		[
+			{ id: "1A", status: "available", isSelected: false },
+			{ id: "1B", status: "available", isSelected: false },
+			null,
+			{ id: "1C", status: "available", isSelected: false },
+			{ id: "1D", status: "available", isSelected: false },
+		],
+		[
+			{ id: "2A", status: "available", isSelected: false },
+			{ id: "2B", status: "available", isSelected: false },
+			null,
+			{ id: "2C", status: "available", isSelected: false },
+			{ id: "2D", status: "available", isSelected: false },
+		],
+	]);
 
-	const handleSeatSelect = (seat: string) => {
-		setSelectedSeat(seat);
+	const handleSeatSelect = (
+		seat: { id: string; status: string; isSelected: boolean },
+		rowIndex: number,
+		seatIndex: number
+	) => {
+		if (seat.status !== "available") return;
+
+		// Create a deep copy of the seat rows
+		const updatedSeatRows = JSON.parse(JSON.stringify(seatRows));
+
+		// First, reset any previously selected seat
+		updatedSeatRows.forEach((row: any[], r: number) => {
+			row.forEach((s: any, s_idx: number) => {
+				if (s && s.isSelected && !(r === rowIndex && s_idx === seatIndex)) {
+					s.isSelected = false;
+				}
+			});
+		});
+
+		// Toggle the clicked seat
+		updatedSeatRows[rowIndex][seatIndex].isSelected =
+			!updatedSeatRows[rowIndex][seatIndex].isSelected;
+
+		if (updatedSeatRows[rowIndex][seatIndex].isSelected) {
+			setSelectedSeat(updatedSeatRows[rowIndex][seatIndex].id);
+		} else {
+			setSelectedSeat("");
+		}
 	};
 
-	const handleConfirm = () => {
-		// Navigate to the next screen with the selected seat
-		navigation.navigate("FlightDetailsScreen");
+	console.log("selected");
+
+	const handleSelectPress = () => {
+		navigation.navigate("PassengerDetails");
+	};
+
+	const getBackgroundColor = (status: string) => {
+		switch (status) {
+			case "emergency":
+				return "#E5E5E5"; // Light gray for emergency
+			case "reserved":
+				return "#333333"; // Dark for reserved
+			default:
+				return "#F1F4F9"; // Light blue-gray for available
+		}
+	};
+
+	const getTextColor = (status: string) => {
+		return status === "selected" ? "white" : "black";
 	};
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
-			<StatusBar barStyle="dark-content" />
-			<View style={tw`flex-1 p-4`}>
-				<Text style={tw`text-2xl font-bold mb-6`}>Choose Seat</Text>
-
+			<View style={tw`flex-1 px-5 pt-4`}>
 				{/* Legend */}
-				<View style={tw`flex-row mb-8`}>
-					<View style={tw`flex-row items-center mr-4`}>
-						<View style={tw`w-3 h-3 rounded-full bg-orange-500 mr-2`}></View>
-						<Text style={tw`text-sm`}>Selected</Text>
+				<View style={tw`flex-row justify-center mb-8`}>
+					<View style={tw`flex-row items-center mr-5`}>
+						<View style={tw`w-4 h-4 rounded-full bg-orange-500 mr-2`} />
+						<Text>Selected</Text>
 					</View>
-					<View style={tw`flex-row items-center mr-4`}>
-						<View style={tw`w-3 h-3 rounded-full bg-gray-300 mr-2`}></View>
-						<Text style={tw`text-sm`}>Emergency Exit</Text>
+					<View style={tw`flex-row items-center mr-5`}>
+						<View style={tw`w-4 h-4 rounded-full bg-gray-200 mr-2`} />
+						<Text>Emergency Exit</Text>
 					</View>
 					<View style={tw`flex-row items-center`}>
-						<View style={tw`w-3 h-3 rounded-full bg-gray-800 mr-2`}></View>
-						<Text style={tw`text-sm`}>Reserved</Text>
+						<View style={tw`w-4 h-4 rounded-full bg-gray-800 mr-2`} />
+						<Text>Reserved</Text>
 					</View>
 				</View>
 
-				{/* Aircraft nose illustration */}
-				<View style={tw`items-center mb-8`}>
-					<Svg height="48" width="128">
-						<Polygon points="25.6,0 102.4,0 128,48 0,48" fill="gray" />
+				{/* Aircraft nose */}
+				<View style={tw`items-center mb-10`}>
+					<Svg height="120" width="180" viewBox="0 0 180 120">
+						<Path
+							d="M30,20 L150,20 L170,70 L150,120 L30,120 L10,70 Z"
+							fill="#E5E5E5"
+						/>
 					</Svg>
 				</View>
-			</View>
 
-			{/* Seat grid */}
-			<View style={tw`mb-8`}>
-				{rows.map((row, rowIndex) => (
-					<View
-						key={`row-${rowIndex}`}
-						style={tw`flex-row justify-center mb-4`}
-					>
-						{row.map((seat, seatIndex) =>
-							seat ? (
-								<TouchableOpacity
-									key={`${rowIndex}-${seatIndex}`}
-									style={tw`w-10 h-10 m-1 rounded-md items-center justify-center ${
-										selectedSeat === seat ? "bg-orange-500" : "bg-gray-100"
-									}`}
-									onPress={() => handleSeatSelect(seat)}
-								>
-									<Text
-										style={tw`${
-											selectedSeat === seat ? "text-white" : "text-black"
-										}`}
+				{/* Seat layout */}
+				<View style={tw`flex-1`}>
+					{seatRows.map((row, rowIndex) => (
+						<View
+							key={`row-${rowIndex}`}
+							style={tw`flex-row justify-center mb-4`}
+						>
+							{row.map((seat, seatIndex) =>
+								seat ? (
+									<TouchableOpacity
+										key={`seat-${rowIndex}-${seatIndex}`}
+										style={[
+											tw`w-14 h-14 mx-2 rounded-md items-center justify-center`,
+											{
+												backgroundColor: seat.isSelected
+													? "#FF713B"
+													: getBackgroundColor(seat.status),
+											},
+										]}
+										onPress={() => handleSeatSelect(seat, rowIndex, seatIndex)}
 									>
-										{seat}
-									</Text>
-								</TouchableOpacity>
-							) : (
-								<View
-									key={`space-${rowIndex}-${seatIndex}`}
-									style={tw`w-10 h-10 m-1`}
-								/>
-							)
-						)}
-					</View>
-				))}
+										<Text
+											style={[
+												tw`font-medium text-center`,
+												{ color: getTextColor(seat.status) },
+											]}
+										>
+											{seat.id}
+										</Text>
+									</TouchableOpacity>
+								) : (
+									<View
+										key={`space-${rowIndex}-${seatIndex}`}
+										style={tw`w-14 mx-2`}
+									/>
+								)
+							)}
+						</View>
+					))}
+				</View>
+
+				{/* Select button */}
+				<View style={tw`mt-auto mb-6`}>
+					<ContinueButton
+						text="Select"
+						onPress={handleSelectPress}
+						disabled={false}
+					/>
+				</View>
 			</View>
-
-			<View style={tw`flex-1`}></View>
-
-			{/* Confirm button */}
-			<TouchableOpacity
-				style={tw`bg-orange-500 rounded-md py-4 items-center`}
-				onPress={handleConfirm}
-			>
-				<Text style={tw`text-white font-medium text-lg`}>Select</Text>
-			</TouchableOpacity>
 		</SafeAreaView>
 	);
 };

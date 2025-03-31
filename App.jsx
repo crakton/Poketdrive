@@ -6,7 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import registerNNPushToken from "native-notify";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { store } from "./store";
+import { store } from "./redux/store";
 import QueryClientProvider from "./utils/ReactQueryProvider";
 
 import DrawerContainer from "./components/Drawer/Index";
@@ -24,6 +24,10 @@ import SummaryScreen from "./screens/Water/SummaryScreen";
 import PaymentScreen from "./screens/Water/PaymentScreen";
 import SuccessScreen from "./screens/Water/SucessScreen";
 import TrackingScreen from "./screens/Water/TrackingScreen";
+import SeatSelectionScreen from "./screens/Air/SeatSelectionScreen";
+import PaymentScreen from "./screens/Air/PaymentScreen";
+import TicketConfirmationScreen from "./screens/Air/TicketConfirmationScreen";
+import TravelsScreen from "./screens/Air/TravelsScreen";
 
 
 export const RootStack = createNativeStackNavigator();
@@ -91,10 +95,6 @@ export default function App() {
 							
 							
 							<RootStack.Screen
-								name="PassengerDetails"
-								component={PassengerDetailsScreen}
-							/>
-							<RootStack.Screen
 								name="FlightSearch"
 								component={FlightSearchScreen}
 							/>
@@ -103,9 +103,37 @@ export default function App() {
 								component={FlightDetailsScreen}
 							/>
 							<RootStack.Screen
+							options={{
+								headerShown:true,
+								headerTitle: 'Book Fight'
+							}} 
 								name="FlightBooking"
 								component={FlightBookingScreen}
 							/>
+
+							<RootStack.Screen name={"Travels"} component={TravelsScreen} />
+
+							<RootStack.Screen options={{
+								headerShown:true,
+								headerTitle: 'Choose Seat'
+						
+							}} name={"SelectSeat"} component={SeatSelectionScreen} />
+
+							<RootStack.Screen name={"PassengerDetails"} component={PassengerDetailsScreen} />
+
+							<RootStack.Screen options={{
+								headerShown:true,
+								headerTitle: 'Payment'
+							}}  name={"Payments"} component={PaymentScreen} />
+
+							<RootStack.Screen options={{
+								headerShown:true,
+								headerTitle: 'Payment Report'
+							}}  name={"PaymentSuccess"} component={PaymentScreen} />
+							<RootStack.Screen options={{
+								headerShown:true,
+								headerTitle: 'Boarding pass'
+							}} name={"TicketConfirmation"} component={TicketConfirmationScreen} />
 							
 						</RootStack.Navigator>
 					</NavigationContainer>
