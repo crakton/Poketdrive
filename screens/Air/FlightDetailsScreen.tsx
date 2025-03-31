@@ -6,6 +6,7 @@ import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
+import ContinueButton from "../../components/ui/ContinueButton";
 
 const FlightDetailsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -276,19 +277,12 @@ const FlightDetailsScreen = () => {
 					>
 						<Text style={tw`text-gray-700`}>All reviews</Text>
 					</TouchableOpacity>
-					<TouchableOpacity
+					<ContinueButton
+						text={"Next"}
+						disabled={false}
 						onPress={() => navigation.navigate("FlightBooking")}
-						style={tw`bg-[#F05A22] -bottom-10 rounded-lg py-3 items-center my-3`}
-					>
-						<Text
-							style={[
-								tw`text-white font-medium`,
-								{ fontFamily: "Poppins-Bold" },
-							]}
-						>
-							Next
-						</Text>
-					</TouchableOpacity>
+						loading={false}
+					/>
 				</View>
 			</ScrollView>
 		</SafeAreaView>

@@ -20,4 +20,9 @@ export type RootStackParamList = {
 	FlightDetails: undefined;
 	PassengerDetails: undefined;
 	FlightBooking: undefined;
+	PaymentSuccess: undefined;
+	Payments: undefined;
+	Payment: undefined;
+	SelectSeat: undefined;
+	Travels: undefined;
 };

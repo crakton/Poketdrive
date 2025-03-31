@@ -34,7 +34,7 @@ type TPassengerDetails = {
 	country: string;
 };
 
-type TSearchQueries = {
+export type TSearchQueries = {
 	currentSearch: string;
 	history: never[];
 	recentSearches: never[];
