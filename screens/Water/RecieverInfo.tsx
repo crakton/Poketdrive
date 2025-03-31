@@ -59,7 +59,7 @@ const RecieverInfo = () => {
         <View style={tw`mt-5`}>
           <ContinueButton
             text={"get quote"}
-            onPress={() => navigate("Onboarding")}
+            onPress={() => navigate("QuoteScreen")}
             disabled={false}
           />
         </View>

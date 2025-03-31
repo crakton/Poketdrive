@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../types";
 import tw from "twrnc";
 import { SvgXml } from "react-native-svg";
 import { orderSvg } from "../../utils/svg";
 
 const FromMe = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedFilter, setSelectedFilter] = useState("All");
 
   const orders = [
@@ -21,6 +23,8 @@ const FromMe = () => {
       color: "green",
       status: "Delivered",
       icon: orderSvg,
+      origin: [37.7749, -122.4194],
+      destination: [37.7929, -122.3969],
     },
     {
       id: "2",
@@ -28,6 +32,8 @@ const FromMe = () => {
       color: "orange",
       status: "Pending",
       icon: orderSvg,
+      origin: [37.7749, -122.4194],
+      destination: [37.8029, -122.3929],
     },
     {
       id: "3",
@@ -35,6 +41,8 @@ const FromMe = () => {
       color: "blue",
       status: "On Process",
       icon: orderSvg,
+      origin: [37.7649, -122.4094],
+      destination: [37.8129, -122.3829],
     },
     {
       id: "4",
@@ -42,6 +50,8 @@ const FromMe = () => {
       color: "red",
       status: "Cancelled",
       icon: orderSvg,
+      origin: [37.7549, -122.3994],
+      destination: [37.8229, -122.3729],
     },
   ];
 
@@ -87,6 +97,11 @@ const FromMe = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={tw`border border-gray-200 rounded-[12px] h-[70px] p-3 flex-row gap-2 justify-between items-center m-1 mb-3`}
+            onPress={() =>
+              navigation.navigate("TrackingScreen", {
+                order: item,
+              })
+            }
           >
             <View
               style={tw`flex justify-center items-center w-[50px] h-[50px] bg-gray-100 rounded-[10px]`}

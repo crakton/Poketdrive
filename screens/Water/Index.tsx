@@ -29,8 +29,9 @@ const WaterRootTab = () => {
           component={Home}
         />
         <Tab.Screen
-          name="Explore"
+          name="Order"
           options={{
+            tabBarLabel: "my Order",
             tabBarIcon(props) {
               return (
                 <FontAwesome5

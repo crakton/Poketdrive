@@ -73,11 +73,11 @@ const StackContainer = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {/* Auth and Onboarding Screens */}
       {isAuthenticated ? (
-        <Stack.Screen name="WaterTabBar" component={WaterRootTab} />
+        <Stack.Screen name="Onboarding" component={Onboarding} />
       ) : (
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
       )}
-      <Stack.Screen name="Onboarding" component={Onboarding} />
+
       <Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Verification" component={Verification} />
@@ -130,12 +130,9 @@ const StackContainer = () => {
       />
 
       {/* Water Stack Screens */}
-      <Stack.Screen name="RecieverInfo" component={RecieverInfo} />
-      <Stack.Screen name="QuoteScreen" component={QuoteScreen} />
-      <Stack.Screen name="SummaryScreen" component={SummaryScreen} />
-      <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-      <Stack.Screen name="SucessScreen" component={SuccessScreen} />
-      <Stack.Screen name="TrackingScreen" component={TrackingScreen} />
+
+     
+      
     </Stack.Navigator>
   );
 };

@@ -12,11 +12,14 @@ import tw from "twrnc";
 import { Feather } from "@expo/vector-icons";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import ContinueButton from "../../components/ui/ContinueButton";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../types";
 
 const PaymentScreen = () => {
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [saveCard, setSaveCard] = useState(false);
+  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <View style={tw`flex-1`}>
@@ -73,9 +76,7 @@ const PaymentScreen = () => {
       <View style={tw`px-5 pb-5`}>
         <ContinueButton
           text={"Pay"}
-          onPress={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          onPress={() => navigate("SucessScreen")}
           disabled={false}
         />
       </View>

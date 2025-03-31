@@ -9,9 +9,12 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import ContinueButton from "../../components/ui/ContinueButton";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../types";
 
 const QuoteScreen = () => {
   const [selectedOption, setSelectedOption] = useState("express");
+  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaView style={tw`flex-1 bg-white px-5`}>
@@ -117,9 +120,7 @@ const QuoteScreen = () => {
       <View style={tw`px-5 `}>
         <ContinueButton
           text={"Proceed"}
-          onPress={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          onPress={() => navigate("SummaryScreen")}
           disabled={false}
         />
       </View>

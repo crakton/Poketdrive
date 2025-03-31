@@ -30,8 +30,6 @@ const MapScreen = ({ route }: any) => {
 
     saveRideDetails();
   }, [rideDetails]);
-
-  // Check if origin and destination are valid arrays with at least two elements
   const isValidCoordinates = (coords: number[]) =>
     Array.isArray(coords) && coords.length === 2;
 

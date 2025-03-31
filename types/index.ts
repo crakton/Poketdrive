@@ -20,4 +20,23 @@ export type RootStackParamList = {
   FlightDetails: undefined;
   PassengerDetails: undefined;
   FlightBooking: undefined;
+  RecieverInfo: undefined;
+  QuoteScreen: undefined;
+  SummaryScreen: undefined;
+  PaymentScreen: undefined;
+  Water: undefined;
+  SendScreen: undefined;
+  SucessScreen: undefined;
+  WaterTabBar: undefined;
+  TrackingScreen: {
+    order: {
+      id: string;
+      description: string;
+      color: string;
+      status: string;
+      icon: string;
+      origin: number[];
+      destination: number[];
+    };
+  };
 };

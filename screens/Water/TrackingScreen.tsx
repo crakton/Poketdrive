@@ -1,97 +1,108 @@
 import React from "react";
-import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import tw from "twrnc";
 import Map from "../../components/Map";
 
-const isValidCoordinates = (coords: string | any[]) =>
-  Array.isArray(coords) && coords.length === 2;
+const isValidCoordinates = (coords: { latitude: number; longitude: number }) =>
+  coords &&
+  typeof coords.latitude === "number" &&
+  typeof coords.longitude === "number";
 
 interface TrackingScreenProps {
-  origin: [number, number];
-  destination: [number, number];
+  origin?: { latitude: number; longitude: number };
+  destination?: { latitude: number; longitude: number };
 }
 
+const mockOrigin = { latitude: 39.2674, longitude: -81.5719 };
+const mockDestination = { latitude: 39.2833, longitude: -81.5696 };
+
 const TrackingScreen: React.FC<TrackingScreenProps> = ({
-  origin,
-  destination,
+  origin = mockOrigin,
+  destination = mockDestination,
 }) => {
   return (
     <SafeAreaView style={tw`flex-1 bg-white`}>
-      {/* Header */}
+      {/* Fixed Header */}
       <View style={tw`flex-row items-center justify-between px-4 py-3`}>
         <TouchableOpacity>
-          <Feather name="arrow-left" size={24} color="black" />
+          <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={tw`text-lg font-semibold text-black`}>
+        <Text style={tw`text-lg font-semibold text-[14px] text-black`}>
           Detail Location
         </Text>
         <TouchableOpacity>
-          <Feather name="more-vertical" size={24} color="black" />
+          <Feather name="more-vertical" size={20} color="black" />
         </TouchableOpacity>
       </View>
 
-      {/* Map Section */}
-      <View style={tw`h-2/5`}>
-        {isValidCoordinates(origin) && isValidCoordinates(destination) ? (
-          <Map
-            origin={{ latitude: origin[0], longitude: origin[1] }}
-            destination={{
-              latitude: destination[0],
-              longitude: destination[1],
-            }}
-          />
-        ) : (
-          <View style={tw`flex-1 justify-center items-center`}>
-            <Text>No valid location data available.</Text>
-          </View>
-        )}
-      </View>
+      {/* Scrollable Content */}
+      <ScrollView contentContainerStyle={tw`flex-grow`}>
+        <View style={tw`h-4/7`}>
+          {isValidCoordinates(origin) && isValidCoordinates(destination) ? (
+            <Map origin={origin} destination={destination} />
+          ) : (
+            <View style={tw`flex-1 justify-center items-center`}>
+              <Text>No valid location data available.</Text>
+            </View>
+          )}
+        </View>
 
-      {/* Info Section */}
-      <View style={tw`px-6 pt-4`}>
-        <Text style={tw`text-lg font-semibold text-black`}>
-          Your <Text style={tw`text-green-600`}>Package</Text> on The Way
-        </Text>
-        <Text style={tw`text-gray-500 mt-1`}>
-          Arriving at pick up point in 2 mins
-        </Text>
+        {/* Info Section */}
+        <View style={tw`px-6 pt-4 flex gap-1`}>
+          <Text style={tw`text-lg font-semibold text-black`}>
+            Your <Text style={tw`text-[#0CCC70]`}>Package</Text> on The Way
+          </Text>
+          <Text style={tw`text-gray-500 mt-1`}>
+            Arriving at pick-up point in 2 mins
+          </Text>
+          <View style={tw`w-full h-[1px] bg-gray-200 mt-4`} />
 
-        {/* Driver Details */}
-        <View
-          style={tw`flex-row justify-between items-center mt-4 border-b pb-4`}
-        >
-          <View>
-            <Text style={tw`text-black font-medium`}>Harry Johnson</Text>
-            <View style={tw`flex-row items-center mt-1`}>
-              <MaterialIcons name="star" size={16} color="green" />
-              <Text style={tw`text-gray-700 ml-1`}>4.9</Text>
+          {/* Driver Details */}
+          <View
+            style={tw`flex-row justify-between items-center mt-4 border-gray-200 border-b pb-4  pl-[20%]`}
+          >
+            <View>
+              <Text style={tw`text-black font-medium`}>Harry Johnson</Text>
+              <View style={tw`flex-row items-center mt-1`}>
+                <MaterialIcons name="star" size={16} color="#0CCC70" />
+                <Text style={tw`text-gray-500 ml-1`}>4.9</Text>
+              </View>
+            </View>
+            <View style={tw`flex-row items-center gap-4`}>
+              <TouchableOpacity style={tw`mr-4`}>
+                <MaterialIcons name="phone" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <MaterialIcons name="message" size={24} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={tw`flex-row items-center`}>
-            <TouchableOpacity style={tw`mr-4`}>
-              <Feather name="phone" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Feather name="message-circle" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Locations */}
-        <View style={tw`mt-4`}>
-          <View style={tw`flex-row items-center mb-2`}>
-            <MaterialIcons name="location-on" size={20} color="green" />
-            <Text style={tw`ml-2 text-black`}>
-              1213 Washington Blvd, Belpre, OH
-            </Text>
-          </View>
-          <View style={tw`flex-row items-center`}>
-            <MaterialIcons name="location-on" size={20} color="black" />
-            <Text style={tw`ml-2 text-black`}>121 Pike St, Marietta, OH</Text>
+          {/* Location Details */}
+          <View style={tw`mt-4`}>
+            <View style={tw`flex-row items-center mb-1`}>
+              <MaterialIcons name="adjust" size={20} color="#0CCC70" />
+              <Text style={tw`ml-2 text-black`}>
+                1213 Washington Blvd, Belpre, OH
+              </Text>
+            </View>
+
+            <View style={tw`ml-[9px] h-4 border-l border-gray-500 `} />
+
+            <View style={tw`flex-row items-center mt-1`}>
+              <MaterialIcons name="location-on" size={20} color="black" />
+              <Text style={tw`ml-2 text-black`}>121 Pike St, Marietta, OH</Text>
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

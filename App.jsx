@@ -18,6 +18,12 @@ import PassengerDetailsScreen from "./screens/Air/PassengerDetailsScreen";
 import FlightSearchScreen from "./screens/Air/FlightSearchScreen";
 import FlightBookingScreen from "./screens/Air/FlightBookingScreen";
 import FlightDetailsScreen from "./screens/Air/FlightDetailsScreen";
+import RecieverInfo from "./screens/Water/RecieverInfo";
+import QuoteScreen from "./screens/Water/QuoteScreen";
+import SummaryScreen from "./screens/Water/SummaryScreen";
+import PaymentScreen from "./screens/Water/PaymentScreen";
+import SuccessScreen from "./screens/Water/SucessScreen";
+import TrackingScreen from "./screens/Water/TrackingScreen";
 
 
 export const RootStack = createNativeStackNavigator();
@@ -58,6 +64,31 @@ export default function App() {
 								name="TourDetails"
 								component={TourDetailsScreen}
 							/>
+							<RootStack.Screen
+								name="RecieverInfo"
+								component={RecieverInfo}
+							/>
+							<RootStack.Screen
+								name="QuoteScreen"
+								component={QuoteScreen}
+							/>
+								<RootStack.Screen
+								name="SummaryScreen"
+								component={SummaryScreen}
+							/>
+									<RootStack.Screen
+								name="PaymentScreen"
+								component={PaymentScreen}
+							/>
+									<RootStack.Screen
+								name="SucessScreen"
+								component={SuccessScreen}
+							/>
+									<RootStack.Screen
+								name="TrackingScreen"
+								component={TrackingScreen}
+							/>
+							
 							
 							<RootStack.Screen
 								name="PassengerDetails"

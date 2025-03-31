@@ -18,7 +18,7 @@ function SendScreen() {
   );
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
 
-  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaView style={tw`flex-1`}>
@@ -124,7 +124,7 @@ function SendScreen() {
           </View>
           <ContinueButton
             text={"Next"}
-            onPress={() => navigate("Onboarding")}
+            onPress={() => navigation.navigate("RecieverInfo")}
             disabled={false}
           />
         </View>

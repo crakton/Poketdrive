@@ -9,9 +9,12 @@ import {
 import tw from "twrnc";
 import { FontAwesome5, Feather, Fontisto } from "@expo/vector-icons";
 import ContinueButton from "../../components/ui/ContinueButton";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../types";
 
 const SummaryScreen = () => {
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
 
   const paymentMethods = [
     { id: "visa", label: "Visa/Mastercard/JCB" },
@@ -130,9 +133,7 @@ const SummaryScreen = () => {
       <View style={tw`px-5 `}>
         <ContinueButton
           text={"Proceed"}
-          onPress={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          onPress={() => navigate("PaymentScreen")}
           disabled={false}
         />
       </View>
