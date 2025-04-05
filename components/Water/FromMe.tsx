@@ -11,54 +11,30 @@ import { RootStackParamList } from "../../types";
 import tw from "twrnc";
 import { SvgXml } from "react-native-svg";
 import { orderSvg } from "../../utils/svg";
+import { useGetOrdersFrom } from "../../hooks/reactQuery/useWater";
 
 const FromMe = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedFilter, setSelectedFilter] = useState("All");
 
-  const orders = [
-    {
-      id: "1",
-      description: "Order 1 description",
-      color: "green",
-      status: "Delivered",
-      icon: orderSvg,
-      origin: [37.7749, -122.4194],
-      destination: [37.7929, -122.3969],
-    },
-    {
-      id: "2",
-      description: "Order 2 description",
-      color: "orange",
-      status: "Pending",
-      icon: orderSvg,
-      origin: [37.7749, -122.4194],
-      destination: [37.8029, -122.3929],
-    },
-    {
-      id: "3",
-      description: "Order 3 description",
-      color: "blue",
-      status: "On Process",
-      icon: orderSvg,
-      origin: [37.7649, -122.4094],
-      destination: [37.8129, -122.3829],
-    },
-    {
-      id: "4",
-      description: "Order 4 description",
-      color: "red",
-      status: "Cancelled",
-      icon: orderSvg,
-      origin: [37.7549, -122.3994],
-      destination: [37.8229, -122.3729],
-    },
-  ];
+  const { data: ordersData, isLoading, isError } = useGetOrdersFrom();
+
+  if (isLoading) {
+    return <Text style={tw`text-center text-gray-500`}>Loading...</Text>;
+  }
+
+  if (isError) {
+    return (
+      <Text style={tw`text-center text-red-500`}>Error fetching orders.</Text>
+    );
+  }
+
+  const ordersFrom = ordersData?.content?.data || [];
 
   const filteredOrders =
     selectedFilter === "All"
-      ? orders
-      : orders.filter((order) => order.status === selectedFilter);
+      ? ordersFrom
+      : ordersFrom.filter((order: any) => order.status === selectedFilter);
 
   return (
     <View style={tw`flex-1 bg-white`}>
@@ -69,7 +45,7 @@ const FromMe = () => {
             showsHorizontalScrollIndicator={false}
             style={tw`p-4`}
           >
-            {["All", "Pending", "On Process", "Delivered"].map(
+            {["All", "pending", "On Process", "Delivered", "Cancelled"].map(
               (filter, index) => (
                 <TouchableOpacity
                   key={index}
@@ -106,17 +82,24 @@ const FromMe = () => {
             <View
               style={tw`flex justify-center items-center w-[50px] h-[50px] bg-gray-100 rounded-[10px]`}
             >
-              <SvgXml xml={item.icon} />
+              <SvgXml xml={item.icon || orderSvg} />
             </View>
             <View style={tw`ml-4 flex-1 gap-1`}>
               <Text style={tw`text-black font-semibold text-[13px]`}>
-                {item.description}
+                {item.senderInfo?.description ||
+                  "Order description not available"}
               </Text>
               <Text style={tw`text-gray-500 text-[12px]`}>
-                {item.description}
+                {item.senderInfo?.pickupAddress ||
+                  "Pickup address not available"}
               </Text>
             </View>
-            <Text style={[tw`font-medium text-[11px]`, { color: item.color }]}>
+            <Text
+              style={[
+                tw`font-medium text-[11px]`,
+                { color: getStatusColor(item.status) },
+              ]}
+            >
               {item.status}
             </Text>
           </TouchableOpacity>
@@ -127,6 +110,22 @@ const FromMe = () => {
       />
     </View>
   );
+};
+
+// Utility function to return a status color based on the order status
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "Pending":
+      return "orange";
+    case "On Process":
+      return "blue";
+    case "Delivered":
+      return "green";
+    case "Cancelled":
+      return "red";
+    default:
+      return "gray";
+  }
 };
 
 export default FromMe;

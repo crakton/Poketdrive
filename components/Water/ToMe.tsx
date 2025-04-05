@@ -6,50 +6,34 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   FlatList,
 } from "react-native";
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import tw from "twrnc";
 import { SvgXml } from "react-native-svg";
+import { useGetOrdersTo } from "../../hooks/reactQuery/useWater";
 import { orderSvg } from "../../utils/svg";
 
 const ToMe = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
-  const orders = [
-    {
-      id: "1",
-      description: "Order to description ",
-      color: "green",
-      status: "Delivered",
-      icon: orderSvg,
-    },
-    {
-      id: "2",
-      description: "Order 2 description",
-      color: "orange",
-      status: "Pending",
-      icon: orderSvg,
-    },
-    {
-      id: "3",
-      description: "Order 3 description",
-      color: "blue",
-      status: "On Process",
-      icon: orderSvg,
-    },
-    {
-      id: "4",
-      description: "Order 4 description",
-      color: "red",
-      status: "Cancelled",
-      icon: orderSvg,
-    },
-  ];
+
+  const { data: ordersData, isLoading, isError } = useGetOrdersTo();
+
+  if (isLoading) {
+    return <Text style={tw`text-center text-gray-500`}>Loading...</Text>;
+  }
+
+  if (isError) {
+    return (
+      <Text style={tw`text-center text-red-500`}>Error fetching orders.</Text>
+    );
+  }
+
+  const ordersTo = ordersData?.content?.data || [];
+
   const filteredOrders =
     selectedFilter === "All"
-      ? orders
-      : orders.filter((order) => order.status === selectedFilter);
+      ? ordersTo
+      : ordersTo.filter((order: any) => order.status === selectedFilter);
 
   return (
     <View style={tw`flex-1 bg-white`}>
@@ -60,7 +44,7 @@ const ToMe = () => {
             showsHorizontalScrollIndicator={false}
             style={tw`p-4`}
           >
-            {["All", "Pending", "On Process", "Delivered"].map(
+            {["All", "pending", "On Process", "Delivered"].map(
               (filter, index) => (
                 <TouchableOpacity
                   key={index}
@@ -92,17 +76,22 @@ const ToMe = () => {
             <View
               style={tw`flex justify-center items-center w-[50px] h-[50px] bg-gray-100 rounded-[10px]`}
             >
-              <SvgXml xml={item.icon} />
+              <SvgXml xml={item.icon || orderSvg} />
             </View>
             <View style={tw`ml-4 flex-1 gap-1`}>
               <Text style={tw`text-black font-semibold text-[13px]`}>
-                {item.description}
+                {item.senderInfo?.sender_name || "No sender"}
               </Text>
               <Text style={tw`text-gray-500 text-[12px]`}>
-                {item.description}
+                {item.senderInfo?.pickupAddress || "No address"}
               </Text>
             </View>
-            <Text style={[tw`font-medium text-[11px]`, { color: item.color }]}>
+            <Text
+              style={[
+                tw`font-medium text-[11px]`,
+                { color: item.status === "pending" ? "orange" : "green" },
+              ]}
+            >
               {item.status}
             </Text>
           </TouchableOpacity>
@@ -114,7 +103,20 @@ const ToMe = () => {
     </View>
   );
 };
+// Utility function to return a status color based on the order status
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "Pending":
+      return "orange";
+    case "On Process":
+      return "blue";
+    case "Delivered":
+      return "green";
+    case "Cancelled":
+      return "red";
+    default:
+      return "gray";
+  }
+};
 
 export default ToMe;
-
-const styles = StyleSheet.create({});

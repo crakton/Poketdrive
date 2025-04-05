@@ -9,12 +9,52 @@ import {
 import tw from "twrnc";
 import { FontAwesome5, Feather, Fontisto } from "@expo/vector-icons";
 import ContinueButton from "../../components/ui/ContinueButton";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { useSendOrder } from "../../hooks/reactQuery/useWater";
+import { SendFormState } from "../../redux/features/waterSendSlice";
 
 const SummaryScreen = () => {
   const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
-  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const { mutate: sendOrder, status } = useSendOrder();
+  const isValidDate = (date: any) => {
+    return date && !isNaN(new Date(date).getTime());
+  };
+
+  const waterSendData = useSelector((state: RootState) => state.sendForm);
+
+  console.log(waterSendData, "waterSendData");
+
+  const formattedData: SendFormState = {
+    senderInfo: {
+      sender_name: waterSendData?.senderInfo?.sender_name,
+      sender_phone: waterSendData?.senderInfo?.sender_phone,
+      pickupAddress: waterSendData?.senderInfo?.pickupAddress,
+      pickupTime: waterSendData?.senderInfo?.pickupTime,
+      description: waterSendData?.senderInfo?.description,
+    },
+    parcelInfo: {
+      weight: waterSendData?.parcelInfo?.weight,
+      dimensions: waterSendData?.parcelInfo?.dimensions,
+      category: waterSendData?.parcelInfo?.category,
+    },
+    receiversInfo: {
+      receiversName: waterSendData?.receiversInfo?.receiversName,
+      receiversPhone: waterSendData?.receiversInfo?.receiversPhone,
+      receiversAddress: waterSendData?.receiversInfo?.receiversAddress,
+      deliveryTime: waterSendData?.receiversInfo?.deliveryTime,
+      deliveryInstruction: waterSendData?.receiversInfo?.deliveryInstruction,
+    },
+    coupon: waterSendData?.coupon,
+    cost: {
+      type: waterSendData?.cost?.type ?? "default",
+      amount: waterSendData?.cost?.amount ?? 0,
+    },
+  };
+  const handleProceed = () => {
+    sendOrder(formattedData);
+  };
 
   const paymentMethods = [
     { id: "visa", label: "Visa/Mastercard/JCB" },
@@ -46,11 +86,9 @@ const SummaryScreen = () => {
                 <Text style={tw`text-gray-500 text-[12px]`}>
                   Sender address
                 </Text>
-                <Text style={tw`text-gray-700 text-[12px]`}>
-                  Kilometer 6, 278H, Street 201R, Kroalkor Village,
-                </Text>
-                <Text style={tw`text-gray-700 text-[12px] mt-1`}>
-                  Unnamed Road, Phnom Penh
+                <Text style={tw`text-gray-700 text-[12px] w-[90%]`}>
+                  {waterSendData?.senderInfo?.pickupAddress ||
+                    "No sender address"}
                 </Text>
               </View>
             </View>
@@ -70,11 +108,9 @@ const SummaryScreen = () => {
                 <Text style={tw`text-gray-500 text-[12px]`}>
                   Receiver address
                 </Text>
-                <Text style={tw`text-gray-700 text-[12px]`}>
-                  2nd Floor 01, 25 Mao Tse Toung Blvd (245),
-                </Text>
-                <Text style={tw`text-gray-700 text-[12px] mt-1`}>
-                  Phnom Penh 12302, Cambodia
+                <Text style={tw`text-gray-700 text-[12px] w-[90%]`}>
+                  {waterSendData?.senderInfo?.pickupAddress ||
+                    "No sender address"}
                 </Text>
               </View>
             </View>
@@ -133,8 +169,9 @@ const SummaryScreen = () => {
       <View style={tw`px-5 `}>
         <ContinueButton
           text={"Proceed"}
-          onPress={() => navigate("PaymentScreen")}
+          onPress={handleProceed}
           disabled={false}
+          loading={status === "pending"}
         />
       </View>
     </SafeAreaView>

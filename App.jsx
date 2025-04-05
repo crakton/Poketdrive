@@ -25,7 +25,7 @@ import PaymentScreen from "./screens/Water/PaymentScreen";
 import SuccessScreen from "./screens/Water/SucessScreen";
 import TrackingScreen from "./screens/Water/TrackingScreen";
 import SeatSelectionScreen from "./screens/Air/SeatSelectionScreen";
-import PaymentScreen from "./screens/Air/PaymentScreen";
+// import PaymentScreen from "./screens/Air/PaymentScreen";
 import TicketConfirmationScreen from "./screens/Air/TicketConfirmationScreen";
 import TravelsScreen from "./screens/Air/TravelsScreen";
 
@@ -126,10 +126,10 @@ export default function App() {
 								headerTitle: 'Payment'
 							}}  name={"Payments"} component={PaymentScreen} />
 
-							<RootStack.Screen options={{
+							{/* <RootStack.Screen options={{
 								headerShown:true,
 								headerTitle: 'Payment Report'
-							}}  name={"PaymentSuccess"} component={PaymentScreen} />
+							}}  name={"PaymentSuccess"} component={PaymentScreen} /> */}
 							<RootStack.Screen options={{
 								headerShown:true,
 								headerTitle: 'Boarding pass'
