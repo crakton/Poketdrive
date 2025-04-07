@@ -4,113 +4,216 @@ import {
 	Text,
 	TouchableOpacity,
 	SafeAreaView,
+	StatusBar,
 	TextInput,
-	KeyboardAvoidingView,
-	Platform,
 	ScrollView,
+	Image,
+	Alert,
 } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
-import { CheckBox } from "react-native-elements";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
+import Icon from "@expo/vector-icons/Feather";
+import { useAirContext } from "../../hooks/air/useAirContext";
+import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome } from "@expo/vector-icons";
 
-import ContinueButton from "../../components/ui/ContinueButton";
+type PaymentMethod = {
+	id: string;
+	cardNumber: string;
+	expiryDate: string;
+	cardholderName: string;
+	cvv: string;
+};
 
-const PaymentScreen = () => {
+const PaymentsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-	const [cardNumber, setCardNumber] = useState("4500 0910 4334 3443");
-	const [expDate, setExpDate] = useState("10/3");
-	const [cvv, setCvv] = useState("");
-	const [saveCard, setSaveCard] = useState(true);
+	const { passengerDetails } = useAirContext();
 
-	const formatCardNumber = (text: string) => {
-		const cleaned = text.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-		const matches = cleaned.match(/\d{4,16}/g);
-		const match = matches && matches[0] ? matches[0] : "";
+	// Payment form state
+	const [cardholderName, setCardholderName] = useState("");
+	const [cardNumber, setCardNumber] = useState("");
+	const [expiryDate, setExpiryDate] = useState("");
+	const [cvv, setCvv] = useState("");
+	const [amount, setAmount] = useState("10000");
+
+	// Optional: Array of existing payment methods
+	const [savedPaymentMethods, setSavedPaymentMethods] = useState<
+		PaymentMethod[]
+	>([]);
+	const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+		string | null
+	>(null);
+
+	// Format card number with spaces
+	const formatCardNumber = (value: string) => {
+		const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+		const matches = v.match(/\d{4,16}/g);
+		const match = (matches && matches[0]) || "";
 		const parts = [];
 
-		for (let i = 0; i < match.length; i += 4) {
+		for (let i = 0, len = match.length; i < len; i += 4) {
 			parts.push(match.substring(i, i + 4));
 		}
 
 		if (parts.length) {
 			return parts.join(" ");
 		} else {
-			return text;
+			return value;
 		}
 	};
 
+	// Format expiry date
+	const formatExpiryDate = (value: string) => {
+		const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+
+		if (v.length > 2) {
+			return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
+		}
+
+		return v;
+	};
+
 	const handlePayment = () => {
-		// Process payment logic here
-		navigation.navigate("TicketConfirmation");
+		// Validate inputs
+		if (!cardholderName.trim()) {
+			Alert.alert("Error", "Please enter cardholder name");
+			return;
+		}
+
+		if (cardNumber.replace(/\s/g, "").length < 16) {
+			Alert.alert("Error", "Please enter a valid card number");
+			return;
+		}
+
+		if (expiryDate.length < 5) {
+			Alert.alert("Error", "Please enter a valid expiry date");
+			return;
+		}
+
+		if (cvv.length < 3) {
+			Alert.alert("Error", "Please enter a valid CVV");
+			return;
+		}
+
+		// Process payment
+		navigation.navigate("PaymentSuccess", { amount: Number(amount) });
+	};
+
+	const navigateToMyWallet = () => {
+		navigation.navigate("MyWallet", {});
 	};
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === "ios" ? "padding" : "height"}
-			style={tw`flex-1 bg-white`}
-		>
-			<SafeAreaView style={tw`flex-1`}>
-				<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`p-4`}>
-					{/* <View style={tw`flex-row items-center mb-4`}>
-						<TouchableOpacity onPress={() => navigation.goBack()}>
-							<Ionicons name="arrow-back" size={24} color="#000" />
-						</TouchableOpacity>
-						<Text style={tw`text-xl font-semibold ml-4`}>Payment</Text>
-					</View> */}
+		<SafeAreaView style={tw`flex-1 bg-white`}>
+			<StatusBar barStyle="dark-content" />
 
-					<View style={tw`mt-4 flex-1`}>
-						<View
-							style={tw`border border-gray-200 rounded-lg p-4 mb-4 flex-row justify-between items-center`}
-						>
-							<Text style={tw`text-base`}>{cardNumber}</Text>
-							<View style={tw`bg-gray-100 p-1 rounded`}>
-								<Text style={tw`text-blue-800 font-bold`}>VISA</Text>
-							</View>
-						</View>
+			<View style={tw`flex-row items-center px-4 py-6`}>
+				<TouchableOpacity onPress={() => navigation.goBack()} style={tw`mr-4`}>
+					<Icon name="arrow-left" size={24} color="#000" />
+				</TouchableOpacity>
+				<Text style={tw`text-xl font-semibold flex-1 text-center`}>
+					Add Payment Method
+				</Text>
+				<View style={tw`w-8`}></View>
+			</View>
 
-						<View style={tw`flex-row gap-4`}>
-							<View style={tw`flex-1`}>
-								<TextInput
-									style={tw`border border-orange-400 rounded-lg p-4 text-base mb-4`}
-									placeholder="MM/YY"
-									value={expDate}
-									onChangeText={setExpDate}
-									keyboardType="numeric"
-								/>
-							</View>
-							<View style={tw`flex-1`}>
-								<TextInput
-									style={tw`border border-gray-200 rounded-lg p-4 text-base mb-4`}
-									placeholder="CVV/CVC"
-									value={cvv}
-									onChangeText={setCvv}
-									keyboardType="numeric"
-									secureTextEntry
-								/>
-							</View>
-						</View>
+			<ScrollView contentContainerStyle={tw`px-4`}>
+				<View style={tw`mb-6`}>
+					<Text style={tw`text-gray-600 mb-1 text-base`}>Name on card</Text>
+					<View
+						style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-4`}
+					>
+						<TextInput
+							style={tw`flex-1 text-base`}
+							placeholder="Enter your name"
+							value={cardholderName}
+							onChangeText={setCardholderName}
+						/>
+					</View>
+				</View>
 
-						<View style={tw`flex-row items-center mb-6`}>
-							<CheckBox
-								checked={saveCard}
-								onPress={() => setSaveCard(!saveCard)}
-								containerStyle={tw`p-0 m-0 bg-transparent border-0`}
-								checkedColor="#F05A22"
-							/>
-							<Text style={tw`text-base ml-2`}>Save card</Text>
+				<View style={tw`mb-6`}>
+					<Text style={tw`text-gray-600 mb-1 text-base`}>Card number</Text>
+					<View
+						style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-4`}
+					>
+						<TextInput
+							style={tw`flex-1 text-base`}
+							placeholder="xxxx xxxx xxxx xxxx"
+							keyboardType="numeric"
+							maxLength={19}
+							value={cardNumber}
+							onChangeText={(text) => setCardNumber(formatCardNumber(text))}
+						/>
+						<View style={tw`flex-row`}>
+							<FontAwesome name="cc-visa" />
+							<FontAwesome name="cc-mastercard" />
+							<FontAwesome name="cc-discover" />
 						</View>
 					</View>
-					<ContinueButton
-						text={"Pay"}
-						onPress={handlePayment}
-						disabled={false}
-					/>
-				</ScrollView>
-			</SafeAreaView>
-		</KeyboardAvoidingView>
+				</View>
+
+				<View style={tw`flex-row mb-6`}>
+					<View style={tw`flex-1 mr-2`}>
+						<Text style={tw`text-gray-600 mb-1 text-base`}>Expiration</Text>
+						<View
+							style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-4`}
+						>
+							<TextInput
+								style={tw`flex-1 text-base`}
+								placeholder="mm/yy"
+								keyboardType="numeric"
+								maxLength={5}
+								value={expiryDate}
+								onChangeText={(text) => setExpiryDate(formatExpiryDate(text))}
+							/>
+						</View>
+					</View>
+
+					<View style={tw`flex-1 ml-2`}>
+						<Text style={tw`text-gray-600 mb-1 text-base`}>Cvv</Text>
+						<View
+							style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-4`}
+						>
+							<TextInput
+								style={tw`flex-1 text-base`}
+								placeholder="3 4 7"
+								keyboardType="numeric"
+								maxLength={3}
+								value={cvv}
+								onChangeText={setCvv}
+								secureTextEntry
+							/>
+						</View>
+					</View>
+				</View>
+
+				<View style={tw`mb-6`}>
+					<Text style={tw`text-gray-600 mb-1 text-base`}>Amount</Text>
+					<View
+						style={tw`flex-row items-center border border-gray-300 rounded-full px-4 py-4`}
+					>
+						<TextInput
+							style={tw`flex-1 text-base`}
+							keyboardType="numeric"
+							value={amount}
+							onChangeText={setAmount}
+						/>
+					</View>
+				</View>
+			</ScrollView>
+
+			<View style={tw`px-4 pb-6 mt-4`}>
+				<TouchableOpacity
+					style={tw`bg-[#FF6633] py-4 rounded-full items-center`}
+					onPress={handlePayment}
+				>
+					<Text style={tw`text-white font-semibold text-lg`}>Fund wallet</Text>
+				</TouchableOpacity>
+			</View>
+		</SafeAreaView>
 	);
 };
 
-export default PaymentScreen;
+export default PaymentsScreen;

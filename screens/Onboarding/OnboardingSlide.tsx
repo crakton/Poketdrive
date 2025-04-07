@@ -19,6 +19,9 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from "react-native-reanimated";
+import { useAppDispatch } from "../../redux/store";
+import { setFirstTimeUser } from "../../redux/features/authSlice";
+import AuthService from "../../services/authService";
 
 const OnboardingSlide = () => {
 	const [currentPage, setCurrentPage] = useState(0);
@@ -62,6 +65,7 @@ const Page: FC<{
 	img_name: ImageSourcePropType;
 }> = (props) => {
 	const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
+	const dispatch = useAppDispatch();
 	return (
 		<View
 			style={[
@@ -83,7 +87,11 @@ const Page: FC<{
 			</Text>
 			{props.id === 3 ? (
 				<TouchableOpacity
-					onPress={() => navigate("CreateAccount")}
+					onPress={async () => {
+						await AuthService.setFirstTimeFlag();
+						dispatch(setFirstTimeUser(false));
+						navigate("MainStack");
+					}}
 					style={[tw`bg-[tomato] p-3 -bottom-20 rounded-full`]}
 				>
 					<Text

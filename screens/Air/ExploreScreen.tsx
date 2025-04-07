@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -24,6 +24,10 @@ import { RootStackParamList } from "../../types";
 // Import components
 import TourCard from "../components/Air/TourCard";
 import { useAirContext } from "../../hooks/air/useAirContext";
+import { useAirService } from "../../hooks/air/useAirService";
+import { useAppDispatch } from "../../redux/store";
+import { setAirlineCities } from "../../redux/features/airlineSlice";
+import PageLoader from "../../components/ui/PageLoader";
 
 const ExploreScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -32,6 +36,27 @@ const ExploreScreen = () => {
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [showDatePicker, setShowDatePicker] = useState(false);
 	const { tourSearchQueries, setTourPassengers } = useAirContext();
+	const dispatch = useAppDispatch();
+	const { useGetAirlineCities } = useAirService();
+	const {
+		isLoading,
+		data: airlineCities,
+		isError,
+		isSuccess,
+		error,
+	} = useGetAirlineCities();
+
+	// get supported airline cities to support searches
+	useEffect(() => {
+		if (isSuccess) {
+			// set to state
+			dispatch(setAirlineCities(airlineCities));
+		}
+
+		// handle errors
+		if (isError) {
+		}
+	}, [isError, isSuccess, airlineCities, error]);
 
 	// References for bottom sheets
 	const filterBottomSheetRef = useRef<BottomSheet>(null);
@@ -107,11 +132,9 @@ const ExploreScreen = () => {
 				backgroundColor="transparent"
 				barStyle={Platform.OS === "ios" ? "dark-content" : "dark-content"}
 			/>
-			<SafeAreaView
-				style={[tw`absolute top-0 left-0 right-0 z-10`]}
-			></SafeAreaView>
+			{isLoading && <PageLoader />}
 			<ScrollView>
-				<View style={tw`p-4`}>
+				<View style={tw`p-4 mt-3`}>
 					{activeTab === "Air" && (
 						<Text style={tw`text-2xl font-bold text-orange-500`}>
 							Explore jets and tours
@@ -122,6 +145,7 @@ const ExploreScreen = () => {
 					<View style={tw`flex-row bg-white rounded-full mt-4`}>
 						{["Air", "Water", "Land"].map((tab) => (
 							<TouchableOpacity
+								disabled
 								key={tab}
 								onPress={() => setActiveTab(tab)}
 								style={tw`flex-1 py-3 ${

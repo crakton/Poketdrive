@@ -5,6 +5,7 @@ import {
 	TouchableOpacity,
 	ScrollView,
 	Platform,
+	ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -13,9 +14,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "../../types";
 import { TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useAirService } from "../../hooks/air/useAirService";
+import { findFlights, setFlights } from "../../redux/features/flightSllice";
+import { useAppDispatch } from "../../redux/store";
+import AirService from "../../services/airService";
+import { useQueryClient } from "@tanstack/react-query";
+import PageLoader from "../../components/ui/PageLoader";
+import Toast from "react-native-toast-message";
 
 const TravelsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+	const dispatch = useAppDispatch();
+	const [isLoading, setIsLoading] = useState(false);
 	const [passengers, setPassengers] = useState(1);
 	const [fromLocation, setFromLocation] = useState("");
 	const [toLocation, setToLocation] = useState("");
@@ -74,8 +84,36 @@ const TravelsScreen = () => {
 		return date.toLocaleDateString();
 	}, []);
 
+	const airServices = new AirService(useQueryClient());
+
+	/* handle fetching of flighs before routing to search result screen */
+	const handleFindFlight = useCallback(async () => {
+		if (fromLocation === "" || toLocation === "") {
+			return;
+		}
+		try {
+			setIsLoading(true);
+			const data = await airServices.findFlights({
+				departureCity: fromLocation,
+				destinationCity: toLocation,
+			});
+			dispatch(findFlights(data));
+			navigation.navigate("FlightSearch");
+		} catch (error) {
+			const e = error as Error;
+			Toast.show({
+				text1: "Search failed",
+				type: "error",
+				text2: e.message,
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	}, [fromLocation, toLocation]);
+
 	return (
 		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
+			{isLoading && <PageLoader />}
 			<ScrollView>
 				<View style={tw`p-4`}>
 					<Text style={tw`text-2xl`}>
@@ -205,7 +243,7 @@ const TravelsScreen = () => {
 
 					{/* Find button */}
 					<TouchableOpacity
-						onPress={() => navigation.navigate("FlightSearch")}
+						onPress={handleFindFlight}
 						style={tw`mt-4 bg-orange-500 p-4 rounded-lg items-center`}
 					>
 						<Text style={tw`text-white font-bold`}>Find</Text>

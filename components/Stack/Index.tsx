@@ -66,11 +66,8 @@ const StackContainer = () => {
 	// Return an actual Navigator component with screens
 	return (
 		<Stack.Navigator screenOptions={{ headerShown: false }}>
-			{/* Auth and Onboarding Screens */}
-			<Stack.Screen name="Onboarding" component={Onboarding} />
-			<Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
-			<Stack.Screen name="CreateAccount" component={CreateAccount} />
 			<Stack.Screen name="Login" component={Login} />
+			<Stack.Screen name="CreateAccount" component={CreateAccount} />
 			<Stack.Screen name="Verification" component={Verification} />
 
 			{/* Main App Screens */}
@@ -111,8 +108,6 @@ const StackContainer = () => {
 			<Stack.Screen name="TripConfirmation" component={TripConfirmation} />
 			<Stack.Screen name="ManageRide" component={ManageRide} />
 			<Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
-
-			
 		</Stack.Navigator>
 	);
 };

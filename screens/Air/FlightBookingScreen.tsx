@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
 	View,
 	Text,
@@ -8,30 +8,31 @@ import {
 	ScrollView,
 } from "react-native";
 import tw from "twrnc";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import {
+	NavigationProp,
+	useNavigation,
+	useRoute,
+} from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "../../types";
 import { useAirContext } from "../../hooks/air/useAirContext";
+import CustomButton from "../../components/ui/CustomButton";
+import { IBookingData, IFlight, ISearchFlight } from "../../types/airline";
 
 const FlightBookingScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-	const { selectedSeat, setFlightDetails } = useAirContext();
+	const bookingData = useRoute().params as IBookingData;
 
-	const flightDetails = {
-		flightNumber: "Jet Marc - 001",
-		departureTime: "5.50",
-		departureCode: "LAG",
-		departureAirport: "Murtala International",
-		arrivalTime: "7.30",
-		arrivalCode: "ABJ",
-		arrivalAirport: "Murtala International",
-		price: "N23000",
-	};
+	// Get available schedule based on selected index
+	const availableSchedule =
+		bookingData.selectedFlight.availableSchedules[bookingData.scheduledIndex];
+
+	// Calculate price (more straightforward)
+	const totalPrice = bookingData.pricePerSeat * bookingData.passengers;
 
 	const handleConfirm = () => {
-		// Navigate to passenger details screen
-		setFlightDetails(flightDetails);
-		navigation.navigate("SelectSeat");
+		// Pass the entire booking data object forward
+		navigation.navigate("SelectSeat", bookingData);
 	};
 
 	const handleCancel = () => {
@@ -41,33 +42,24 @@ const FlightBookingScreen = () => {
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
 			<ScrollView contentContainerStyle={tw`flex-grow`} style={tw`flex-1 p-4`}>
-				{/* <View style={tw`flex-row items-center mb-6`}>
-					<TouchableOpacity
-						onPress={() => navigation.goBack()}
-						style={tw`mr-4`}
-					>
-						<Ionicons name="arrow-back" size={24} color="black" />
-					</TouchableOpacity>
-					<Text style={tw`text-2xl font-bold`}>Flight details</Text>
-				</View> */}
-
 				<View style={tw`bg-white rounded-xl shadow-md mb-6`}>
 					<View style={tw`py-3`}>
 						<Text style={tw`text-lg font-bold text-center mb-4`}>
-							{flightDetails.flightNumber}
+							{bookingData.flight.airline.name} -{" "}
+							{bookingData.flight.flightNumber}
 						</Text>
 					</View>
 					<View style={tw`border border-gray-100 border-b-1 `} />
 					<View style={tw`flex-row justify-between p-3 items-center mb-6`}>
 						<View style={tw`items-start`}>
 							<Text style={tw`text-xl font-bold`}>
-								{flightDetails.departureTime}
+								{availableSchedule.departureTime.toString()}
 							</Text>
 							<Text style={tw`text-lg font-bold`}>
-								{flightDetails.departureCode}
+								{bookingData.selectedFlight.departure.code}
 							</Text>
 							<Text style={tw`text-sm text-gray-500`}>
-								{flightDetails.departureAirport}
+								{bookingData.selectedFlight.airline.name}
 							</Text>
 						</View>
 
@@ -83,13 +75,13 @@ const FlightBookingScreen = () => {
 
 						<View style={tw`items-end`}>
 							<Text style={tw`text-xl font-bold`}>
-								{flightDetails.arrivalTime}
+								{availableSchedule.arrivalTime.toString()}
 							</Text>
 							<Text style={tw`text-lg font-bold`}>
-								{flightDetails.arrivalCode}
+								{bookingData.selectedFlight.destination.code}
 							</Text>
 							<Text style={tw`text-sm text-gray-500`}>
-								{flightDetails.arrivalAirport}
+								{bookingData.selectedFlight.airline.name}
 							</Text>
 						</View>
 					</View>
@@ -115,7 +107,7 @@ const FlightBookingScreen = () => {
 
 					<View style={tw`py-4`}>
 						<Text style={tw`text-xl font-bold text-center mt-4`}>
-							Price {flightDetails.price}
+							Price: {totalPrice.toLocaleString("en-US")}
 						</Text>
 					</View>
 				</View>
@@ -123,24 +115,17 @@ const FlightBookingScreen = () => {
 				<View style={tw`flex-1`}></View>
 
 				<View style={tw`flex-row gap-3`}>
-					<TouchableOpacity
-						style={[
-							tw`p-3 border-[1px] border-[#F25b3e] items-center flex-1 justify-center rounded-lg my-8`,
-							{ backgroundColor: "#fff" },
-						]}
+					<CustomButton
+						style={tw`flex-1`}
+						text="Cancel"
+						variant="outlined"
 						onPress={handleCancel}
-					>
-						<Text style={tw`text-[#F25b3e] font-medium text-lg`}>Cancel</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={[
-							tw`p-3 items-center flex-1 justify-center rounded-lg my-8`,
-							{ backgroundColor: "#F25B3E" },
-						]}
+					/>
+					<CustomButton
+						style={tw`flex-1`}
+						text="Confirm"
 						onPress={handleConfirm}
-					>
-						<Text style={tw`text-white font-medium text-lg`}>Confirm</Text>
-					</TouchableOpacity>
+					/>
 				</View>
 			</ScrollView>
 		</SafeAreaView>

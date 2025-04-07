@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import AirService from "../../services/airService";
+import AirService, { FindFlightDTO } from "../../services/airService";
 
 /**
  * Custom hook for accessing airline-related data and operations
@@ -22,6 +22,16 @@ export const useAirService = () => {
 				queryFn,
 			});
 		},
+		/**
+		 * Fetch all supported cities
+		 */
+		useGetAirlineCities: () => {
+			const { queryKey, queryFn } = airService.getAirlineCities();
+			return useQuery({
+				queryKey,
+				queryFn,
+			});
+		},
 
 		/**
 		 * Fetch a specific airline by ID
@@ -36,19 +46,36 @@ export const useAirService = () => {
 				enabled: !!id,
 			});
 		},
+		/**
+		 * Fetch a specific flight by ID
+		 * @param id - The ID of the airline to fetch
+		 */
+		useGetFlightById: <T>(id: string) => {
+			const { queryKey, queryFn } = airService.getFlightById(id);
+			return useQuery<T>({
+				queryKey,
+				queryFn,
+				// Only fetch when ID is present
+				enabled: !!id,
+			});
+		},
 
 		/**
 		 * Create a new airline
-		 * @returns Mutation hook for creating airlines
+		 * @returns Mutation hook for finding flgihts
+		 * @Params {departureCity:string, destinationCity:string }
 		 */
-		useCreateAirline: () => {
-			return useMutation({
-				mutationFn: airService.createAirline,
-				onSuccess: () => {
-					// Invalidate and refetch airlines list after creation
-					queryClient.invalidateQueries({ queryKey: ["airline"] });
-				},
-			});
-		},
+		// useFindFlights: (payload: FindFlightDTO) => {
+		// 	return useMutation({
+		// 		mutationFn: () => airService.findFlights(payload),
+		// 		onSuccess: () => {
+		// 			// Invalidate and refetch airlines list after creation
+		// 			queryClient.invalidateQueries({ queryKey: ["findFlights"] });
+		// 		},
+		// 		onError: (error) => {
+		// 			console.log(error);
+		// 		},
+		// 	});
+		// },
 	};
 };

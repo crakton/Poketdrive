@@ -1,22 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Airline } from "../../types/airline";
+import { IAirline, IAirlineCities } from "../../types/airline";
 
 const airlineSlice = createSlice({
 	name: "airline",
 	initialState: {
-		airlines: [] as Airline[],
-		selectedAirline: null as Airline | null,
+		airlines: [] as IAirline[],
+		airlineCities: [] as IAirlineCities[],
+		selectedAirline: null as IAirline | null,
 	},
 	reducers: {
-		setAirlines: (state, action: PayloadAction<Airline[]>) => {
+		setAirlines: (state, action: PayloadAction<IAirline[]>) => {
 			state.airlines = action.payload;
 		},
-		setSelectedAirline: (state, action: PayloadAction<Airline | null>) => {
+		setSelectedAirline: (state, action: PayloadAction<IAirline | null>) => {
 			state.selectedAirline = action.payload;
+		},
+		setAirlineCities: (state, action: PayloadAction<IAirlineCities[]>) => {
+			state.airlineCities = action.payload;
 		},
 	},
 });
 
-export const { setAirlines, setSelectedAirline } = airlineSlice.actions;
+export const { setAirlines, setSelectedAirline, setAirlineCities } =
+	airlineSlice.actions;
 const airlineReducer = airlineSlice.reducer;
 export default airlineReducer;
