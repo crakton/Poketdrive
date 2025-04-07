@@ -86,8 +86,7 @@ const FromMe = () => {
             </View>
             <View style={tw`ml-4 flex-1 gap-1`}>
               <Text style={tw`text-black font-semibold text-[13px]`}>
-                {item.senderInfo?.description ||
-                  "Order description not available"}
+                {item.senderInfo?.sender_name || "No sender"}
               </Text>
               <Text style={tw`text-gray-500 text-[12px]`}>
                 {item.senderInfo?.pickupAddress ||

@@ -68,3 +68,11 @@ export const getOrderTo = async () => {
   const response = await fetch(options);
   return response;
 };
+export const getOrderById = async (id: number) => {
+  const options: AxiosRequestConfig = {
+    method: "GET",
+    url: `/water/get_order/${id}`,
+  };
+  const response = await fetch(options);
+  return response;
+};

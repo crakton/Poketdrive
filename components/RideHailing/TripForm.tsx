@@ -8,8 +8,10 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { useSearchRide } from "../../hooks/reactQuery/useTrips";
-import Loader from "../loader/Loader";
 import ContinueButton from "../ui/ContinueButton";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { GOOGLE_MAPS_APIKEY } from "../../utils/constant";
+import tw from "twrnc";
 
 // Validation schema
 const TripFormSchema = Yup.object().shape({
@@ -68,46 +70,81 @@ const TripForm = () => {
         touched,
         setFieldValue,
       }) => (
-        <View>
-          <View style={styles.inputContainer}>
-            <Icon
-              name="location"
-              type="ionicon"
-              color="red"
-              style={styles.icon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="From where?"
-              onChangeText={handleChange("fromwhere")}
-              onBlur={handleBlur("fromwhere")}
-              placeholderTextColor="gray"
-              value={values.fromwhere}
-            />
-          </View>
-          {errors.fromwhere && touched.fromwhere && (
-            <Text style={styles.errorText}>{errors.fromwhere}</Text>
-          )}
-          <View style={styles.inputContainer}>
-            <Icon
-              name="location"
-              type="ionicon"
-              color="green"
-              style={styles.icon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="To where?"
-              onChangeText={handleChange("towhere")}
-              onBlur={handleBlur("towhere")}
-              placeholderTextColor="gray"
-              value={values.towhere}
-            />
-          </View>
-          {errors.towhere && touched.towhere && (
-            <Text style={styles.errorText}>{errors.towhere}</Text>
-          )}
-          {/**
+        <View style={tw`flex justify-between h-full pb-40`}>
+          <View>
+            <View style={styles.inputContainer}>
+              <Icon
+                name="location"
+                type="ionicon"
+                color="red"
+                size={20}
+                style={styles.icon}
+              />
+              <GooglePlacesAutocomplete
+                nearbyPlacesAPI="GooglePlacesSearch"
+                fetchDetails={true}
+                GooglePlacesDetailsQuery={{ rankby: "distance" }}
+                enablePoweredByContainer={false}
+                placeholder="From where?"
+                onPress={(data, details = null) => {
+                  setFieldValue("fromwhere", data.description);
+                }}
+                query={{
+                  key: GOOGLE_MAPS_APIKEY,
+                  language: "en",
+                }}
+                styles={{
+                  textInput: {
+                    flex: 1,
+                    height: 45,
+                    borderRadius: 10,
+                    paddingVertical: 10,
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 14,
+                  },
+                }}
+              />
+            </View>
+            {errors.fromwhere && touched.fromwhere && (
+              <Text style={styles.errorText}>{errors.fromwhere}</Text>
+            )}
+            <View style={styles.inputContainer}>
+              <Icon
+                name="location"
+                type="ionicon"
+                color="green"
+                size={20}
+                style={styles.icon}
+              />
+              <GooglePlacesAutocomplete
+                nearbyPlacesAPI="GooglePlacesSearch"
+                fetchDetails={true}
+                GooglePlacesDetailsQuery={{ rankby: "distance" }}
+                enablePoweredByContainer={false}
+                placeholder="To where?"
+                onPress={(data, details = null) => {
+                  setFieldValue("towhere", data.description);
+                }}
+                query={{
+                  key: GOOGLE_MAPS_APIKEY,
+                  language: "en",
+                }}
+                styles={{
+                  textInput: {
+                    flex: 1,
+                    height: 45,
+                    borderRadius: 10,
+                    paddingVertical: 10,
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 14,
+                  },
+                }}
+              />
+            </View>
+            {errors.towhere && touched.towhere && (
+              <Text style={styles.errorText}>{errors.towhere}</Text>
+            )}
+            {/**
           <View style={styles.inputContainerDate}>
             <Icon name="time" type="ionicon" color="red" style={styles.icon} />
             <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>
@@ -127,7 +164,7 @@ const TripForm = () => {
           {errors.departureTime && touched.departureTime && (
             <Text style={styles.errorText}>{errors.departureTime}</Text>
           )} */}
-
+          </View>
           <ContinueButton
             text={"Search"}
             onPress={() => handleSubmit()}
@@ -143,13 +180,12 @@ const TripForm = () => {
 const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    // alignItems: "",
     marginBottom: 20,
-    borderColor: "#D9D9D9",
-    borderWidth: 1,
+    // borderColor: "gray",
+    // borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    backgroundColor: "#D9D9D9",
   },
   inputContainerDate: {
     flexDirection: "row",
@@ -162,9 +198,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#D9D9D9",
   },
-  icon: {
-    marginRight: 10,
-  },
+
   input: {
     flex: 1,
     height: 50,
@@ -172,6 +206,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
     paddingHorizontal: 10,
     fontFamily: "Poppins-Regular",
+  },
+  icon: {
+    marginRight: 10,
+    marginTop: 13,
   },
   errorText: {
     color: "red",

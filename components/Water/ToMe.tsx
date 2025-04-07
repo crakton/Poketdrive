@@ -12,9 +12,12 @@ import tw from "twrnc";
 import { SvgXml } from "react-native-svg";
 import { useGetOrdersTo } from "../../hooks/reactQuery/useWater";
 import { orderSvg } from "../../utils/svg";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../types";
 
 const ToMe = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const { data: ordersData, isLoading, isError } = useGetOrdersTo();
 
@@ -71,6 +74,11 @@ const ToMe = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("TrackingScreen", {
+                order: item,
+              })
+            }
             style={tw`border border-gray-200 rounded-[12px] h-[70px] p-3 flex-row gap-2 justify-between items-center m-1 mb-3`}
           >
             <View

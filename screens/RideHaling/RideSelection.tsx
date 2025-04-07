@@ -53,7 +53,7 @@ const RideSelection = () => {
     <View
       style={[
         tailwind`bg-white flex-1 h-full `,
-        // { paddingTop: StatusBar.currentHeight },
+        { paddingTop: StatusBar.currentHeight },
       ]}
     >
       <StatusBar translucent backgroundColor="transparent" />

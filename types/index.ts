@@ -1,3 +1,5 @@
+import { TrackingOrder } from "../lib/types";
+
 export type Dict = Record<string, string>;
 export type DictOf<T> = Record<string, T>;
 export type RootStackParamList = {
@@ -35,14 +37,6 @@ export type RootStackParamList = {
   SucessScreen: undefined;
   WaterTabBar: undefined;
   TrackingScreen: {
-    order: {
-      id: string;
-      description: string;
-      color: string;
-      status: string;
-      icon: string;
-      origin: number[];
-      destination: number[];
-    };
+    order: TrackingOrder;
   };
 };

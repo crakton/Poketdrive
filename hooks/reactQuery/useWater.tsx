@@ -42,6 +42,13 @@ export const useGetRate = (kg: number) => {
     enabled: !!kg,
   });
 };
+export const useGetOrderById = (id: number) => {
+  return useQuery({
+    queryKey: ["getRate"],
+    queryFn: () => getRate(id),
+    enabled: !!id,
+  });
+};
 export const useGetOrdersFrom = () => {
   return useQuery({
     queryKey: ["getRate"],

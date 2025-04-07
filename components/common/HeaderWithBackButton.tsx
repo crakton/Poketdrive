@@ -14,7 +14,9 @@ const HeaderWithBackButton: React.FC<HeaderWithBackButtonProps> = ({
   title,
 }) => {
   return (
-    <SafeAreaView style={tw`flex flex-row items-center justify-between pt-3`}>
+    <SafeAreaView
+      style={tw`flex flex-row items-center justify-between pt-3 px-5 pr-10`}
+    >
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Icon
           name="arrow-back-outline"

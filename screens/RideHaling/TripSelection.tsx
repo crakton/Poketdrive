@@ -73,7 +73,7 @@ const TripSelection = () => {
       <View style={tw`px-3 py-5`}>
         <TripForm />
       </View>
-      <View>
+      {/* <View>
         <View>
           <Text
             style={[tw`text-xl text-center`, { fontFamily: "Poppins-Medium" }]}
@@ -98,7 +98,7 @@ const TripSelection = () => {
             keyExtractor={(item) => item.id.toString()}
           />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };
