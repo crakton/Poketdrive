@@ -1,5 +1,5 @@
-import { set } from "date-fns";
 import React, { createContext, FC, useMemo, useState } from "react";
+import { IFlight } from "../../types/airline";
 
 type AirContextProps = {
 	children: React.ReactNode;
@@ -43,10 +43,8 @@ export type TSearchQueries = {
 export const AirContext = createContext<{
 	selectedSeat: string;
 	setSelectedSeat: React.Dispatch<React.SetStateAction<string>>;
-	flightDetails: TFlightDetails | undefined;
-	setFlightDetails: React.Dispatch<
-		React.SetStateAction<TFlightDetails | undefined>
-	>;
+	flightDetails: IFlight | undefined;
+	setFlightDetails: React.Dispatch<React.SetStateAction<IFlight | undefined>>;
 	tourDetails: TTourDetails | undefined;
 	setTourDetails: React.Dispatch<
 		React.SetStateAction<TTourDetails | undefined>
@@ -91,7 +89,7 @@ const AirContextProvider: FC<AirContextProps> = (props) => {
 		useState<TSearchQueries>();
 	const [selectedSeat, setSelectedSeat] = useState<string>("1A");
 	const [tourDetails, setTourDetails] = useState<TTourDetails>();
-	const [flightDetails, setFlightDetails] = useState<TFlightDetails>();
+	const [flightDetails, setFlightDetails] = useState<IFlight>();
 	const [passengerDetails, setPassengerDetails] = useState<TPassengerDetails>();
 	const [tourPassengers, setTourPassengers] = useState<number>(1);
 	const [flightPassengers, setFlightPassengers] = useState<number>(1);
@@ -115,7 +113,16 @@ const AirContextProvider: FC<AirContextProps> = (props) => {
 			flightPassengers,
 			setFlightPassengers,
 		}),
-		[]
+		[
+			selectedSeat,
+			flightDetails,
+			tourDetails,
+			passengerDetails,
+			tourSearchQueries,
+			flightSearchQueries,
+			tourPassengers,
+			flightPassengers,
+		]
 	);
 	return (
 		<AirContext.Provider value={value}>{props.children}</AirContext.Provider>

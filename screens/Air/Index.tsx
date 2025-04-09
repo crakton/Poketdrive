@@ -13,6 +13,7 @@ import TravelsScreen from "./TravelsScreen";
 const Tab = createBottomTabNavigator();
 
 const AirRootTab = () => {
+<<<<<<< HEAD
   return (
     <AirContextProvider>
       <Tab.Navigator
@@ -49,6 +50,48 @@ const AirRootTab = () => {
           }}
           component={TravelsScreen}
         />
+=======
+	return (
+		<AirContextProvider>
+			<Tab.Navigator
+				screenOptions={{
+					headerShown: false,
+					tabBarHideOnKeyboard: true,
+					tabBarActiveTintColor: "#FF6633",
+				}}
+			>
+				<Tab.Screen
+					name="Explore"
+					options={{
+						tabBarIcon(props) {
+							return (
+								<FontAwesome5
+									name="route"
+									size={props.size}
+									color={props.color}
+								/>
+							);
+						},
+					}}
+					component={ExploreScreen}
+				/>
+				<Tab.Screen
+					name="Travels"
+					options={{
+						tabBarLabel: "Travels",
+						tabBarIcon(props) {
+							return (
+								<Ionicons
+									name="train-outline"
+									size={props.size}
+									color={props.color}
+								/>
+							);
+						},
+					}}
+					component={TravelsScreen}
+				/>
+>>>>>>> 3cd2cf17ad2ca487c09b65969c224c9e6b1da61b
 
         <Tab.Screen
           name="Profile"

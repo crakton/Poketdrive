@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { Avatar } from "@rneui/base";
+import { IAirline } from "../../types/airline";
 
 const TourDetailsScreen = () => {
 	const navigation = useNavigation();
+	const preview = useRoute().params as IAirline;
 	const [passengers, setPassengers] = useState(1);
 	const [flightDuration, setFlightDuration] = useState("35 min");
 	const [startTime, setStartTime] = useState("9:00");
@@ -43,7 +45,7 @@ const TourDetailsScreen = () => {
 				{/* Header image */}
 				<View style={tw`relative`}>
 					<Image
-						source={require("../../assets/images/air/cassna.png")}
+						source={{ uri: preview.image }}
 						style={tw`w-full h-48`}
 						resizeMode="cover"
 					/>
@@ -73,12 +75,8 @@ const TourDetailsScreen = () => {
 
 				{/* Tour information */}
 				<View style={tw`p-4`}>
-					<Text style={tw`text-xl font-bold`}>Tour to Paris</Text>
-					<Text style={tw`text-gray-600 mt-1`}>
-						An exciting flight in a Cessna 172 sightseeing airplane over the
-						neighborhood of the airfield. The flight includes performance of
-						simple aerobatics figures and short-term weightlessness mode.
-					</Text>
+					<Text style={tw`text-xl font-bold`}>Tour to {preview.country}</Text>
+					<Text style={tw`text-gray-600 mt-1`}></Text>
 
 					<View style={tw`flex-row mt-4`}>
 						<TouchableOpacity
@@ -94,7 +92,7 @@ const TourDetailsScreen = () => {
 					</View>
 
 					{/* Location details */}
-					<Text style={tw`text-xl font-bold mt-6`}>Paris</Text>
+					<Text style={tw`text-xl font-bold mt-6`}>{preview.name}</Text>
 
 					{/* Passengers selector */}
 					<View
@@ -284,11 +282,11 @@ const TourDetailsScreen = () => {
 					</View>
 
 					{/* Booking button */}
-					<TouchableOpacity
+					{/* <TouchableOpacity
 						style={tw`mt-6 bg-orange-500 p-4 rounded-lg items-center`}
 					>
 						<Text style={tw`text-white font-bold`}>Book for 10,000 ₽</Text>
-					</TouchableOpacity>
+					</TouchableOpacity> */}
 				</View>
 			</ScrollView>
 		</SafeAreaView>

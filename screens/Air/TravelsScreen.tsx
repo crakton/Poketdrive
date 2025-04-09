@@ -1,21 +1,30 @@
-import React, { useState, useRef, useCallback } from "react";
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	ScrollView,
-	Platform,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import PageLoader from "@components/ui/PageLoader";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { findFlights } from "@redux/features/flightSllice";
+import { useAppDispatch } from "@redux/store";
+import AirService from "@services/airService";
+import { useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import React, { useCallback, useState } from "react";
+import {
+	Platform,
+	SafeAreaView,
+	ScrollView,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import Toast from "react-native-toast-message";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "../../types";
-import { TextInput } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 const TravelsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+	const dispatch = useAppDispatch();
+	const [isLoading, setIsLoading] = useState(false);
 	const [passengers, setPassengers] = useState(1);
 	const [fromLocation, setFromLocation] = useState("");
 	const [toLocation, setToLocation] = useState("");
@@ -39,12 +48,13 @@ const TravelsScreen = () => {
 	}, [passengers]);
 
 	const handleSwapLocations = useCallback(() => {
+		const tempFrom = fromLocation;
 		setFromLocation(toLocation);
-		setToLocation(fromLocation);
-	}, []);
+		setToLocation(tempFrom);
+	}, [fromLocation, toLocation]);
 
 	const onChangeDepartureDate = useCallback(
-		(event: any, selectedDate: Date | undefined) => {
+		(selectedDate: Date | undefined) => {
 			const currentDate = selectedDate || new Date();
 			setShowDeparturePicker(Platform.OS === "ios");
 			setDepartureDate(currentDate);
@@ -52,14 +62,11 @@ const TravelsScreen = () => {
 		[]
 	);
 
-	const onChangeArrivalDate = useCallback(
-		(event: any, selectedDate: Date | undefined) => {
-			const currentDate = selectedDate || new Date();
-			setShowArrivalPicker(Platform.OS === "ios");
-			setArrivalDate(currentDate);
-		},
-		[]
-	);
+	const onChangeArrivalDate = useCallback((selectedDate: Date | undefined) => {
+		const currentDate = selectedDate || new Date();
+		setShowArrivalPicker(Platform.OS === "ios");
+		setArrivalDate(currentDate);
+	}, []);
 
 	const showDepartureMode = useCallback(() => {
 		setShowDeparturePicker(true);
@@ -74,9 +81,38 @@ const TravelsScreen = () => {
 		return date.toLocaleDateString();
 	}, []);
 
+	const airServices = new AirService(useQueryClient());
+
+	/* handle fetching of flighs before routing to search result screen */
+	const handleFindFlight = useCallback(async () => {
+		if (fromLocation === "" || toLocation === "") {
+			return;
+		}
+		try {
+			setIsLoading(true);
+			const data = await airServices.findFlights({
+				departureCity: fromLocation.trim(),
+				destinationCity: toLocation.trim(),
+			});
+
+			dispatch(findFlights(data));
+			navigation.navigate("FlightSearch");
+		} catch (error) {
+			const e = error as AxiosError;
+			Toast.show({
+				text1: "Search failed",
+				type: "error",
+				text2: e?.response?.data.message as string,
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	}, [fromLocation, toLocation]);
+
 	return (
 		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
-			<ScrollView>
+			{isLoading && <PageLoader />}
+			<ScrollView style={tw`flex-grow pt-3`}>
 				<View style={tw`p-4`}>
 					<Text style={tw`text-2xl`}>
 						<Text style={tw`font-bold text-orange-500`}>Jet Share</Text>
@@ -141,7 +177,7 @@ const TravelsScreen = () => {
 						{showDeparturePicker && (
 							<DateTimePicker
 								testID="dateTimePicker"
-								value={departureDate || new Date()}
+								// value={departureDate || new Date()}
 								mode="date"
 								is24Hour={true}
 								display="default"
@@ -205,7 +241,7 @@ const TravelsScreen = () => {
 
 					{/* Find button */}
 					<TouchableOpacity
-						onPress={() => navigation.navigate("FlightSearch")}
+						onPress={handleFindFlight}
 						style={tw`mt-4 bg-orange-500 p-4 rounded-lg items-center`}
 					>
 						<Text style={tw`text-white font-bold`}>Find</Text>

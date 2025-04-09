@@ -28,9 +28,9 @@ import SeatSelectionScreen from "./screens/Air/SeatSelectionScreen";
 // import PaymentScreen from "./screens/Air/PaymentScreen";
 import TicketConfirmationScreen from "./screens/Air/TicketConfirmationScreen";
 import TravelsScreen from "./screens/Air/TravelsScreen";
+import RootNavigator from "./components/common/RootNavigator";
 
 
-export const RootStack = createNativeStackNavigator();
 
 export default function App() {
   // Register push notifications - moved inside useEffect in a real component
@@ -137,6 +137,7 @@ export default function App() {
 							
 						</RootStack.Navigator>
 					</NavigationContainer>
+					<RootNavigator />
 					<Toast />
 				</GestureHandlerRootView>
 			</Provider>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { TrackingOrder } from "../lib/types";
 
 export type Dict = Record<string, string>;
@@ -39,4 +40,38 @@ export type RootStackParamList = {
   TrackingScreen: {
     order: TrackingOrder;
   };
+=======
+export type RootStackParamList = {
+	CreateAccount?: {};
+	MainStack?: {};
+	DrawerContainer?: {};
+	StackContainer?: {};
+	Air?: {};
+	Home?: {};
+	AirTabBar?: {};
+	OnboardingSlide?: {};
+	Onboarding?: {};
+	PhoneNumberScreen?: {};
+	NameScreen?: {};
+	ConfirmationCodeScreen?: {};
+	DateOfBirthScreen?: {};
+	Dashboard?: {};
+	TourDetails?: {};
+	Login?: {};
+	TicketConfirmation?: {};
+	ProfileScreen?: {};
+	FlightSearch?: {};
+	FlightDetails?: {};
+	PassengerDetails?: {};
+	FlightBooking?: {};
+	PaymentSuccess?: {};
+	Payments?: {};
+	Payment?: {};
+	SelectSeat?: {};
+	Travels?: {};
+	MyWallet?: {};
+	TransactionDetails?: {};
+	ForgotPassword?: {};
+	CardManagement?: {};
+>>>>>>> 3cd2cf17ad2ca487c09b65969c224c9e6b1da61b
 };

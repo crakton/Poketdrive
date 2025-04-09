@@ -15,7 +15,7 @@ import tw from "twrnc";
 import { RootStackParamList } from "../../types";
 import { useAirContext } from "../../hooks/air/useAirContext";
 import { useAppSelector } from "../../redux/store";
-import { Airline } from "../../types/airline";
+import { IAirline } from "../../types/airline";
 import ContinueButton from "../../components/ui/ContinueButton";
 
 const TourScreen = () => {
@@ -50,9 +50,9 @@ const TourScreen = () => {
 	// 	},
 	// ];
 
-	const handleTourPreveiw = useCallback((item: Airline) => {
+	const handleTourPreveiw = useCallback((item: IAirline) => {
 		// setTourDetails(item);
-		navigation.navigate("TourDetails");
+		navigation.navigate("TourDetails", item);
 	}, []);
 
 	const filteredAirlines = useMemo(() => {
@@ -67,7 +67,7 @@ const TourScreen = () => {
 	console.log("search", search);
 	console.log("filteredAirlines", filteredAirlines);
 
-	const renderAirTour = ({ item }: { item: Airline }) => (
+	const renderAirTour = ({ item }: { item: IAirline }) => (
 		<View style={tw`bg-gray-50 rounded-lg overflow-hidden mb-4`}>
 			<TouchableOpacity onPress={() => handleTourPreveiw(item)} style={tw``}>
 				<ImageBackground
