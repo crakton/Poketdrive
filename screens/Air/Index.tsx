@@ -16,7 +16,11 @@ const AirRootTab = () => {
 	return (
 		<AirContextProvider>
 			<Tab.Navigator
-				screenOptions={{ headerShown: false, tabBarHideOnKeyboard: true }}
+				screenOptions={{
+					headerShown: false,
+					tabBarHideOnKeyboard: true,
+					tabBarActiveTintColor: "#FF6633",
+				}}
 			>
 				<Tab.Screen
 					name="Explore"
