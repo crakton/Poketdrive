@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import AirService, { FindFlightDTO } from "../../services/airService";
+import AirService from "../../services/airService";
+import { FindFlightDTO } from "../../types/dtos/flightDto";
 
 /**
  * Custom hook for accessing airline-related data and operations
@@ -13,6 +14,16 @@ export const useAirService = () => {
 
 	return {
 		/**
+		 * Fetch all open flights
+		 */
+		useGetFlights: () => {
+			const { queryKey, queryFn } = airService.getFligts();
+			return useQuery({
+				queryKey,
+				queryFn,
+			});
+		},
+		/**
 		 * Fetch all airlines
 		 */
 		useGetAirlines: () => {
@@ -22,6 +33,7 @@ export const useAirService = () => {
 				queryFn,
 			});
 		},
+
 		/**
 		 * Fetch all supported cities
 		 */
@@ -42,40 +54,69 @@ export const useAirService = () => {
 			return useQuery({
 				queryKey,
 				queryFn,
-				// Only fetch when ID is present
 				enabled: !!id,
 			});
 		},
+
 		/**
 		 * Fetch a specific flight by ID
-		 * @param id - The ID of the airline to fetch
+		 * @param id - The ID of the flight to fetch
 		 */
 		useGetFlightById: <T>(id: string) => {
 			const { queryKey, queryFn } = airService.getFlightById(id);
 			return useQuery<T>({
 				queryKey,
 				queryFn,
-				// Only fetch when ID is present
 				enabled: !!id,
 			});
 		},
 
 		/**
-		 * Create a new airline
-		 * @returns Mutation hook for finding flgihts
-		 * @Params {departureCity:string, destinationCity:string }
+		 * Find flights based on search criteria
 		 */
-		// useFindFlights: (payload: FindFlightDTO) => {
-		// 	return useMutation({
-		// 		mutationFn: () => airService.findFlights(payload),
-		// 		onSuccess: () => {
-		// 			// Invalidate and refetch airlines list after creation
-		// 			queryClient.invalidateQueries({ queryKey: ["findFlights"] });
-		// 		},
-		// 		onError: (error) => {
-		// 			console.log(error);
-		// 		},
-		// 	});
+		useFindFlights: () => {
+			return useMutation({
+				mutationFn: (data: FindFlightDTO) => airService.findFlights(data),
+				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: ["flights"] });
+				},
+			});
+		},
+
+		/**
+		 * Book a full flight
+		 */
+		useBookFullFlight: () => {
+			return useMutation({
+				mutationFn: airService.bookFullFlight,
+				onSuccess: () => {
+					queryClient.invalidateQueries({ queryKey: ["bookings"] });
+				},
+			});
+		},
+
+		/**
+		 * Book and share a flight
+		 */
+		// useBookAndShareFlight: () => {
+		//   return useMutation({
+		//     mutationFn: airService.bookAndShareFlight,
+		//     onSuccess: () => {
+		//       queryClient.invalidateQueries({ queryKey: ["bookings"] });
+		//     },
+		//   });
+		// },
+
+		/**
+		 * Join an already booked shared flight
+		 */
+		// useJoinBookedFlight: () => {
+		//   return useMutation({
+		//     mutationFn: airService.joinBookedFlight,
+		//     onSuccess: () => {
+		//       queryClient.invalidateQueries({ queryKey: ["bookings"] });
+		//     },
+		//   });
 		// },
 	};
 };

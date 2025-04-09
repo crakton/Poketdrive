@@ -111,13 +111,26 @@ export interface IBookingData {
 
 	// Booking options
 	isTour: boolean;
-	isSharedFlight: boolean;
+	isSplitFare: boolean;
 	isRoundTrip: boolean;
 
 	// Pricing and passengers
 	passengers: number;
 	pricePerSeat: number;
 
-	// Seat selection (filled later in flow)
-	selectedSeatId?: string;
+	//  (filled later in flow)
+	selectedSeat?: string;
+	enableJetshare?: boolean;
+	jetSharePricePerSeat?: number;
+}
+
+export interface IFlights {
+	status: EFlightStatus;
+	_id: string;
+	airline: IAirline;
+	flightNumber: string;
+	departure: IFlightDeparture;
+	destination: IFlightDestination;
+	fixedPrice: number;
+	availableSchedules: ISearchFlightAvaiSchedule[];
 }

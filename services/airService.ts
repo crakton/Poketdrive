@@ -1,12 +1,13 @@
 import { QueryClient, MutationFunction } from "@tanstack/react-query";
-import { baseUrl } from "../utils/constant";
+import api from "../lib/api"; // Import the axios instance
+
 import {
 	FindFlightDTO,
 	TBookFlightWithoutSharedSeatsDTO,
 	TBookFlightWithSharedSeatsDTO,
 	TBookSharedFlightDTO,
 } from "../types/dtos/flightDto";
-import AuthService from "./authService";
+import { isDate } from "node:util/types";
 
 export default class AirService {
 	private queryClient: QueryClient;
@@ -15,85 +16,69 @@ export default class AirService {
 		this.queryClient = queryClient;
 	}
 
+	getFligts = () => {
+		const queryKey = ["flights"];
+		return {
+			queryKey,
+			queryFn: async () => {
+				const response = await api.get("/air/flights");
+				return response.data;
+			},
+		};
+	};
 	getAirlines = () => {
 		const queryKey = ["airline"];
 		return {
 			queryKey,
 			queryFn: async () => {
-				const response = await fetch(`${baseUrl}/air/airline`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.message || "Failed to fetch airlines");
-				}
-				return response.json() as Promise<any>;
+				const response = await api.get("/air/airline");
+				return response.data;
 			},
 		};
 	};
+
 	getAirlineCities = () => {
 		const queryKey = ["cities"];
 		return {
 			queryKey,
 			queryFn: async () => {
-				const response = await fetch(`${baseUrl}/air/airport/cities`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.message || "Failed to fetch airlines");
-				}
-				return response.json() as Promise<any>;
+				const response = await api.get("/air/airport/cities");
+				return response.data;
 			},
 		};
 	};
+
 	getAirlineById = (id: string) => {
 		const queryKey = ["airline", id];
-
 		return {
 			queryKey,
 			queryFn: async () => {
-				const response = await fetch(`${baseUrl}/air/airline/${id}`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(
-						errorData.message || `Failed to fetch airline with id ${id}`
-					);
-				}
-				return response.json() as Promise<any>;
+				const response = await api.get(`/air/airline/${id}`);
+				return response.data;
 			},
 		};
 	};
+
 	getFlightById = (id: string) => {
 		const queryKey = ["flight", id];
-
 		return {
 			queryKey,
 			queryFn: async () => {
-				const response = await fetch(`${baseUrl}/air/flights/${id}`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(
-						errorData.message || `Failed to fetch airline with id ${id}`
-					);
-				}
-				return response.json() as Promise<any>;
+				const response = await api.get(`/air/flights/${id}`);
+				return response.data;
+			},
+		};
+	};
+
+	payFlight = (id: string) => {
+		const queryKey = ["pay-flight", id];
+		return {
+			queryKey,
+			queryFn: async () => {
+				const response = await api.get(
+					`/wallet/initialize_flight_payment/${id}`
+				);
+				return response.data;
 			},
 		};
 	};
@@ -102,66 +87,28 @@ export default class AirService {
 		any,
 		{ payload: TBookFlightWithoutSharedSeatsDTO; id: string }
 	> = async ({ payload, id }) => {
-		const response = await fetch(`${baseUrl}/air/booking/${id}/book-jet`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${AuthService.getToken()}`,
-			},
-			body: JSON.stringify(payload),
-		});
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(errorData.message || "Failed to book flight");
-		}
-		return response.json();
+		const response = await api.post(`/air/booking/${id}/book-jet`, payload);
+		return response.data;
 	};
+
 	bookAndShareFlight: MutationFunction<
 		any,
 		{ payload: TBookFlightWithSharedSeatsDTO; id: string }
 	> = async ({ payload, id }) => {
-		const response = await fetch(`${baseUrl}/air/booking/${id}/book-jet`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${AuthService.getToken()}`,
-			},
-			body: JSON.stringify(payload),
-		});
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(errorData.message || "Failed to book flight");
-		}
-		return response.json();
+		const response = await api.post(`/air/booking/${id}/book-jet`, payload);
+		return response.data;
 	};
+
 	joinBookedFlight: MutationFunction<
 		any,
 		{ payload: TBookSharedFlightDTO; id: string }
 	> = async ({ payload, id }) => {
-		const response = await fetch(`${baseUrl}/air/booking/${id}/book-jet`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${AuthService.getToken()}`,
-			},
-			body: JSON.stringify(payload),
-		});
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(errorData.message || "Failed to book flight");
-		}
-		return response.json();
+		const response = await api.post(`/air/booking/${id}/book-jet`, payload);
+		return response.data;
 	};
+
 	findFlights: MutationFunction<any, FindFlightDTO> = async (data) => {
-		const response = await fetch(`${baseUrl}/air/flights/search-flights`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data),
-		});
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(errorData.message || "Failed to find flights");
-		}
-		return response.json();
+		const response = await api.post(`/air/flights/search-flights`, data);
+		return response.data;
 	};
 }

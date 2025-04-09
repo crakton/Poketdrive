@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	View,
 	Text,
@@ -14,6 +14,12 @@ import { RootStackParamList } from "../../types";
 import Icon from "@expo/vector-icons/Feather";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useUserService } from "@hooks/useUserService";
+import { clearUser, clearWallet, setWallet } from "@redux/features/userSlice";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import { AxiosError } from "axios";
+import Toast from "react-native-toast-message";
+import CustomButton from "@components/ui/CustomButton";
 
 type Transaction = {
 	id: string;
@@ -25,9 +31,19 @@ type Transaction = {
 
 const MyWalletScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+	const dispatch = useAppDispatch();
+	const { user, wallet } = useAppSelector((state) => state.user);
+	const { useGetWallet } = useUserService();
+	const {
+		data: walletData,
+		isLoading,
+		error,
+	} = useGetWallet("67daf8f89f8a38d5c05819de");
 
-	// Mock data
-	const [balance, setBalance] = useState("N5,750");
+	console.log("walletData", walletData);
+	console.log("isLoading", isLoading);
+	console.log("error", error);
+
 	const [cardNumber, setCardNumber] = useState("5282 3456 7890 1289");
 	const [expiryDate, setExpiryDate] = useState("09/12");
 
@@ -69,22 +85,47 @@ const MyWalletScreen = () => {
 		},
 	]);
 
-	const navigateToPayments = () => {
-		navigation.navigate("Payments");
+	const navigateToCardManagement = () => {
+		navigation.navigate("CardManagement");
 	};
 
 	const navigateToHistory = () => {
 		navigation.navigate("TransactionDetails");
 	};
 
-	const handlePay = () => {
+	const handleTopup = () => {
 		// Implement pay functionality
 	};
 
-	return (
-		<SafeAreaView style={tw`flex-1 bg-white`}>
-			<StatusBar barStyle="dark-content" />
+	useEffect(() => {
+		if (walletData) {
+			dispatch(setWallet(walletData.content));
+		}
+		if (error) {
+			// handle Error
+			if (error instanceof AxiosError) {
+				if (error.status === 401) {
+					// handle unauthorized error
+					Toast.show({
+						type: "error",
+						text1: "Session expired!",
+						text2: "Please log in again",
+					});
+					dispatch(clearUser());
+					dispatch(clearWallet());
 
+					// redirect to login screen
+					navigation.reset({
+						index: 0,
+						routes: [{ name: "Login" }],
+					});
+				}
+			}
+		}
+	}, [wallet, error]);
+
+	return (
+		<SafeAreaView style={tw`flex-1 bg-white  pt-4`}>
 			<View style={tw`flex-row items-center px-4 py-6`}>
 				<TouchableOpacity onPress={() => navigation.goBack()} style={tw`mr-4`}>
 					<Icon name="arrow-left" size={24} color="#000" />
@@ -100,7 +141,7 @@ const MyWalletScreen = () => {
 				<LinearGradient
 					colors={["#FF6633", "#8B5CF6"]}
 					start={{ x: 0, y: 0 }}
-					end={{ x: 1, y: 1 }}
+					end={{ x: 1, y: 2 }}
 					style={tw`rounded-3xl p-5 mb-6`}
 				>
 					<View style={tw`flex-row justify-between items-start mb-4`}>
@@ -109,7 +150,7 @@ const MyWalletScreen = () => {
 								Current Balance
 							</Text>
 							<Text style={tw`text-white text-3xl font-bold mt-1`}>
-								{balance}
+								{wallet.balance ?? 0}
 							</Text>
 						</View>
 						<View style={tw`w-12 h-2 bg-gray-300 rounded-md`}></View>
@@ -122,15 +163,11 @@ const MyWalletScreen = () => {
 				</LinearGradient>
 
 				{/* Action Buttons */}
-				<TouchableOpacity
-					style={tw`bg-[#FF6633] py-4 rounded-full items-center mb-6`}
-					onPress={handlePay}
-				>
-					<Text style={tw`text-white font-semibold text-lg`}>Pay</Text>
-				</TouchableOpacity>
-
-				<Text style={tw`text-lg font-medium mb-4`}>Top up Wallet</Text>
-
+				<CustomButton
+					style={tw`rounded-full items-center mb-6`}
+					onPress={handleTopup}
+					text="Top up Wallet"
+				/>
 				<View style={tw`mb-6`}>
 					<Text style={tw`text-lg text-gray-600 mb-2`}>
 						Other payment method
@@ -150,7 +187,7 @@ const MyWalletScreen = () => {
 
 					<TouchableOpacity
 						style={tw`flex-row items-center bg-gray-50 p-4 rounded-lg`}
-						onPress={navigateToPayments}
+						onPress={navigateToCardManagement}
 					>
 						<View
 							style={tw`w-8 h-8 bg-[#FF6633] rounded-md items-center justify-center mr-3`}

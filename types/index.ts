@@ -27,4 +27,7 @@ export type RootStackParamList = {
 	SelectSeat?: {};
 	Travels?: {};
 	MyWallet?: {};
+	TransactionDetails?: {};
+	ForgotPassword?: {};
+	CardManagement?: {};
 };

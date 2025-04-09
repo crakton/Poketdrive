@@ -5,10 +5,10 @@ import tw from "twrnc";
 import { AntDesign, Ionicons, Octicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { FlatList } from "react-native";
 
 import { EFlightStatus } from "../../types/airline";
+import { useAppDispatch, useAppSelector } from "@redux/store";
 
 const FlightSearchScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -23,53 +23,44 @@ const FlightSearchScreen = () => {
 					navigation.navigate("FlightDetails", item);
 				}, 100);
 			}}
-			style={tw`px-4 py-2`}
+			style={tw`rounded-lg overflow-hidden`}
 		>
 			<ImageBackground
-				source={{ uri: item?.airline?.image }}
-				style={tw`w-full h-40 rounded-lg flex flex-col justify-between overflow-hidden`}
+				source={{ uri: item.airline.image }}
+				style={tw`w-full h-40 flex-col flex justify-between`}
 				resizeMode="cover"
 			>
-				<View style={tw`flex-row items-center gap-1 self-end p-3`}>
-					{/* <Octicons
-						name="dot"
-						size={16}
-						color={item.status === EFlightStatus.open ? "#FF6633" : "#000"}
-					/> */}
-					<Text
-						style={tw`text-xs font-medium ${
-							item.status === EFlightStatus.open
-								? "text-[#FF6633]"
-								: "text-gray-700"
-						}`}
-					>
-						{item.status.toLocaleUpperCase()}
-					</Text>
-				</View>
-				<View
-					style={tw`flex-row  items-center justify-between px-4 py-2 bg-white`}
+				<TouchableOpacity
+					style={tw`relative self-end bg-[#e9e9e9] bg-opacity-70 top-3 right-3 p-1 rounded-full`}
 				>
-					<Text>{item?.departure.name}</Text>
-					<Text>Carriage: {item?.availableSchedules[0].totalSeats}</Text>
+					<Ionicons name={"open-outline"} size={14} color={"white"} />
+				</TouchableOpacity>
+				<View style={tw`p-3 flex-row gap-2 items-center mb-1`}>
+					<View
+						style={tw`bg-[#e9e9e9c9] p-1 flex-row items-center rounded-full`}
+					>
+						<Ionicons name="star" size={16} color="#FFD700" />
+						{/* <Text style={tw`ml-1`}>{}</Text> */}
+					</View>
+					<View
+						style={tw`bg-[#e9e9e9c9] p-1 flex-row items-center rounded-full`}
+					>
+						<Text style={tw`text-gray-500 text-xs`}>
+							Airfield:{" "}
+							{item.departure.name.length > 9
+								? item.departure.name.slice(0, 9) + "..."
+								: item.departure.name}
+						</Text>
+					</View>
+					<View
+						style={tw`bg-[#e9e9e9c9] p-1 flex-row items-center rounded-full`}
+					>
+						<Text style={tw`text-gray-500 text-xs`}>
+							Passengers: {item.airline.fleetSize}
+						</Text>
+					</View>
 				</View>
 			</ImageBackground>
-			<View style={tw`mt-3 flex-row justify-between items-center`}>
-				<TouchableOpacity
-					style={tw`bg-[#FF6633] px-6 py-2 rounded-full`}
-					onPress={() => navigation.navigate("FlightBooking")}
-				>
-					<Text
-						style={[tw`text-white font-medium`, { fontFamily: "Poppins-Bold" }]}
-					>
-						Book
-					</Text>
-				</TouchableOpacity>
-				{item?.availableSchedules[0].jetShare && (
-					<View>
-						<Text style={tw`text-gray-700`}>Share</Text>
-					</View>
-				)}
-			</View>
 		</TouchableOpacity>
 	);
 	return (

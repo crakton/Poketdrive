@@ -10,11 +10,9 @@ import ContinueButton from "../ui/ContinueButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import CustomButton from "../ui/CustomButton";
-import { login } from "../../redux/features/authSlice";
 import { useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { RootStackParamList } from "../../types";
-
 const PhoneNumberInput = () => {
 	const navigation =
 		useNavigation<NativeStackNavigationProp<RootStackParamList, "Login">>();
@@ -22,7 +20,6 @@ const PhoneNumberInput = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const dispatch = useAppDispatch();
-	const { isLoading } = useAppSelector((state) => state.auth);
 
 	// const { mutateAsync, status } = useMutation({
 	// 	mutationFn: (payload: any) => RequestOTP(payload),
@@ -44,7 +41,6 @@ const PhoneNumberInput = () => {
 
 		try {
 			// Dispatch action to request OTP
-			dispatch(login({ email, password })).unwrap();
 			Toast.show({ type: "success", text1: "Logged in successfully" });
 			navigation.replace("Onboarding");
 		} catch (error) {
@@ -91,7 +87,6 @@ const PhoneNumberInput = () => {
 				text="Verify"
 				onPress={handleSignUp}
 				disabled={!email || !password}
-				loading={isLoading}
 			/>
 		</View>
 	);

@@ -25,6 +25,7 @@ import { useAirService } from "../../../hooks/air/useAirService";
 import { useAppDispatch } from "../../../redux/store";
 import { setAirlines } from "../../../redux/features/airlineSlice";
 import { TSearchQueries } from "../../../context/air/AirContextProvider";
+import PageLoader from "@components/ui/PageLoader";
 
 const SearchBottomSheet = forwardRef((props, ref) => {
 	// Reference to the actual bottom sheet
@@ -203,13 +204,7 @@ const SearchBottomSheet = forwardRef((props, ref) => {
 				)}
 
 				<ScrollView>
-					{isLoading ? (
-						<ActivityIndicator />
-					) : error ? (
-						renderError()
-					) : (
-						<TourScreen />
-					)}
+					{isLoading ? <PageLoader /> : error ? renderError() : <TourScreen />}
 				</ScrollView>
 			</BottomSheetView>
 		</BottomSheet>

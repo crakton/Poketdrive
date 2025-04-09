@@ -1,11 +1,5 @@
-import React, { useMemo, useState, useEffect } from "react";
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	SafeAreaView,
-	StyleSheet,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import tw from "twrnc";
 import Svg, { Path } from "react-native-svg";
 import {
@@ -14,15 +8,13 @@ import {
 	useRoute,
 } from "@react-navigation/native";
 import { RootStackParamList } from "../../types";
-import { useAirContext } from "../../hooks/air/useAirContext";
-import ContinueButton from "../../components/ui/ContinueButton";
-import { IBookingData, IFlight, ISearchFlight } from "../../types/airline";
-import CustomButton from "../../components/ui/CustomButton";
+import { IBookingData } from "../../types/airline";
+import CustomButton from "@components/ui/CustomButton";
 
 const SeatSelectionScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-	const { selectedSeat, setSelectedSeat } = useAirContext(); // From context
 	const bookingData = useRoute().params as IBookingData;
+	const [selectedSeatId, setSelectedSeatId] = useState<string | null>(null);
 
 	// Get available schedule based on selected index
 	const availableSchedule =
@@ -31,49 +23,79 @@ const SeatSelectionScreen = () => {
 
 	const [seatRows, setSeatRows] = useState<any[][]>([]);
 
-	// Only process seat layout if this is a shared flight
+	// Process seat layout for both shared and non-shared flights
 	useEffect(() => {
-		if (bookingData.isSharedFlight) {
-			// Your existing seat organization code
-			const newSeatRows: any[][] = [];
-			let currentRow: any[] = [];
-			seats.forEach((seat, index) => {
-				currentRow.push({ ...seat, isSelected: false });
-				if ((index + 1) % 4 === 0) {
-					newSeatRows.push(currentRow);
-					currentRow = [];
-				}
-			});
-			if (currentRow.length > 0) {
-				newSeatRows.push(currentRow);
-			}
-			setSeatRows(newSeatRows);
-		} else {
-			setSeatRows([]);
-		}
-	}, [seats, bookingData.isSharedFlight]);
+		// Organize seats into rows
+		const newSeatRows: any[][] = [];
+		let currentRow: any[] = [];
 
-	const handleSeatSelect = (seat, rowIndex, seatIndex) => {
-		if (!bookingData.isSharedFlight) return; // Ignore if not a shared flight
+		seats.forEach((seat, index) => {
+			// For non-shared flights, mark all seats as reserved except emergency ones
+			const seatStatus =
+				!bookingData.isTour && seat.status !== "emergency"
+					? "reserved"
+					: seat.status;
+
+			currentRow.push({
+				...seat,
+				isSelected: false,
+				status: seatStatus,
+			});
+
+			if ((index + 1) % 4 === 0) {
+				newSeatRows.push(currentRow);
+				currentRow = [];
+			}
+		});
+
+		if (currentRow.length > 0) {
+			newSeatRows.push(currentRow);
+		}
+
+		setSeatRows(newSeatRows);
+	}, [seats, bookingData.isTour]);
+
+	const handleSeatSelect = (seat: any, rowIndex: number, seatIndex: number) => {
+		// Don't allow selection if seat is reserved or emergency
+		if (seat.status === "reserved" || seat.status === "emergency") {
+			return;
+		}
+
+		// Create a new copy of seat rows
 		const updatedRows = [...seatRows];
-		updatedRows[rowIndex][seatIndex].isSelected =
-			!updatedRows[rowIndex][seatIndex].isSelected;
+
+		// Deselect all seats first (to ensure only one is selected)
+		updatedRows.forEach((row) => {
+			row.forEach((s) => {
+				s.isSelected = false;
+			});
+		});
+
+		// Then select the clicked seat
+		updatedRows[rowIndex][seatIndex].isSelected = true;
+
+		// Update state
 		setSeatRows(updatedRows);
-		const selectedSeat = updatedRows[rowIndex][seatIndex].isSelected
-			? updatedRows[rowIndex][seatIndex].id
-			: null;
-		setSelectedSeat(selectedSeat); // Update context with selected seat
-		// Update booking data with selected seat
-		bookingData.selectedSeatId = selectedSeat;
+		setSelectedSeatId(seat.id);
 	};
 
 	const handleSelectPress = () => {
-		// Pass the updated booking data to the next screen
-		navigation.navigate("PassengerDetails", bookingData);
+		// Add selected seat to booking data
+		const updatedBookingData = {
+			...bookingData,
+			selectedSeat: selectedSeatId,
+		};
+
+		// Navigate to next screen with updated booking data
+		navigation.navigate("PassengerDetails", updatedBookingData);
 	};
 
-	const getBackgroundColor = (status: string) => {
-		switch (status) {
+	const getBackgroundColor = (seat: any) => {
+		if (seat.isSelected) {
+			return "#FF713B"; // Orange for selected
+		}
+
+		switch (seat.status) {
 			case "emergency":
 				return "#E5E5E5"; // Light gray for emergency
 			case "reserved":
@@ -83,8 +105,11 @@ const SeatSelectionScreen = () => {
 		}
 	};
 
-	const getTextColor = (status: string) => {
-		return status === "selected" ? "white" : "black";
+	const getTextColor = (seat: any) => {
+		if (seat.isSelected) {
+			return "white";
+		}
+		return seat.status === "reserved" ? "white" : "black";
 	};
 
 	return (
@@ -123,44 +148,29 @@ const SeatSelectionScreen = () => {
 							key={`row-${rowIndex}`}
 							style={tw`flex-row justify-center mb-4`}
 						>
-							{row.map((seat, seatIndex) => {
-								if (bookingData?.isSharedFlight) {
-									return (
-										<TouchableOpacity
-											key={`seat-${rowIndex}-${seatIndex}`}
-											style={[
-												tw`w-14 h-14 mx-2 rounded-md items-center justify-center`,
-												{
-													backgroundColor: seat.isSelected
-														? "#FF713B"
-														: getBackgroundColor(seat.status),
-												},
-											]}
-											onPress={() =>
-												handleSeatSelect(seat, rowIndex, seatIndex)
-											}
-										>
-											<Text
-												style={[
-													tw`font-medium text-center`,
-													{ color: getTextColor(seat.status) },
-												]}
-											>
-												{seats[seatIndex]}
-											</Text>
-										</TouchableOpacity>
-									);
-								} else {
-									return (
-										<View
-											key={`space-${rowIndex}-${seatIndex}`}
-											style={tw`w-14 h-14 mx-2 rounded-md items-center justify-center bg-gray-400`}
-										>
-											<Text>{seat}</Text>
-										</View>
-									);
-								}
-							})}
+							{row.map((seat, seatIndex) => (
+								<TouchableOpacity
+									key={`seat-${rowIndex}-${seatIndex}`}
+									style={[
+										tw`w-14 h-14 mx-2 rounded-md items-center justify-center`,
+										{ backgroundColor: getBackgroundColor(seat) },
+									]}
+									onPress={() => handleSeatSelect(seat, rowIndex, seatIndex)}
+									disabled={
+										seat.status === "reserved" || seat.status === "emergency"
+									}
+								>
+									<Text
+										style={[
+											tw`font-medium text-center`,
+											{ color: getTextColor(seat) },
+										]}
+									>
+										{seat.label ||
+											`${rowIndex + 1}${String.fromCharCode(65 + seatIndex)}`}
+									</Text>
+								</TouchableOpacity>
+							))}
 						</View>
 					))}
 				</View>
@@ -170,7 +180,7 @@ const SeatSelectionScreen = () => {
 					<CustomButton
 						text="Select"
 						onPress={handleSelectPress}
-						disabled={false}
+						disabled={bookingData.isTour && selectedSeatId === null}
 					/>
 				</View>
 			</View>

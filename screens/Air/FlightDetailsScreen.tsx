@@ -34,16 +34,11 @@ const FlightDetailsScreen = () => {
 	const [passengers, setPassengers] = useState(
 		selectedFlight?.availableSchedules[0]?.sharedPassengers || 1
 	);
-	const [scheduledIndex, setScheduledIndex] = useState<number>();
-	const [isRoundTrip, setIsRoundTrip] = useState(true);
+	const [showSplitFare, setShowSplitFare] = useState(false);
 	const [selectedTime, setSelectedTime] = useState("");
-	const [isSharedFlight, setIsSharedFlight] = useState(false);
 	const [pricePerSeat, setPricePerSeat] = useState(
 		selectedFlight?.availableSchedules[0]?.additionalCharge || 400000
 	);
-	const [showTourOption, setShowTourOption] = useState(false);
-	const [showSplitFare, setShowSplitFare] = useState(false);
-	const dispatch = useAppDispatch();
 
 	// Fetch flight data
 	const {
@@ -86,7 +81,7 @@ const FlightDetailsScreen = () => {
 	const [bookingData, setBookingData] = useState<Partial<IBookingData>>({
 		passengers: 1,
 		isTour: false,
-		isSharedFlight: false,
+		isSplitFare: false,
 		isRoundTrip: true,
 		pricePerSeat:
 			selectedFlight?.availableSchedules[0]?.additionalCharge || 400000,
@@ -100,15 +95,15 @@ const FlightDetailsScreen = () => {
 			...bookingData,
 			isTour: enabled,
 			// Reset shared flight if tour is disabled
-			isSharedFlight: enabled ? bookingData.isSharedFlight : false,
+			isSplitFare: enabled ? bookingData.isSplitFare : false,
 		});
 	};
 
-	// Toggle shared flight option (only available if tour is true)
+	// // Toggle shared flight option (only available if tour is true)
 	const toggleSharedFlight = (enabled: boolean) => {
 		setBookingData({
 			...bookingData,
-			isSharedFlight: enabled,
+			isSplitFare: enabled,
 		});
 	};
 
@@ -205,7 +200,7 @@ const FlightDetailsScreen = () => {
 									selectedTime === time ? "bg-[#FF6633]" : "bg-gray-100"
 								}`}
 								onPress={() => {
-									setScheduledIndex(idx);
+									setBookingData((prev) => ({ ...prev, scheduledIndex: idx }));
 									setSelectedTime(time.toString());
 									selectDepartureTime(idx, time.toString());
 								}}
@@ -266,7 +261,7 @@ const FlightDetailsScreen = () => {
 						<View style={tw`flex-row gap-3`}>
 							<TouchableOpacity
 								style={tw`flex-1 py-2 rounded-lg ${
-									bookingData?.isSharedFlight
+									bookingData?.isSplitFare
 										? "bg-[#FF6633]"
 										: "border border-gray-300"
 								} items-center`}
@@ -274,7 +269,7 @@ const FlightDetailsScreen = () => {
 							>
 								<Text
 									style={tw`${
-										bookingData?.isSharedFlight ? "text-white" : "text-black"
+										bookingData?.isSplitFare ? "text-white" : "text-black"
 									}`}
 								>
 									Yes
@@ -283,7 +278,7 @@ const FlightDetailsScreen = () => {
 
 							<TouchableOpacity
 								style={tw`flex-1 py-2 rounded-lg ${
-									!bookingData?.isSharedFlight
+									!bookingData?.isSplitFare
 										? "bg-[#FF6633]"
 										: "border border-gray-300"
 								} items-center`}
@@ -291,7 +286,7 @@ const FlightDetailsScreen = () => {
 							>
 								<Text
 									style={tw`${
-										!bookingData?.isSharedFlight ? "text-white" : "text-black"
+										!bookingData?.isSplitFare ? "text-white" : "text-black"
 									}`}
 								>
 									No
@@ -351,7 +346,7 @@ const FlightDetailsScreen = () => {
 						<CustomButton
 							style={tw`flex-1`}
 							text="Round Trip"
-							onPress={() => setIsRoundTrip(true)}
+							onPress={() => {}}
 							suffixIcon={
 								<AntDesign
 									name="retweet"
@@ -373,7 +368,7 @@ const FlightDetailsScreen = () => {
 									style={tw`ml-2`}
 								/>
 							}
-							onPress={() => setIsRoundTrip(false)}
+							onPress={() => {}}
 						/>
 					</View>
 				</View>

@@ -7,14 +7,10 @@ export type TBookFlightWithoutSharedSeatsDTO = {
 
 export type TBookFlightWithSharedSeatsDTO = {
 	scheduleIndex: number;
-	passengerInfo: {
-		name: string;
-		email: string;
-		passportNumber: string;
-		dateOfBirth: string | Date;
-		address: string;
-		country: string;
-	};
+	selectedSeat: string;
+	passengerInfo: TPassengerDTO;
+	enableJetshare: boolean;
+	jetSharePricePerSeat: number;
 };
 
 export type TBookSharedFlightDTO = {

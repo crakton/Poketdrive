@@ -1,38 +1,29 @@
-import React, { useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import AuthService from "../../services/authService";
-import { loadUser, setFirstTimeUser } from "../../redux/features/authSlice";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import PageLoader from "../ui/PageLoader";
+import { loadAuthState } from "../../utils/auth";
 
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
-	const dispatch = useAppDispatch();
-	const { isLoading } = useAppSelector((state) => state.auth);
+	const [loading, setLoading] = useState(true);
+	const [authReady, setAuthReady] = useState(false);
+
 	useEffect(() => {
-		const checkAuthState = async () => {
+		const checkAuth = async () => {
 			try {
-				// Load user authentication state first
-				await dispatch(loadUser());
-
-				// Check first time user
-				const isFirstTime = await AuthService.isFirstTime();
-
-				// Only set first time flag if it actually is first time
-				if (isFirstTime) {
-					dispatch(setFirstTimeUser(true));
-				} else {
-					dispatch(setFirstTimeUser(false));
-				}
-			} catch (error) {
-				console.error("Auth check error:", error);
+				const authState = await loadAuthState();
+				console.log("Loaded Auth:", authState);
+			} catch (e) {
+				console.error("Auth check failed:", e);
+			} finally {
+				setLoading(false);
+				setAuthReady(true);
 			}
 		};
 
-		checkAuthState();
-	}, [dispatch]);
+		checkAuth();
+	}, []);
 
-	if (isLoading) {
+	if (loading || !authReady) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
 				<PageLoader />

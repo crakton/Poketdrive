@@ -25,7 +25,7 @@ const Onboarding = () => {
 				]}
 			>
 				<TouchableOpacity
-					onPress={() => navigate("OnboardingSlide")}
+					onPress={() => navigate("MainStack")}
 					style={[
 						tw`bg-white p-3 rounded-full justify-center items-center w-full`,
 					]}

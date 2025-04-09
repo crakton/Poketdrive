@@ -15,20 +15,21 @@ import {
 } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "../../types";
-import { useAirContext } from "../../hooks/air/useAirContext";
-import CustomButton from "../../components/ui/CustomButton";
-import { IBookingData, IFlight, ISearchFlight } from "../../types/airline";
+import { IBookingData } from "../../types/airline";
+import CustomButton from "@components/ui/CustomButton";
 
 const FlightBookingScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 	const bookingData = useRoute().params as IBookingData;
+
+	console.log("bookingData", bookingData);
 
 	// Get available schedule based on selected index
 	const availableSchedule =
 		bookingData.selectedFlight.availableSchedules[bookingData.scheduledIndex];
 
 	// Calculate price (more straightforward)
-	const totalPrice = bookingData.pricePerSeat * bookingData.passengers;
+	const totalPrice = bookingData.selectedFlight.fixedPrice;
 
 	const handleConfirm = () => {
 		// Pass the entire booking data object forward

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	View,
 	Text,
@@ -14,6 +14,9 @@ import tw from "twrnc";
 import * as ImagePicker from "expo-image-picker";
 import { RootStackParamList } from "../../types";
 import Toast from "react-native-toast-message";
+import { useAppSelector } from "@redux/store";
+import { IUser } from "../../types/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -21,7 +24,7 @@ const ProfileScreen = () => {
 	const [profileImage, setProfileImage] = useState(
 		"https://randomuser.me/api/portraits/men/32.jpg"
 	);
-
+	const [user, setUser] = useState<IUser>();
 	const handleImagePick = async () => {
 		const permissionResult =
 			await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -46,6 +49,16 @@ const ProfileScreen = () => {
 		}
 	};
 
+	useEffect(() => {
+		const getUserFromStorage = async () => {
+			const user = await AsyncStorage.getItem("user");
+			if (user) {
+				setUser(JSON.parse(user));
+			}
+		};
+		getUserFromStorage();
+	}, []);
+
 	return (
 		<SafeAreaView style={tw`flex-1 flex-grow bg-gray-100`}>
 			<View style={tw`items-center justify-center flex-1 pt-6 pb-4 bg-white`}>
@@ -62,8 +75,10 @@ const ProfileScreen = () => {
 					</TouchableOpacity>
 				</View>
 
-				<Text style={tw`text-xl font-bold mt-3`}>David J</Text>
-				<Text style={tw`text-gray-500`}>+234 789 67678</Text>
+				<Text style={tw`text-xl font-bold mt-3`}>
+					{user?.firstName} {user?.lastName[0].toLocaleUpperCase()}.
+				</Text>
+				<Text style={tw`text-gray-500`}>{user?.email}</Text>
 			</View>
 
 			<View style={tw`mt-4 flex-1`}>

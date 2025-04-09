@@ -2,15 +2,15 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { navSlice } from "../slices/navSlice";
 import chatReducer from "./features/chatSlice";
 import airlineReducer from "./features/airlineSlice";
-import authReducer from "./features/authSlice";
 import flightReducer from "./features/flightSllice";
+import userReducer from "./features/userSlice";
 
 const reducers = combineReducers({
 	nav: navSlice.reducer,
-	auth: authReducer,
 	airlines: airlineReducer,
 	chat: chatReducer,
 	flights: flightReducer,
+	user: userReducer,
 });
 
 export const store = configureStore({
