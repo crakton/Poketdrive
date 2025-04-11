@@ -14,112 +14,92 @@ import { useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { RootStackParamList } from "../../types";
 const PhoneNumberInput = () => {
-	const navigation =
-		useNavigation<NativeStackNavigationProp<RootStackParamList, "Login">>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AuthStackParamList, "Login">>();
 
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const dispatch = useAppDispatch();
+  const [email, setEmail] = useState("");
+  const dispatch = useAppDispatch();
 
-	// const { mutateAsync, status } = useMutation({
-	// 	mutationFn: (payload: any) => RequestOTP(payload),
-	// 	onSuccess: (data) => {
-	// 		Toast.show({ type: "success", text1: "OTP sent successfully" });
-	// 		navigation.replace("Verification");
-	// 	},
-	// 	onError: () => {
-	// 		Toast.show({ type: "error", text1: "Something went wrong" });
-	// 	},
-	// });
+  const { mutateAsync, status } = useMutation({
+    mutationFn: (payload: any) => RequestOTP(payload),
+    onSuccess: (data) => {
+      Alert.alert("Success", data?.message);
+      navigation.replace("Verification");
+    },
+    onError: () => {
+      Alert.alert("Error", "An error occurred, please try again");
+    },
+  });
 
-	const handleSignUp = async () => {
-		// Basic validation
-		if (!email) {
-			Toast.show({ type: "error", text1: "Email is required" });
-			return;
-		}
+  const handleSignUp = async () => {
+    if (!email) {
+      Alert.alert("All fields are required");
+      return;
+    }
+    const payload = { email };
 
-		try {
-			// Dispatch action to request OTP
-			Toast.show({ type: "success", text1: "Logged in successfully" });
-			navigation.replace("Onboarding");
-		} catch (error) {
-			const e = error as Error;
-			Toast.show({
-				type: "error",
-				text1: e.message || "Something went wrong",
-			});
-		}
-	};
+    // Call the mutation function to request OTP
+    await mutateAsync(payload);
+  };
 
-	return (
-		<View style={styles.container}>
-			<View style={styles.inputContainer}>
-				<Text style={[tailwind`mb-2`, { fontFamily: "Poppins-Regular" }]}>
-					Email
-				</Text>
-				<TextInput
-					keyboardType="email-address"
-					autoCapitalize="none"
-					autoCorrect={false}
-					style={styles.input}
-					placeholder="Your email address"
-					value={email}
-					onChangeText={setEmail}
-				/>
-			</View>
-			<View style={styles.inputContainer}>
-				<Text style={[tailwind`mb-2`, { fontFamily: "Poppins-Regular" }]}>
-					Password
-				</Text>
-				<TextInput
-					keyboardType="default"
-					autoCapitalize="none"
-					autoCorrect={false}
-					secureTextEntry
-					style={styles.input}
-					placeholder="Your password"
-					value={password}
-					onChangeText={setPassword}
-				/>
-			</View>
-			<CustomButton
-				text="Verify"
-				onPress={handleSignUp}
-				disabled={!email || !password}
-			/>
-		</View>
-	);
+  return (
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <Text style={[tailwind`mb-2`, { fontFamily: "Poppins-Regular" }]}>
+          Email
+        </Text>
+        <TextInput
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          style={styles.input}
+          placeholder="Your email address"
+          value={email}
+          onChangeText={setEmail}
+        />
+      </View>
+      <CustomButton
+        text="Verify"
+        onPress={handleSignUp}
+        disabled={!email}
+        loading={status === "pending"}
+      />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		padding: 20,
-	},
-	inputContainer: {
-		marginBottom: 20,
-	},
-	input: {
-		height: 50,
-		borderRadius: 5,
-		backgroundColor: "#F2F2F2",
-		paddingHorizontal: 10,
-		fontFamily: "Poppins-Regular",
-	},
-	button: {
-		marginTop: 20,
-		padding: 15,
-		backgroundColor: "#F25B3E",
-		borderRadius: 5,
-		alignItems: "center",
-	},
-	buttonText: {
-		color: "white",
-		fontWeight: "bold",
-		fontSize: 16,
-	},
+  container: {
+    flex: 1,
+    padding: 20,
+    height: "100%",
+    justifyContent: "space-between",
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderRadius: 5,
+    backgroundColor: "#F2F2F2",
+    paddingHorizontal: 10,
+    fontFamily: "Poppins-Regular",
+  },
+  button: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: "#F25B3E",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });
 
 export default PhoneNumberInput;
+function mutateAsync(arg0: { email: string }) {
+  throw new Error("Function not implemented.");
+}

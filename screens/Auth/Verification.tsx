@@ -9,8 +9,6 @@ import {
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
-import { Icon } from "@rneui/base";
-import CountryPhoneNumber from "../../components/Auth/CountryPhoneNumber";
 import { useNavigation } from "@react-navigation/native";
 import CodeVerification from "../../components/Auth/CodeVerification";
 
@@ -29,12 +27,13 @@ const Verification = () => {
         ></TouchableOpacity>
       </View>
       <ScrollView>
-        <View style={tw`flex px-3`}>
-          <Text style={[tw`text-2xl`, { fontFamily: "Poppins-Black" }]}>
+        <View style={tw`flex px-3 gap-2`}>
+          <Text style={[tw`text-[18px]`, { fontFamily: "Poppins-semibold" }]}>
             Verification Title
           </Text>
-          <Text style={[tw`text-lg py-5`, { fontFamily: "Poppins-Regular" }]}>
-            {/* Enter the code we've sent to your phone number +234 70 345 67899 */}
+          <Text
+            style={[tw`text-[14px] pb-5`, { fontFamily: "Poppins-Regular" }]}
+          >
             Enter the code we've sent to your email address
           </Text>
         </View>

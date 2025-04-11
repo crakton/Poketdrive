@@ -177,7 +177,10 @@ const RootNavigator = () => {
         />
         <RootStack.Screen name="Travels" component={TravelsScreen} />
         <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Choose Seat" }}
+          options={{
+            headerShown: true,
+            headerTitle: "Choose Seat",
+          }}
           name="SelectSeat"
           component={SeatSelectionScreen}
         />
