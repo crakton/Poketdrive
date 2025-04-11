@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import tw from "twrnc";
+import { GOOGLE_MAPS_APIKEY } from "../utils/constant";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { View } from "react-native";
 
 interface Coordinates {
   latitude: number;
@@ -14,7 +17,6 @@ interface MapProps {
 }
 
 const Map = ({ origin, destination }: MapProps) => {
-  const GOOGLE_MAPS_APIKEY = "AIzaSyB9XjWemCW4CDheEaMYdH7nqbTVkja3MMg";
   const mapRef = useRef<MapView | null>(null);
 
   useEffect(() => {
@@ -45,7 +47,18 @@ const Map = ({ origin, destination }: MapProps) => {
         title="Origin"
         description="Start point"
         identifier="origin"
-      />
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 1,
+            elevation: 5,
+          }}
+        >
+          <Ionicons name="radio-button-on" size={25} color="red" />
+        </View>
+      </Marker>
 
       {/* Marker for Destination */}
       <Marker
@@ -53,7 +66,18 @@ const Map = ({ origin, destination }: MapProps) => {
         title="Destination"
         description="End point"
         identifier="destination"
-      />
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 1,
+            elevation: 5,
+          }}
+        >
+          <Ionicons name="radio-button-on" size={25} color="green" />
+        </View>
+      </Marker>
 
       {/* Directions from origin to destination */}
       <MapViewDirections
@@ -61,7 +85,8 @@ const Map = ({ origin, destination }: MapProps) => {
         destination={destination}
         apikey={GOOGLE_MAPS_APIKEY}
         strokeWidth={3}
-        strokeColor="blue"
+        strokeColor="#FF6633"
+        lineDashPattern={[0]}
       />
     </MapView>
   );

@@ -33,8 +33,17 @@ import DriverDetails from "../../screens/Driver/DriverDetails";
 import ManageRide from "../../screens/RideHaling/ManageRide";
 import DriverEndTrip from "../../screens/Driver/DriverEndTrip";
 import OnboardingSlide from "../../screens/Onboarding/OnboardingSlide";
-import DrawerContainer from "../Drawer/Index"; // Already imported in App.js, but keeping for reference
 import Onboarding from "../../screens/Onboarding/Index";
+import TourDetailsScreen from "../../screens/Air/TourDetailScreen";
+import FlightDetailsScreen from "../../screens/Air/FlightDetailsScreen";
+import PassengerDetailsScreen from "../../screens/Air/PassengerDetailsScreen";
+import RecieverInfo from "../../screens/Water/RecieverInfo";
+import QuoteScreen from "../../screens/Water/QuoteScreen";
+import SummaryScreen from "../../screens/Water/SummaryScreen";
+import PaymentScreen from "../../screens/Water/PaymentScreen";
+import SuccessScreen from "../../screens/Water/SucessScreen";
+import TrackingScreen from "../../screens/Water/TrackingScreen";
+import WaterRootTab from "../../screens/Water/Index";
 
 // Create a stack navigator specifically for this component
 const Stack = createNativeStackNavigator();
@@ -48,11 +57,7 @@ const StackContainer = () => {
 			setIsLoading(true);
 			try {
 				const isOnboard = await AsyncStorage.getItem("userData");
-				if (isOnboard) {
-					setIsAuthenticated(true);
-				} else {
-					setIsAuthenticated(false);
-				}
+				setIsAuthenticated(!!isOnboard);
 			} catch (error) {
 				console.log(error);
 			} finally {
@@ -66,6 +71,17 @@ const StackContainer = () => {
 	// Return an actual Navigator component with screens
 	return (
 		<Stack.Navigator screenOptions={{ headerShown: false }}>
+			{/* Auth and Onboarding Screens */}
+			{isAuthenticated ? (
+				<Stack.Screen name="Onboarding" component={Onboarding} />
+			) : (
+				<Stack.Screen name="CreateAccount" component={CreateAccount} />
+			)}
+
+			<Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
+			<Stack.Screen name="Login" component={Login} />
+			<Stack.Screen name="Verification" component={Verification} />
+
 			{/* Main App Screens */}
 			<Stack.Screen name="Home" component={Home} />
 			<Stack.Screen name="TripSelection" component={TripSelection} />
@@ -104,6 +120,16 @@ const StackContainer = () => {
 			<Stack.Screen name="TripConfirmation" component={TripConfirmation} />
 			<Stack.Screen name="ManageRide" component={ManageRide} />
 			<Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+
+			{/* Air Stack Screens */}
+			<Stack.Screen name="TourDetails" component={TourDetailsScreen} />
+			<Stack.Screen name="FlightDetails" component={FlightDetailsScreen} />
+			<Stack.Screen
+				name="PassengerDetails"
+				component={PassengerDetailsScreen}
+			/>
+
+			{/* Water Stack Screens */}
 		</Stack.Navigator>
 	);
 };

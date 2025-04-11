@@ -13,10 +13,6 @@ import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useWalletDetails } from "../../hooks/reactQuery/useWallet";
 import Loader from "../loader/Loader";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../nav";
-import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 
 const formatBalance = (balance: number | null) => {
   if (balance === null || balance === undefined) return "Loading...";

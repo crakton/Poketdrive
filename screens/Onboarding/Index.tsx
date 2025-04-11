@@ -9,7 +9,7 @@ const Onboarding = () => {
 	return (
 		<View
 			style={[
-				tw`flex gap-x-3 gap-y-12 flex-col items-center justify-center p-3 bg-[tomato]`,
+				tw`flex gap-x-3 gap-y-12 flex-col items-center justify-center p-3 bg-[#FF6633]`,
 				{ height: "100%" },
 			]}
 		>
@@ -25,7 +25,7 @@ const Onboarding = () => {
 				]}
 			>
 				<TouchableOpacity
-					onPress={() => navigate("MainStack")}
+					onPress={() => navigate("Home")}
 					style={[
 						tw`bg-white p-3 rounded-full justify-center items-center w-full`,
 					]}
@@ -49,6 +49,7 @@ const Onboarding = () => {
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity
+					onPress={() => navigate("WaterTabBar")}
 					style={[
 						tw`bg-white p-3 rounded-full justify-center items-center w-full`,
 					]}

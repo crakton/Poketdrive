@@ -4,6 +4,8 @@ import { CheckBox, Icon, Text } from "@rneui/base";
 import { Formik } from "formik";
 import * as yup from "yup";
 import tw from "twrnc";
+import { GOOGLE_MAPS_APIKEY } from "../../utils/constant";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 interface ScheduleFormValues {
   fromwhere: string;
@@ -60,57 +62,94 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = ({
         errors,
         touched,
       }) => (
-        <View style={tw`flex gap-5`}>
+        <View style={tw`flex gap-2`}>
           <View>
-            <Text style={[tw`text-lg`, styles.label]}>Start Location</Text>
+            <Text style={[tw`text-[14px]`, styles.label]}>Start Location</Text>
             <View style={styles.inputContainer}>
               <Icon
                 name="location"
                 type="ionicon"
                 color="red"
+                size={20}
                 style={styles.icon}
               />
-              <TextInput
-                style={styles.input}
+              <GooglePlacesAutocomplete
+                nearbyPlacesAPI="GooglePlacesSearch"
+                fetchDetails={true}
+                GooglePlacesDetailsQuery={{ rankby: "distance" }}
+                enablePoweredByContainer={false}
                 placeholder="From where?"
-                value={values.fromwhere}
-                onChangeText={handleChange("fromwhere")}
-                onBlur={handleBlur("fromwhere")}
+                onPress={(data, details = null) => {
+                  setFieldValue("fromwhere", data.description);
+                }}
+                query={{
+                  key: GOOGLE_MAPS_APIKEY,
+                  language: "en",
+                }}
+                styles={{
+                  textInput: {
+                    flex: 1,
+                    height: 45,
+                    borderRadius: 10,
+                    paddingVertical: 10,
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 14,
+                  },
+                }}
               />
             </View>
             {touched.fromwhere && errors.fromwhere && (
               <Text style={styles.error}>{errors.fromwhere}</Text>
             )}
           </View>
+
           <View>
-            <Text style={[tw`text-lg`, styles.label]}>Destination</Text>
+            <Text style={[tw`text-[14px]`, styles.label]}>Destination</Text>
             <View style={styles.inputContainer}>
               <Icon
                 name="location"
                 type="ionicon"
                 color="green"
+                size={20}
                 style={styles.icon}
               />
-              <TextInput
-                style={styles.input}
+              <GooglePlacesAutocomplete
+                nearbyPlacesAPI="GooglePlacesSearch"
+                fetchDetails={true}
+                GooglePlacesDetailsQuery={{ rankby: "distance" }}
+                enablePoweredByContainer={false}
                 placeholder="To where?"
-                value={values.towhere}
-                onChangeText={handleChange("towhere")}
-                onBlur={handleBlur("towhere")}
+                onPress={(data, details = null) => {
+                  setFieldValue("towhere", data.description);
+                }}
+                query={{
+                  key: GOOGLE_MAPS_APIKEY,
+                  language: "en",
+                }}
+                styles={{
+                  textInput: {
+                    flex: 1,
+                    height: 45,
+                    borderRadius: 10,
+                    paddingVertical: 10,
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 14,
+                  },
+                }}
               />
             </View>
             {touched.towhere && errors.towhere && (
               <Text style={styles.error}>{errors.towhere}</Text>
             )}
           </View>
-          <View>
-            <Text style={[tw`text-lg`, styles.label]}>Stops?</Text>
+          <View style={tw`flex gap-1`}>
+            <Text style={[tw`text-[14px]`, styles.label]}>Stops?</Text>
             <View style={styles.checkboxOuterContainer}>
               <View style={styles.checkboxContainer}>
                 <CheckBox
                   checkedColor="green"
                   uncheckedColor="black"
-                  size={30}
+                  size={20}
                   checked={stopEnabled}
                   onPress={() => {
                     setStopEnabled(!stopEnabled);
@@ -145,17 +184,33 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = ({
                       name="remove"
                       type="ionicon"
                       color="red"
+                      size={18}
                       style={styles.icon}
                     />
                   </TouchableOpacity>
-                  <TextInput
-                    style={styles.input}
+
+                  <GooglePlacesAutocomplete
+                    nearbyPlacesAPI="GooglePlacesSearch"
+                    fetchDetails={true}
+                    GooglePlacesDetailsQuery={{ rankby: "distance" }}
+                    enablePoweredByContainer={false}
                     placeholder="Enter a stop"
-                    value={stop}
-                    onChangeText={(value) => {
-                      const newStops = [...values.stops];
-                      newStops[index] = value;
-                      setFieldValue("stops", newStops);
+                    onPress={(data, details = null) => {
+                      console.log(data, details);
+                    }}
+                    query={{
+                      key: GOOGLE_MAPS_APIKEY,
+                      language: "en",
+                    }}
+                    styles={{
+                      textInput: {
+                        flex: 1,
+                        height: 45,
+                        borderRadius: 10,
+                        paddingVertical: 10,
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 14,
+                      },
                     }}
                   />
                 </View>
@@ -167,6 +222,7 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = ({
                   name="add"
                   type="ionicon"
                   color="green"
+                  size={12}
                   style={styles.icon}
                 />
               </TouchableOpacity>
@@ -174,7 +230,7 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = ({
           )}
           <TouchableOpacity
             onPress={handleSubmit as any}
-            style={tw`rounded bg-[#404040] w-full rounded-lg p-3 mt-10`}
+            style={tw`rounded bg-[#404040] w-full rounded-lg p-3 mt-[90%]`}
           >
             <Text style={tw`text-center text-white text-[20px] font-bold`}>
               Next
@@ -189,22 +245,22 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = ({
 const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    // alignItems: "",
     marginBottom: 20,
-    borderColor: "#fffff",
-    borderWidth: 1,
+    // borderColor: "gray",
+    // borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    backgroundColor: "#fffff",
   },
   icon: {
     marginRight: 10,
+    marginTop: 13,
   },
   input: {
     flex: 1,
-    height: 60,
+    height: 50,
     borderRadius: 10,
-    backgroundColor: "#fffff",
+    backgroundColor: "#D9D9D9",
     paddingHorizontal: 10,
     fontFamily: "Poppins-Regular",
   },
@@ -214,7 +270,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   label: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   checkboxOuterContainer: {
     flexDirection: "row",
@@ -233,7 +289,7 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontFamily: "Poppins-Light",
     fontSize: 12,
-    marginLeft: 10,
+    marginLeft: 7,
   },
 });
 

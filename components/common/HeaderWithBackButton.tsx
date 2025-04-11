@@ -15,13 +15,18 @@ const HeaderWithBackButton: React.FC<HeaderWithBackButtonProps> = ({
 }) => {
   return (
     <SafeAreaView
-      style={tw`flex flex-row items-center justify-between px-5 pt-3`}
+      style={tw`flex flex-row items-center justify-between pt-3 px-5 pr-10`}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back-outline" type="ionicon" color="black" />
+        <Icon
+          name="arrow-back-outline"
+          type="ionicon"
+          color="black"
+          size={20}
+        />
       </TouchableOpacity>
       {title && (
-        <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+        <Text style={[tw`text-[14px]`, { fontFamily: "Poppins-semiBold" }]}>
           {title}
         </Text>
       )}
