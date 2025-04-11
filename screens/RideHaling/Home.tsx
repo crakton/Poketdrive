@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getLocalData } from "../../utils/localStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DrawerToggleButton } from "@react-navigation/drawer";
+import { navigationRef } from "@components/common/RootNavigator";
 
 type AuthStackParamList = {
 	RideSchedule: undefined;
@@ -78,12 +79,21 @@ const Home = () => {
 		>
 			<StatusBar translucent backgroundColor="transparent" />
 			<View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
+				<TouchableOpacity
+					onPress={() => {
+						if (navigationRef.isReady()) {
+							navigationRef.current?.toggleDrawer();
+						}
+					}}
+				>
+					<Icon name="menu" />
+				</TouchableOpacity>
 				{/* <TouchableOpacity
           onPress={() => navigation.navigate("AccountVerification")}
         >
           <Icon name="menu" />
         </TouchableOpacity> */}
-				<DrawerToggleButton />
+
 				<Text
 					style={[
 						tw`px-2 text-white bg-red-500 rounded-md py-1`,

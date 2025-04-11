@@ -71,11 +71,13 @@ const StackContainer = () => {
   // Return an actual Navigator component with screens
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Auth and Onboarding Screens */}
       {isAuthenticated ? (
         <Stack.Screen name="Onboarding" component={Onboarding} />
       ) : (
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
       )}
+
       <Stack.Screen name="OnboardingSlide" component={OnboardingSlide} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Verification" component={Verification} />
@@ -87,16 +89,19 @@ const StackContainer = () => {
       <Stack.Screen name="MapScreen" component={MapScreen} />
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="Confirmation" component={Confirmation} />
+
       {/* Driver Screens */}
       <Stack.Screen name="RideSchedule" component={RideSchedule} />
       <Stack.Screen name="ManageTrips" component={ManageTrips} />
       <Stack.Screen name="TripItinerary" component={TripItinerary} />
       <Stack.Screen name="DriverDetails" component={DriverDetails} />
+
       {/* Wallet Screens */}
       <Stack.Screen name="WalletHome" component={WalletHome} />
       <Stack.Screen name="WalletHistory" component={WalletHistory} />
       <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
       <Stack.Screen name="PaymentSucessful" component={PaymentSucessful} />
+
       {/* Settings Screens */}
       <Stack.Screen
         name="AccountVerification"
@@ -106,6 +111,7 @@ const StackContainer = () => {
       <Stack.Screen name="IdDetails" component={IdDetails} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="FAQs" component={FAQs} />
+
       {/* Extra Screens */}
       <Stack.Screen name="CarIdentification" component={CarIdentification} />
       <Stack.Screen name="RideIdentification" component={RideIdentification} />
@@ -114,6 +120,7 @@ const StackContainer = () => {
       <Stack.Screen name="TripConfirmation" component={TripConfirmation} />
       <Stack.Screen name="ManageRide" component={ManageRide} />
       <Stack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+
       {/* Air Stack Screens */}
       <Stack.Screen name="TourDetails" component={TourDetailsScreen} />
       <Stack.Screen name="FlightDetails" component={FlightDetailsScreen} />
@@ -121,6 +128,7 @@ const StackContainer = () => {
         name="PassengerDetails"
         component={PassengerDetailsScreen}
       />
+
       {/* Water Stack Screens */}
     </Stack.Navigator>
   );

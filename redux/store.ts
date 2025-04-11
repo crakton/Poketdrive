@@ -2,9 +2,9 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { navSlice } from "../slices/navSlice";
 import chatReducer from "./features/chatSlice";
 import airlineReducer from "./features/airlineSlice";
+import sendReducer from "./features/waterSendSlice";
 import flightReducer from "./features/flightSllice";
 import userReducer from "./features/userSlice";
-import sendReducer from "./features/waterSendSlice";
 
 const reducers = combineReducers({
   nav: navSlice.reducer,

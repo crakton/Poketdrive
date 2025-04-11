@@ -64,6 +64,7 @@ const Page: FC<{
   subTitle: string;
   img_name: ImageSourcePropType;
 }> = (props) => {
+<<<<<<< HEAD
   const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
   return (
@@ -106,6 +107,50 @@ const Page: FC<{
       ) : null}
     </View>
   );
+=======
+	const { navigate } = useNavigation<NavigationProp<RootStackParamList>>();
+	const dispatch = useAppDispatch();
+	return (
+		<View
+			style={[
+				tw`flex flex-col h-full bg-white w-full flex-1 items-center gap-5 justify-center px-5`,
+			]}
+		>
+			<StatusBar barStyle={"default"} translucent />
+			<Image
+				resizeMethod="scale"
+				resizeMode="contain"
+				source={props.img_name}
+				style={[tw`w-full h-1/3`]}
+			/>
+			<Text style={[tw`text-2xl`, { fontFamily: "Poppins-Black" }]}>
+				{props.title}
+			</Text>
+			<Text style={[tw`text-lg`, { fontFamily: "Poppins-Regular" }]}>
+				{props.subTitle}
+			</Text>
+			{props.id === 3 ? (
+				<TouchableOpacity
+					onPress={async () => {
+						// await AuthService.setFirstTimeFlag();
+						// dispatch(setFirstTimeUser(false));
+						navigate("MainStack");
+					}}
+					style={[tw`bg-[tomato] p-3 -bottom-20 rounded-full`]}
+				>
+					<Text
+						style={[
+							tw`text-white text-lg font-bold`,
+							{ fontFamily: "Poppins-Regular" },
+						]}
+					>
+						Get Started
+					</Text>
+				</TouchableOpacity>
+			) : null}
+		</View>
+	);
+>>>>>>> 514ba57233f27486fe6e1c9e7db552939d0a7de4
 };
 
 const PageIndicator: FC<{

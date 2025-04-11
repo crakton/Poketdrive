@@ -30,8 +30,8 @@ const ContinueButton: React.FC<ContinueButtonProps> = ({
 			) : (
 				<Text
 					style={[
-						tw`text-center text-2xl text-white`,
-						{ fontFamily: "Poppins-Bold" },
+						tw`text-center text-[14px] text-white`,
+						{ fontFamily: "Poppins-semiBold" },
 					]}
 				>
 					{text}
