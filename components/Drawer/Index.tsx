@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Messages from "../../screens/Chat/Messages";
 import ManageRide from "../../screens/RideHaling/ManageRide";
 import ManageTrips from "../../screens/Driver/DriverItinerary/ManageTrips";
+import Home from "@screens/RideHaling/Home";
 
 export const MyDrawer = createDrawerNavigator();
 
@@ -55,6 +56,15 @@ const DrawerContainer = () => {
 				swipeEnabled: false,
 			}}
 		>
+			<MyDrawer.Screen
+				component={Home}
+				name="Home"
+				options={{
+					drawerIcon: ({ color, size }: { color: string; size: number }) => (
+						<Ionicons name="home-outline" size={size} color={color} />
+					),
+				}}
+			/>
 			<MyDrawer.Screen
 				component={Payment}
 				name="Payments"
@@ -196,6 +206,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 							onPress={() => navigation.navigate(route.name)}
 							icon={({ color, size }: { color: string; size: number }) => {
 								switch (route.name) {
+									case "Home":
+										return (
+											<Ionicons name="home-outline" size={size} color={color} />
+										);
 									case "Payments":
 										return (
 											<Ionicons name="card-outline" size={size} color={color} />

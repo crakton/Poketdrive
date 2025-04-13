@@ -1,4 +1,3 @@
-// screens/ChatListScreen.tsx
 import React, { useEffect, useState } from "react";
 import {
 	View,
@@ -8,6 +7,7 @@ import {
 	Image,
 	StyleSheet,
 	ActivityIndicator,
+	Alert,
 } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,39 +21,85 @@ import {
 	setConnectionStatus,
 	setConversations,
 } from "../../redux/features/chatSlice";
+import { set } from "date-fns";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IUser } from "@../../types/user";
 
 const ChatListScreen = () => {
 	const navigation = useNavigation<NavigationProp<any>>();
 	const dispatch = useAppDispatch();
 	const { conversations, isConnected } = useAppSelector((state) => state.chat);
 	const [loading, setLoading] = useState(true);
+	const [connectionError, setConnectionError] = useState(false);
+	const [userData, setUser] = useState<IUser>();
+	const [token, setToken] = useState<string>();
+
+	// fetch user from asncy storage
+	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const jsonValue = await AsyncStorage.getItem("userData");
+
+				if (jsonValue !== null) {
+					const parsedData = JSON.parse(jsonValue);
+					setUser(parsedData as IUser);
+					setToken((await AsyncStorage.getItem("token")) ?? "");
+				}
+			} catch (e) {
+				console.log("Error fetching user data:", e);
+			}
+		};
+	}, []);
 
 	useEffect(() => {
+		let socketConnectTimeout: NodeJS.Timeout;
 		// Connect to socket with user ID (use actual user ID from auth state)
-		const socket = chatSocketService.connect(
-			"user1",
-			"YOUR_SOCKET_IO_ENDPOINT"
-		);
+		try {
+			const socket = chatSocketService.connect(userData?.id ?? "user1", token);
 
-		// Listen for connection events
-		socket.on("connect", () => {
-			dispatch(setConnectionStatus(true));
-		});
+			// Listen for connection events
+			socket.on("connect", () => {
+				dispatch(setConnectionStatus(true));
+				setConnectionError(false);
+			});
 
-		socket.on("disconnect", () => {
-			dispatch(setConnectionStatus(false));
-		});
+			socket.on("disconnect", () => {
+				dispatch(setConnectionStatus(false));
+			});
 
-		// Subscribe to conversations
-		chatSocketService.subscribeToConversations((updatedConversations) => {
-			dispatch(setConversations(updatedConversations));
+			socket.on("connect_error", (error) => {
+				console.error("Socket connection error:", error);
+				setConnectionError(true);
+
+				// Still proceed with UI even if connection fails
+				socketConnectTimeout = setTimeout(() => {
+					setLoading(false);
+				}, 3000);
+			});
+
+			// Subscribe to conversations
+			chatSocketService.subscribeToConversations((updatedConversations) => {
+				dispatch(setConversations(updatedConversations));
+				setLoading(false);
+			});
+
+			// Fetch initial conversations
+			chatSocketService.requestConversations();
+
+			// Set a timeout to show UI even if server doesn't respond
+			socketConnectTimeout = setTimeout(() => {
+				if (loading) {
+					setLoading(false);
+				}
+			}, 5000);
+		} catch (error) {
+			console.error("Failed to initialize socket:", error);
+			setConnectionError(true);
 			setLoading(false);
-		});
-
-		// Fetch initial conversations
-		socket.emit("get_conversations");
+		}
 
 		return () => {
+			clearTimeout(socketConnectTimeout);
 			chatSocketService.disconnect();
 		};
 	}, [dispatch]);
@@ -101,9 +147,11 @@ const ChatListScreen = () => {
 			>
 				<Image
 					source={{
-						uri: `https://randomuser.me/api/portraits/men/${
-							parseInt(recipientId.replace("user", "")) + 30
-						}.jpg`,
+						uri: recipientId
+							? `https://randomuser.me/api/portraits/men/${
+									parseInt(recipientId.replace("user", "") || "0") + 30
+							  }.jpg`
+							: "https://randomuser.me/api/portraits/men/30.jpg",
 					}}
 					style={tw`w-12 h-12 rounded-full mr-3`}
 				/>
@@ -163,7 +211,9 @@ const ChatListScreen = () => {
 			{!isConnected && (
 				<View style={tw`bg-yellow-100 p-2`}>
 					<Text style={tw`text-yellow-800 text-center`}>
-						Connecting to chat server...
+						{connectionError
+							? "Unable to connect to chat server. Some features may be limited."
+							: "Connecting to chat server..."}
 					</Text>
 				</View>
 			)}
@@ -172,13 +222,38 @@ const ChatListScreen = () => {
 				<View style={tw`flex-1 justify-center items-center p-4`}>
 					<Ionicons name="chatbubble-ellipses-outline" size={64} color="#ccc" />
 					<Text style={tw`text-gray-500 mt-4 text-center`}>
-						No conversations yet
+						{connectionError
+							? "Unable to load conversations. Please check your connection."
+							: "No conversations yet"}
 					</Text>
 					<TouchableOpacity
 						style={tw`mt-4 bg-orange-500 px-6 py-3 rounded-full`}
-						onPress={() => navigation.navigate("Contacts")} // Navigate to contacts screen
+						onPress={() => {
+							if (connectionError) {
+								// Try to reconnect
+								setLoading(true);
+								chatSocketService.disconnect();
+								const socket = chatSocketService.connect("user1", "");
+								setTimeout(() => {
+									const connected = chatSocketService.isConnected();
+									dispatch(setConnectionStatus(connected));
+									if (!connected) {
+										Alert.alert(
+											"Connection Issue",
+											"Still unable to connect. Please try again later.",
+											[{ text: "OK" }]
+										);
+									}
+									setLoading(false);
+								}, 2000);
+							} else {
+								navigation.navigate("Contacts");
+							}
+						}}
 					>
-						<Text style={tw`text-white font-bold`}>Start a conversation</Text>
+						<Text style={tw`text-white font-bold`}>
+							{connectionError ? "Retry Connection" : "Start a conversation"}
+						</Text>
 					</TouchableOpacity>
 				</View>
 			) : (
@@ -192,3 +267,5 @@ const ChatListScreen = () => {
 		</SafeAreaView>
 	);
 };
+
+export default ChatListScreen;

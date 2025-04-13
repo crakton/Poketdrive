@@ -15,8 +15,10 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getLocalData } from "../../utils/localStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DrawerToggleButton } from "@react-navigation/drawer";
-import { navigationRef } from "@components/common/RootNavigator";
+import {
+	navigateToDrawerAndToggle,
+	toggleDrawer,
+} from "@services/navigationService";
 
 type AuthStackParamList = {
 	RideSchedule: undefined;
@@ -70,22 +72,13 @@ const Home = () => {
 		checkOnboard();
 	}, []);
 
-	// function to toggle drawer
-	const handleDrawer = () => {};
-
 	return (
 		<SafeAreaView
 			style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
 		>
 			<StatusBar translucent backgroundColor="transparent" />
 			<View style={tw`flex flex-row items-center justify-between px-5 py-5 `}>
-				<TouchableOpacity
-					onPress={() => {
-						if (navigationRef.isReady()) {
-							navigationRef.current?.toggleDrawer();
-						}
-					}}
-				>
+				<TouchableOpacity onPress={navigateToDrawerAndToggle}>
 					<Icon name="menu" />
 				</TouchableOpacity>
 				{/* <TouchableOpacity

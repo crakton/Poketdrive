@@ -15,7 +15,7 @@ import tw from "twrnc";
 import { RootStackParamList } from "../../types";
 import { useAirContext } from "../../hooks/air/useAirContext";
 import { useAppSelector } from "../../redux/store";
-import { IAirline } from "../../types/airline";
+import { IAirline, IFlight } from "../../types/airline";
 import ContinueButton from "../../components/ui/ContinueButton";
 
 const TourScreen = () => {
@@ -27,30 +27,8 @@ const TourScreen = () => {
 		[tourSearchQueries?.currentSearch]
 	);
 	const { airlines } = useAppSelector((state) => state.airlines);
-
-	// mock data for tours
-	// const airTours = [
-	// 	{
-	// 		id: "1",
-	// 		name: "Cessna 172 familiarization flight from Kronstadt",
-	// 		image: require("../../assets/images/air/cassna.png"),
-	// 		rating: 4.7,
-	// 		airfield: "Seizo",
-	// 		passengers: 4,
-	// 		isFavorite: false,
-	// 	},
-	// 	{
-	// 		id: "2",
-	// 		name: "Cessna 172 over Kronstadt",
-	// 		image: require("../../assets/images/air/cassna.png"),
-	// 		rating: 4.9,
-	// 		airfield: "Bychye Polye",
-	// 		passengers: 1,
-	// 		isFavorite: false,
-	// 	},
-	// ];
-
-	const handleTourPreveiw = useCallback((item: IAirline) => {
+	const { allFlights: flights } = useAppSelector((state) => state.flights);
+	const handleTourPreveiw = useCallback((item: IFlight) => {
 		// setTourDetails(item);
 		navigation.navigate("TourDetails", item);
 	}, []);
@@ -63,15 +41,20 @@ const TourScreen = () => {
 			airline.name.toLowerCase().includes(search.toLowerCase())
 		);
 	}, [airlines, search]);
+	const filteredFlights = useMemo(() => {
+		if (search === undefined || search === "") {
+			return flights;
+		}
+		return flights.filter((flight) =>
+			flight.airline.name.toLowerCase().includes(search.toLowerCase())
+		);
+	}, [flights, search]);
 
-	console.log("search", search);
-	console.log("filteredAirlines", filteredAirlines);
-
-	const renderAirTour = ({ item }: { item: IAirline }) => (
+	const renderAirTour = ({ item }: { item: IFlight }) => (
 		<View style={tw`bg-gray-50 rounded-lg overflow-hidden mb-4`}>
 			<TouchableOpacity onPress={() => handleTourPreveiw(item)} style={tw``}>
 				<ImageBackground
-					source={{ uri: item.image }}
+					source={{ uri: item.airline.logo }}
 					style={tw`w-full h-40 flex-col flex justify-between`}
 					resizeMode="cover"
 				>
@@ -88,20 +71,20 @@ const TourScreen = () => {
 						<View style={tw`bg-gray-50 p-1 flex-row items-center rounded-full`}>
 							<Text style={tw`text-gray-500`}>
 								Airfield:{" "}
-								{item.name.length > 9
-									? item.name.slice(0, 9) + "..."
-									: item.name}
+								{item.airline.name.length > 9
+									? item.airline.name.slice(0, 9) + "..."
+									: item.airline.name}
 							</Text>
 						</View>
 						<View style={tw`bg-gray-50 p-1 flex-row items-center rounded-full`}>
 							<Text style={tw`text-gray-500`}>
-								Passengers: {item.fleetSize}
+								Passengers: {item.airline.fleetSize}
 							</Text>
 						</View>
 					</View>
 				</ImageBackground>
 				<View style={[tw`p-3`]}>
-					<Text style={tw`font-medium text-base`}>{item.name}</Text>
+					<Text style={tw`font-medium text-base`}>{item.airline.name}</Text>
 				</View>
 			</TouchableOpacity>
 		</View>
@@ -110,7 +93,7 @@ const TourScreen = () => {
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white my-3`}>
 			<ScrollView showsVerticalScrollIndicator={false}>
-				{filteredAirlines.map((item) => (
+				{filteredFlights.map((item) => (
 					<View key={item._id}>{renderAirTour({ item })}</View>
 				))}
 
