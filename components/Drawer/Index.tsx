@@ -15,7 +15,12 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import {
+	useNavigation,
+	NavigationProp,
+	useRoute,
+	DrawerActions,
+} from "@react-navigation/native";
 import StackContainer from "../Stack/Index";
 import Payment from "../../screens/RideHaling/Payment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,11 +28,14 @@ import Messages from "../../screens/Chat/Messages";
 import ManageRide from "../../screens/RideHaling/ManageRide";
 import ManageTrips from "../../screens/Driver/DriverItinerary/ManageTrips";
 import Home from "@screens/RideHaling/Home";
+import ChatListScreen from "@screens/Chat/ChatListScreen";
 
 export const MyDrawer = createDrawerNavigator();
 
 const DrawerContainer = () => {
 	const { width } = useWindowDimensions();
+	const route = useRoute();
+	const navigation = useNavigation<NavigationProp<any>>();
 	const [userData, setUserData] = useState<any>(null);
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -45,6 +53,7 @@ const DrawerContainer = () => {
 
 		fetchUserData();
 	}, [setUserData]);
+
 	return (
 		<MyDrawer.Navigator
 			drawerContent={(props: DrawerContentComponentProps) => (
@@ -84,45 +93,45 @@ const DrawerContainer = () => {
 				}}
 			/>
 			<MyDrawer.Screen
-				component={Messages}
+				component={ChatListScreen}
 				name="Chat"
-				options={{
-					headerShown: true,
-					header: ({ navigation }: { navigation: NavigationProp<any> }) => {
-						return (
-							<View style={tw`flex-row items-center justify-between py-2 px-3`}>
-								<View style={tw`flex-row items-center mt-6`}>
-									<TouchableOpacity onPress={() => navigation.goBack()}>
-										<Ionicons name="arrow-back" size={24} color="black" />
-									</TouchableOpacity>
-									<View style={tw`flex-row items-center ml-2`}>
-										<Image
-											source={require("../../assets/images/avatar.png")}
-											style={tw`w-10 h-10 rounded-full`}
-										/>
-										<View style={[tw`ml-2 flex flex-col`]}>
-											<Text style={tw`font-bold`}>
-												{userData?.firstName ?? "Jonny"}
-											</Text>
-											<View style={[tw`flex flex-row items-center`]}>
-												<Text
-													style={tw`h-[1.4] w-[1.4] rounded-full bg-green-700`}
-												></Text>
-												<Text style={tw`text-xs ml-1`}>Online</Text>
-											</View>
-										</View>
-									</View>
-								</View>
-								<TouchableOpacity style={tw`mt-6`}>
-									<Ionicons name="call-outline" size={24} color="black" />
-								</TouchableOpacity>
-							</View>
-						);
-					},
-					drawerIcon: ({ color, size }: { color: string; size: number }) => (
-						<Ionicons name="chatbox" size={size} color={color} />
-					),
-				}}
+				// options={{
+				// 	headerShown: true,
+				// 	header: ({ navigation }: { navigation: NavigationProp<any> }) => {
+				// 		return (
+				// 			<View style={tw`flex-row items-center justify-between py-2 px-3`}>
+				// 				<View style={tw`flex-row items-center mt-6`}>
+				// 					<TouchableOpacity onPress={() => navigation.goBack()}>
+				// 						<Ionicons name="arrow-back" size={24} color="black" />
+				// 					</TouchableOpacity>
+				// 					<View style={tw`flex-row items-center ml-2`}>
+				// 						<Image
+				// 							source={require("../../assets/images/avatar.png")}
+				// 							style={tw`w-10 h-10 rounded-full`}
+				// 						/>
+				// 						<View style={[tw`ml-2 flex flex-col`]}>
+				// 							<Text style={tw`font-bold`}>
+				// 								{userData?.firstName ?? "Jonny"}
+				// 							</Text>
+				// 							<View style={[tw`flex flex-row items-center`]}>
+				// 								<Text
+				// 									style={tw`h-[1.4] w-[1.4] rounded-full bg-green-700`}
+				// 								></Text>
+				// 								<Text style={tw`text-xs ml-1`}>Online</Text>
+				// 							</View>
+				// 						</View>
+				// 					</View>
+				// 				</View>
+				// 				<TouchableOpacity style={tw`mt-6`}>
+				// 					<Ionicons name="call-outline" size={24} color="black" />
+				// 				</TouchableOpacity>
+				// 			</View>
+				// 		);
+				// 	},
+				// 	drawerIcon: ({ color, size }: { color: string; size: number }) => (
+				// 		<Ionicons name="chatbox" size={size} color={color} />
+				// 	),
+				// }}
 			/>
 			<MyDrawer.Screen
 				component={ManageRide}

@@ -59,6 +59,11 @@ import FAQs from "@screens/Settings/FAQs";
 import IdDetails from "@screens/Settings/IdDetails";
 import IdVerification from "@screens/Settings/IdVerification";
 import Settings from "@screens/Settings/Settings";
+import MessageScreen from "@screens/Chat/Messages";
+import { IUser } from "../../types/user";
+import chatSocketService from "@services/chatService";
+import { useAppDispatch } from "@redux/store";
+import { IConversation } from "@redux/features/chatSlice";
 
 export const RootStack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
@@ -67,6 +72,10 @@ const RootNavigator = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const [isFirstTime, setIsFirstTime] = useState<boolean>(false);
+	const [userData, setUserData] = useState<IUser>();
+	const [token, setToken] = useState<string>();
+
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		const loadAuthData = async () => {
@@ -77,6 +86,10 @@ const RootNavigator = () => {
 
 				setIsAuthenticated(!!token && !!user);
 				setIsFirstTime(firstTime === "true");
+				if (token !== null) {
+					setUserData(JSON.parse(user as string));
+					setToken(token);
+				}
 			} catch (error) {
 				console.error("Error loading auth data", error);
 			} finally {
@@ -87,8 +100,64 @@ const RootNavigator = () => {
 		loadAuthData();
 	}, []);
 
+	// Connect to socket when user data is available
+	useEffect(() => {
+		if (!userData?.id) return;
+
+		let socketConnectTimeout: NodeJS.Timeout;
+
+		try {
+			// Connect to socket with user ID
+			const socket = chatSocketService.connect(userData.id, token);
+
+			// Listen for connection events
+			socket.on("connect", () => {
+				dispatch(setConnectionStatus(true));
+				setConnectionError(false);
+				console.log("Socket connected successfully");
+
+				// Request conversations after successful connection
+				chatSocketService.requestConversations();
+			});
+
+			socket.on("connect_error", (error) => {
+				console.error("Socket connection error:", error);
+				setConnectionError(true);
+				setLoading(false);
+			});
+
+			// Subscribe to conversations updates
+			chatSocketService.subscribeToConversations((updatedConversations) => {
+				dispatch(setConversations(updatedConversations));
+				setLoading(false);
+			});
+
+			// Subscribe to new conversation events
+			chatSocketService.subscribeToNewConversations((newConversation) => {
+				dispatch(addConversation(newConversation));
+			});
+
+			// Set a timeout to show UI even if server doesn't respond
+			socketConnectTimeout = setTimeout(() => {
+				if (isLoading) {
+					setLoading(false);
+				}
+			}, 5000);
+		} catch (error) {
+			console.error("Failed to initialize socket:", error);
+			setConnectionError(true);
+			setLoading(false);
+		}
+
+		return () => {
+			clearTimeout(socketConnectTimeout);
+			// We don't disconnect here to keep the socket alive for other screens
+		};
+	}, [userData, token, dispatch, isLoading]);
+
 	if (isLoading) {
 		return <PageLoader />;
+		1;
 	}
 
 	return (
@@ -117,6 +186,7 @@ const RootNavigator = () => {
 				<RootStack.Screen name="MapScreen" component={MapScreen} />
 				<RootStack.Screen name="Payment" component={Payment} />
 				<RootStack.Screen name="Confirmation" component={Confirmation} />
+				<RootStack.Screen name="Message" component={MessageScreen} />
 
 				{/* Driver Screens */}
 				<RootStack.Screen name="RideSchedule" component={RideSchedule} />
@@ -232,3 +302,45 @@ const RootNavigator = () => {
 };
 
 export default RootNavigator;
+function setConnectionStatus(arg0: boolean): any {
+	throw new Error("Function not implemented.");
+}
+
+function setConnectionError(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}
+
+function setConversations(updatedConversations: IConversation[]): any {
+	throw new Error("Function not implemented.");
+}
+
+function addConversation(newConversation: IConversation): any {
+	throw new Error("Function not implemented.");
+}
+
+function setLoading(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}
+
+function useCallback(
+	arg0: (
+		conversationId: string,
+		recipientId: string,
+		recipientName: string
+	) => void,
+	arg1: any[]
+) {
+	throw new Error("Function not implemented.");
+}
+
+function setActiveConversation(conversationId: string): any {
+	throw new Error("Function not implemented.");
+}
+
+function markConversationAsRead(conversationId: string): any {
+	throw new Error("Function not implemented.");
+}
+
+function setUserModalVisible(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}

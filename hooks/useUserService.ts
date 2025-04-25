@@ -33,5 +33,26 @@ export const useUserService = () => {
 				queryFn,
 			});
 		},
+
+		/**
+		 * Fetch all users
+		 */
+		useGetUsers: () => {
+			const { queryKey, queryFn } = userService.getUsers();
+			return useQuery({
+				queryKey,
+				queryFn,
+			});
+		},
+		/**
+		 * Fetch a single user by ID
+		 */
+		useGetUser: (userId: string) => {
+			const { queryKey, queryFn } = userService.getUser(userId);
+			return useQuery({
+				queryKey,
+				queryFn,
+			});
+		},
 	};
 };
