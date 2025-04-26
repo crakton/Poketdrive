@@ -157,7 +157,6 @@ const RootNavigator = () => {
 
 	if (isLoading) {
 		return <PageLoader />;
-		1;
 	}
 
 	return (

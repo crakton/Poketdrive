@@ -174,42 +174,53 @@ const ChatListScreen = () => {
 
 		return (
 			<TouchableOpacity
-				style={tw`flex-row p-4 border-b border-gray-100`}
+				style={tw`flex-row item p-4 border-b border-gray-100`}
 				onPress={() => navigateToChat(item.id, recipientId, recipientName)}
 			>
 				<Image
 					source={{ uri: avatarUrl }}
 					style={tw`w-12 h-12 rounded-full mr-3`}
 				/>
-
-				<View style={tw`flex-1 justify-center`}>
-					<View style={tw`flex-row justify-between items-center`}>
-						<Text style={tw`font-bold text-base`}>{recipientName}</Text>
-						<Text style={tw`text-gray-500 text-xs`}>
-							{formatTimestamp(lastMessage.timestamp || lastMessage.createdAt)}
-						</Text>
-					</View>
-
-					<View style={tw`flex-row justify-between items-center mt-1`}>
-						<Text
-							numberOfLines={1}
-							style={tw`text-gray-600 flex-1 pr-2 ${
-								item.unreadCount > 0 ? "font-semibold" : ""
-							}`}
-						>
-							{lastMessage.message}
-						</Text>
-
-						{item.unreadCount > 0 && (
-							<View
-								style={tw`bg-red-500 rounded-full h-5 min-w-5 items-center justify-center px-1`}
-							>
-								<Text style={tw`text-white text-xs font-bold`}>
-									{item.unreadCount}
-								</Text>
-							</View>
-						)}
-					</View>
+				<View style={tw`flex-1`}>
+					<Text style={tw`font-bold`}>{recipientName}</Text>
+					<Text style={tw`text-gray-500 text-sm`}>
+						{lastMessage.message.length > 30
+							? `${lastMessage.message.slice(0, 30)}...`
+							: lastMessage.message}
+					</Text>
+					<Text style={tw`text-gray-400 text-[10px]`}>
+						{formatTimestamp(lastMessage.timestamp)}
+					</Text>
+				</View>
+				<View style={tw`ml-2`}>
+					{!item.read ? (
+						<Ionicons
+							name="checkmark-outline"
+							size={12}
+							color="#FF4533"
+							style={tw`absolute top-0 right-0`}
+						/>
+					) : (
+						<Ionicons
+							name="checkmark-done-outline"
+							size={12}
+							color="#FF4533"
+							style={tw`absolute top-0 right-0`}
+						/>
+					)}
+					<Text style={tw`text-gray-400 text-xs`}>
+						{item.unreadCount > 0 ? item.unreadCount : ""}
+					</Text>
+					{recipientUser.role !== "passenger" && (
+						<>
+							<Text style={tw`text-gray-400 text-[10px]`}>
+								{recipientUser.carName}
+							</Text>
+							<Text style={tw`text-gray-400 text-[10px]`}>
+								{recipientUser.carNumber}
+							</Text>
+						</>
+					)}
 				</View>
 			</TouchableOpacity>
 		);

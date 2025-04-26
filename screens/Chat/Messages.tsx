@@ -471,7 +471,7 @@ const MessageScreen = () => {
 				keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
 			>
 				<ChatHeader
-					phoneNumber={recipientData.phoneNumber}
+					phoneNumber={recipientData?.phoneNumber}
 					isOnline={isConnected}
 					isTyping={isTyping}
 					recipientName={recipientName}
