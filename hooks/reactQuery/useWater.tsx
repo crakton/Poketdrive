@@ -4,6 +4,7 @@ import {
   getOrderFrom,
   getOrderTo,
   getRate,
+  getTime,
   sendOrder,
 } from "../../services/waterService";
 import { SendFormState } from "../../redux/features/waterSendSlice";
@@ -33,6 +34,11 @@ export const useGetCouponRate = (kg: number, coupon: string) => {
 
     queryFn: () => getCouponRate(kg, coupon),
     enabled: !!kg && !!coupon,
+  });
+};
+export const useGetTime = () => {
+  return useMutation({
+    mutationFn: (data: any) => getTime(data),
   });
 };
 export const useGetRate = (kg: number) => {

@@ -64,171 +64,171 @@ export const RootStack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
 
 const RootNavigator = () => {
-	const [isLoading, setIsLoading] = useState(true);
-	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-	const [isFirstTime, setIsFirstTime] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isFirstTime, setIsFirstTime] = useState<boolean>(false);
 
-	useEffect(() => {
-		const loadAuthData = async () => {
-			try {
-				const token = await AsyncStorage.getItem("token");
-				const user = await AsyncStorage.getItem("user");
-				const firstTime = await AsyncStorage.getItem("firstTime");
+  useEffect(() => {
+    const loadAuthData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const user = await AsyncStorage.getItem("user");
+        const firstTime = await AsyncStorage.getItem("firstTime");
 
-				setIsAuthenticated(!!token && !!user);
-				setIsFirstTime(firstTime === "true");
-			} catch (error) {
-				console.error("Error loading auth data", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+        setIsAuthenticated(!!token && !!user);
+        setIsFirstTime(firstTime === "true");
+      } catch (error) {
+        console.error("Error loading auth data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-		loadAuthData();
-	}, []);
+    loadAuthData();
+  }, []);
 
-	if (isLoading) {
-		return <PageLoader />;
-	}
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
-	return (
-		<NavigationContainer ref={navigationRef}>
-			<RootStack.Navigator
-				initialRouteName={
-					isFirstTime
-						? "CreateAccount"
-						: isAuthenticated
-						? "Onboarding"
-						: "CreateAccount"
-				}
-				screenOptions={{ headerShown: false }}
-			>
-				<RootStack.Screen name="Onboarding" component={Onboarding} />
-				<RootStack.Screen name="CreateAccount" component={CreateAccount} />
-				<RootStack.Screen name="Login" component={Login} />
-				<RootStack.Screen name="Verification" component={Verification} />
+  return (
+    <NavigationContainer ref={navigationRef}>
+      <RootStack.Navigator
+        initialRouteName={
+          isFirstTime
+            ? "CreateAccount"
+            : isAuthenticated
+            ? "Onboarding"
+            : "CreateAccount"
+        }
+        screenOptions={{ headerShown: false }}
+      >
+        <RootStack.Screen name="Onboarding" component={Onboarding} />
+        <RootStack.Screen name="CreateAccount" component={CreateAccount} />
+        <RootStack.Screen name="Login" component={Login} />
+        <RootStack.Screen name="Verification" component={Verification} />
 
-				<RootStack.Screen name="LandDrawer" component={DrawerContainer} />
+        <RootStack.Screen name="LandDrawer" component={DrawerContainer} />
 
-				{/* Main App Screens */}
-				<RootStack.Screen name="Home" component={Home} />
-				<RootStack.Screen name="TripSelection" component={TripSelection} />
-				<RootStack.Screen name="RideSelection" component={RideSelection} />
-				<RootStack.Screen name="MapScreen" component={MapScreen} />
-				<RootStack.Screen name="Payment" component={Payment} />
-				<RootStack.Screen name="Confirmation" component={Confirmation} />
+        {/* Main App Screens */}
+        <RootStack.Screen name="Home" component={Home} />
+        <RootStack.Screen name="TripSelection" component={TripSelection} />
+        <RootStack.Screen name="RideSelection" component={RideSelection} />
+        <RootStack.Screen name="MapScreen" component={MapScreen} />
+        <RootStack.Screen name="Payment" component={Payment} />
+        <RootStack.Screen name="Confirmation" component={Confirmation} />
 
-				{/* Driver Screens */}
-				<RootStack.Screen name="RideSchedule" component={RideSchedule} />
-				<RootStack.Screen name="ManageTrips" component={ManageTrips} />
-				<RootStack.Screen name="TripItinerary" component={TripItinerary} />
-				<RootStack.Screen name="DriverDetails" component={DriverDetails} />
+        {/* Driver Screens */}
+        <RootStack.Screen name="RideSchedule" component={RideSchedule} />
+        <RootStack.Screen name="ManageTrips" component={ManageTrips} />
+        <RootStack.Screen name="TripItinerary" component={TripItinerary} />
+        <RootStack.Screen name="DriverDetails" component={DriverDetails} />
 
-				{/* Wallet Screens */}
-				<RootStack.Screen name="WalletHome" component={WalletHome} />
-				<RootStack.Screen name="WalletHistory" component={WalletHistory} />
-				<RootStack.Screen
-					name="AddPaymentMethod"
-					component={AddPaymentMethod}
-				/>
-				<RootStack.Screen
-					name="PaymentSucessful"
-					component={PaymentSucessful}
-				/>
+        {/* Wallet Screens */}
+        <RootStack.Screen name="WalletHome" component={WalletHome} />
+        <RootStack.Screen name="WalletHistory" component={WalletHistory} />
+        <RootStack.Screen
+          name="AddPaymentMethod"
+          component={AddPaymentMethod}
+        />
+        <RootStack.Screen
+          name="PaymentSucessful"
+          component={PaymentSucessful}
+        />
 
-				{/* Settings Screens */}
-				<RootStack.Screen
-					name="AccountVerification"
-					component={AccountVerification}
-				/>
-				<RootStack.Screen name="IdVerification" component={IdVerification} />
-				<RootStack.Screen name="IdDetails" component={IdDetails} />
-				<RootStack.Screen name="Settings" component={Settings} />
-				<RootStack.Screen name="FAQs" component={FAQs} />
+        {/* Settings Screens */}
+        <RootStack.Screen
+          name="AccountVerification"
+          component={AccountVerification}
+        />
+        <RootStack.Screen name="IdVerification" component={IdVerification} />
+        <RootStack.Screen name="IdDetails" component={IdDetails} />
+        <RootStack.Screen name="Settings" component={Settings} />
+        <RootStack.Screen name="FAQs" component={FAQs} />
 
-				{/* Extra Screens */}
-				<RootStack.Screen
-					name="CarIdentification"
-					component={CarIdentification}
-				/>
-				<RootStack.Screen
-					name="RideIdentification"
-					component={RideIdentification}
-				/>
-				<RootStack.Screen name="RideProgress" component={RideProgress} />
-				<RootStack.Screen name="EndTrip" component={EndTrip} />
-				<RootStack.Screen
-					name="TripConfirmation"
-					component={TripConfirmation}
-				/>
-				<RootStack.Screen name="ManageRide" component={ManageRide} />
-				<RootStack.Screen name="DriverEndTrip" component={DriverEndTrip} />
-				<RootStack.Screen name="AirTabBar" component={AirRootTab} />
-				<RootStack.Screen name="TourDetails" component={TourDetailsScreen} />
-				<RootStack.Screen name="FlightSearch" component={FlightSearchScreen} />
-				<RootStack.Screen
-					name="FlightDetails"
-					component={FlightDetailsScreen}
-				/>
-				<RootStack.Screen
-					options={{ headerShown: true, headerTitle: "Book Flight" }}
-					name="FlightBooking"
-					component={FlightBookingScreen}
-				/>
-				<RootStack.Screen name="Travels" component={TravelsScreen} />
-				<RootStack.Screen
-					options={{
-						headerShown: true,
-						headerTitle: "Choose Seat",
-					}}
-					name="SelectSeat"
-					component={SeatSelectionScreen}
-				/>
-				<RootStack.Screen
-					name="PassengerDetails"
-					component={PassengerDetailsScreen}
-				/>
-				<RootStack.Screen
-					options={{ headerShown: true, headerTitle: "Payment" }}
-					name="Payments"
-					component={PaymentsScreen}
-				/>
-				<RootStack.Screen
-					options={{ headerShown: true, headerTitle: "Payment Report" }}
-					name="PaymentSuccess"
-					component={PaymentScreen}
-				/>
-				<RootStack.Screen
-					options={{ headerShown: true, headerTitle: "Boarding pass" }}
-					name="TicketConfirmation"
-					component={TicketConfirmationScreen}
-				/>
-				<RootStack.Screen
-					name="WalletPaymentSuccess"
-					component={PaymentSuccessScreen}
-				/>
-				<RootStack.Screen name="MyWallet" component={MyWalletScreen} />
-				<RootStack.Screen
-					name="TransactionDetails"
-					component={TransactionDetailsScreen}
-				/>
-				<RootStack.Screen
-					options={{ headerShown: true, headerTitle: "Card Management" }}
-					name={"CardManagement"}
-					component={CreditCardScreen}
-				/>
+        {/* Extra Screens */}
+        <RootStack.Screen
+          name="CarIdentification"
+          component={CarIdentification}
+        />
+        <RootStack.Screen
+          name="RideIdentification"
+          component={RideIdentification}
+        />
+        <RootStack.Screen name="RideProgress" component={RideProgress} />
+        <RootStack.Screen name="EndTrip" component={EndTrip} />
+        <RootStack.Screen
+          name="TripConfirmation"
+          component={TripConfirmation}
+        />
+        <RootStack.Screen name="ManageRide" component={ManageRide} />
+        <RootStack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+        <RootStack.Screen name="AirTabBar" component={AirRootTab} />
+        <RootStack.Screen name="TourDetails" component={TourDetailsScreen} />
+        <RootStack.Screen name="FlightSearch" component={FlightSearchScreen} />
+        <RootStack.Screen
+          name="FlightDetails"
+          component={FlightDetailsScreen}
+        />
+        <RootStack.Screen
+          options={{ headerShown: true, headerTitle: "Book Flight" }}
+          name="FlightBooking"
+          component={FlightBookingScreen}
+        />
+        <RootStack.Screen name="Travels" component={TravelsScreen} />
+        <RootStack.Screen
+          options={{
+            headerShown: true,
+            headerTitle: "Choose Seat",
+          }}
+          name="SelectSeat"
+          component={SeatSelectionScreen}
+        />
+        <RootStack.Screen
+          name="PassengerDetails"
+          component={PassengerDetailsScreen}
+        />
+        <RootStack.Screen
+          options={{ headerShown: true, headerTitle: "Payment" }}
+          name="Payments"
+          component={PaymentsScreen}
+        />
+        <RootStack.Screen
+          options={{ headerShown: true, headerTitle: "Payment Report" }}
+          name="PaymentSuccess"
+          component={PaymentScreen}
+        />
+        <RootStack.Screen
+          options={{ headerShown: true, headerTitle: "Boarding pass" }}
+          name="TicketConfirmation"
+          component={TicketConfirmationScreen}
+        />
+        <RootStack.Screen
+          name="WalletPaymentSuccess"
+          component={PaymentSuccessScreen}
+        />
+        <RootStack.Screen name="MyWallet" component={MyWalletScreen} />
+        <RootStack.Screen
+          name="TransactionDetails"
+          component={TransactionDetailsScreen}
+        />
+        <RootStack.Screen
+          options={{ headerShown: true, headerTitle: "Card Management" }}
+          name={"CardManagement"}
+          component={CreditCardScreen}
+        />
 
-				{/* Water Management Screens */}
-				<RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
-				<RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
-				<RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
-				<RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
-				<RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
-				<RootStack.Screen name="SucessScreen" component={SuccessScreen} />
-				<RootStack.Screen name="TrackingScreen" component={TrackingScreen} />
-			</RootStack.Navigator>
-		</NavigationContainer>
-	);
+        {/* Water Management Screens */}
+        <RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
+        <RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
+        <RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
+        <RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
+        <RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
+        <RootStack.Screen name="SucessScreen" component={SuccessScreen} />
+        <RootStack.Screen name="TrackingScreen" component={TrackingScreen} />
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
 };
 
 export default RootNavigator;

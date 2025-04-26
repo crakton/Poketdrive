@@ -16,9 +16,9 @@ import { SvgXml } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "../../nav";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { card } from "../../assets/card";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import CardDetails from "../../components/MyWallet/CardDetails";
+import ContinueButton from "@components/ui/ContinueButton";
 
 const WalletHome = () => {
   const navigation =
@@ -32,15 +32,15 @@ const WalletHome = () => {
     >
       <HeaderWithBackButton navigation={navigation} />
       <View
-        style={tw`flex-row h-[50px] -mt-5   mb-2 mx-5 items-center justify-between`}
+        style={tw`flex-row h-[50px] -mt-7   mb-2 mx-5 items-center justify-between`}
       >
         <View>
-          <Text style={[tw`text-[26px] `, { fontFamily: "Poppins-SemiBold" }]}>
+          <Text style={[tw`text-[18px] `, { fontFamily: "Poppins-SemiBold" }]}>
             My Wallet
           </Text>
         </View>
         <TouchableOpacity
-          style={tw`bg-[#FF4E00] rounded-xl py-2 mb-2 px-4`}
+          style={tw`bg-[#FF4E00] rounded-xl py-[5px] mb-2 px-4`}
           onPress={() => navigation.navigate("WalletHistory")}
         >
           <Text
@@ -53,27 +53,17 @@ const WalletHome = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        refreshControl={
-          <RefreshControl refreshing={false} onRefresh={() => {}} />
-        }
-      >
+
+      <View style={tw`flex-1 justify-between flex h-full`}>
         <CardDetails />
-        <TouchableOpacity
-          style={tw`bg-[#FF4E00] rounded-[20px] mx-4 items-center py-4 px-4`}
-          onPress={() => navigation.navigate("AddPaymentMethod")}
-        >
-          <Text
-            style={[
-              tw`text-white text-[18px] `,
-              { fontFamily: "Poppins-SemiBold" },
-            ]}
-          >
-            Top up Wallet
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+        <View style={tw`px-5 pb-10`}>
+          <ContinueButton
+            onPress={() => navigation.navigate("AddPaymentMethod")}
+            text={"Top up Wallet"}
+            disabled={false}
+          />
+        </View>
+      </View>
     </View>
   );
 };

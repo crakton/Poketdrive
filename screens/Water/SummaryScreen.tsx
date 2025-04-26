@@ -43,10 +43,12 @@ const SummaryScreen = () => {
       receiversName: waterSendData?.receiversInfo?.receiversName,
       receiversPhone: waterSendData?.receiversInfo?.receiversPhone,
       receiversAddress: waterSendData?.receiversInfo?.receiversAddress,
-      deliveryTime: waterSendData?.receiversInfo?.deliveryTime,
+      // deliveryTime: waterSendData?.receiversInfo?.deliveryTime,
       deliveryInstruction: waterSendData?.receiversInfo?.deliveryInstruction,
     },
     coupon: waterSendData?.coupon,
+    estimatedDeliveryDays: waterSendData?.estimatedDeliveryDays,
+    estimatedDeliveryDate: waterSendData?.estimatedDeliveryDate,
     cost: {
       type: waterSendData?.cost?.type ?? "default",
       amount: waterSendData?.cost?.amount ?? 0,
@@ -109,7 +111,7 @@ const SummaryScreen = () => {
                   Receiver address
                 </Text>
                 <Text style={tw`text-gray-700 text-[12px] w-[90%]`}>
-                  {waterSendData?.senderInfo?.pickupAddress ||
+                  {waterSendData?.receiversInfo?.receiversAddress ||
                     "No sender address"}
                 </Text>
               </View>

@@ -45,7 +45,7 @@ const Home = () => {
     { xml: orderSvg, label: "My Orders", screen: "Order" },
     { xml: rateSvg, label: "Check Rates", screen: "OtherScreen" },
     { xml: helpSvg, label: "Help Center", screen: "OtherScreen" },
-    { xml: walletSvg, label: "Wallet", screen: "OtherScreen" },
+    { xml: walletSvg, label: "Wallet", screen: "WalletHome" },
     { xml: otherSvg, label: "Others", screen: "Profile" },
   ];
   const [userData, setUserData] = useState<any>(null);

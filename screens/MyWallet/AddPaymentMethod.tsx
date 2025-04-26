@@ -16,12 +16,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import HeaderWithBackButton from "../../components/common/HeaderWithBackButton";
 import { useWalletPayment } from "../../hooks/reactQuery/useWallet";
-import { Tab } from "@rneui/base";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { openBrowserAsync } from "expo-web-browser";
-// import { TextInput } from 'react-native-gesture-handler';
+import ContinueButton from "@components/ui/ContinueButton";
 
 const PaymentSchema = Yup.object().shape({
   amount: Yup.number()
@@ -31,7 +30,7 @@ const PaymentSchema = Yup.object().shape({
 });
 
 const AddPaymentMethod = () => {
-  const { data, mutate } = useWalletPayment();
+  const { mutate, status } = useWalletPayment();
   const [userData, setUserData] = useState<any>(null);
   const [payLink, setPayLink] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -87,7 +86,7 @@ const AddPaymentMethod = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View>
         <HeaderWithBackButton navigation={navigation} />
-        <ScrollView>
+        <View>
           {/* <View
             style={tw`flex-row h-[50px]  -mt-2 mb-2 mx-5 items-center justify-between`}
           >
@@ -112,39 +111,36 @@ const AddPaymentMethod = () => {
               errors,
               touched,
             }) => (
-              <View>
-                <Text
-                  style={[
-                    tw`mb-3 ml-6 text-[18px] `,
-                    { fontFamily: "Poppins-SemiBold" },
-                  ]}
-                >
-                  Amount
-                </Text>
-                <TextInput
-                  style={Styles.Input}
-                  placeholder="Enter Amount"
-                  keyboardType="numeric"
-                  onChangeText={handleChange("amount")}
-                  onBlur={handleBlur("amount")}
-                  value={values.amount}
-                />
-                {touched.amount && errors.amount && (
-                  <Text style={tw`text-red-500 ml-6`}>{errors.amount}</Text>
-                )}
-                <TouchableOpacity
-                  style={tw`bg-[#FF4E00] p-4 items-center mt-20 mx-6 rounded-5`}
-                  onPress={handleSubmit}
-                >
+              <View style={tw`flex -mt-5 justify-between h-full pb-45`}>
+                <View>
                   <Text
                     style={[
-                      tw`text-white text-[4]`,
+                      tw`mb-3 ml-6 text-[18px] `,
                       { fontFamily: "Poppins-SemiBold" },
                     ]}
                   >
-                    Fund wallet
+                    Amount
                   </Text>
-                </TouchableOpacity>
+                  <TextInput
+                    style={Styles.Input}
+                    placeholder="Enter Amount"
+                    keyboardType="numeric"
+                    onChangeText={handleChange("amount")}
+                    onBlur={handleBlur("amount")}
+                    value={values.amount}
+                  />
+                  {touched.amount && errors.amount && (
+                    <Text style={tw`text-red-500 ml-6`}>{errors.amount}</Text>
+                  )}
+                </View>
+                <View style={tw`px-5 pb-10`}>
+                  <ContinueButton
+                    text={"Fund wallet"}
+                    onPress={handleSubmit}
+                    disabled={false}
+                    loading={status === "pending"}
+                  />
+                </View>
               </View>
             )}
           </Formik>
@@ -225,7 +221,7 @@ const AddPaymentMethod = () => {
               placeholder="1000"
             />
           </View> */}
-        </ScrollView>
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );

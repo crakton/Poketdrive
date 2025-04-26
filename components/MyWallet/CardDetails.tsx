@@ -83,13 +83,13 @@ const CardDetails = () => {
                 <View>
                   <Text
                     style={[
-                      tw`text-white text-[4]`,
+                      tw`text-white text-[14px]`,
                       { fontFamily: "Poppins-Regular" },
                     ]}
                   >
                     Current Balance
                   </Text>
-                  <Text style={[tw`text-white  text-[34px] font-bold`]}>
+                  <Text style={[tw`text-white  text-[24px] font-bold`]}>
                     {formatBalance(balance)}
                   </Text>
                 </View>

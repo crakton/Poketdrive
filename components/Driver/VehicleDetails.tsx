@@ -70,7 +70,6 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
 
   const addTrip = () => {
     if (trips.length < 2) {
-      // If there are less than 2 trips, simply add a new one
       setTrips([...trips, { date: "", time: "" }]);
     } else {
       // If there are already 2 trips, replace the second one

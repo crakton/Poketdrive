@@ -44,6 +44,15 @@ export const getCouponRate = async (kg: number, coupon: string) => {
   const response = await fetch(options);
   return response;
 };
+export const getTime = async (data: any) => {
+  const options: AxiosRequestConfig = {
+    method: "POST",
+    url: `water/get_delivery_date`,
+    data,
+  };
+  const response = await fetch(options);
+  return response;
+};
 export const getRate = async (kg: number) => {
   const options: AxiosRequestConfig = {
     method: "GET",

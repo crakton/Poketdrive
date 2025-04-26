@@ -119,14 +119,12 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
               </ImageBackground>
 
               <View style={tw`flex my-5 items-start`}>
-                <Text
-                  style={[tw`text-2xl px-5`, { fontFamily: "Poppins-Bold" }]}
-                >
+                <Text style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}>
                   Preference
                 </Text>
                 <Text
                   style={[
-                    tw`text-[16px] px-5 pt-2`,
+                    tw`text-[14px]  pt-2`,
                     { fontFamily: "Poppins-Light" },
                   ]}
                 >
@@ -135,9 +133,12 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
                 </Text>
               </View>
 
-              <View style={tw`flex px-5`}>
+              <View style={tw`flex`}>
                 <Text
-                  style={[tw`text-lg pb-2`, { fontFamily: "Poppins-Bold" }]}
+                  style={[
+                    tw`text-[16px] pb-2`,
+                    { fontFamily: "Poppins-SemiBold" },
+                  ]}
                 >
                   Luggage
                 </Text>
@@ -185,9 +186,9 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
                 )}
               </View>
 
-              <View style={tw`flex px-5 py-5`}>
+              <View style={tw`flex  py-5`}>
                 <Text
-                  style={[tw`text-lg pb-2`, { fontFamily: "Poppins-Bold" }]}
+                  style={[tw`text-[16px] pb-2`, { fontFamily: "Poppins-Bold" }]}
                 >
                   Back row Seating
                 </Text>
@@ -227,7 +228,7 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
                       handleChange("brs")("3"); // Update Formik field
                     }}
                     style={[
-                      tw`flex flex-row mr-11 items-center justify-center px-6 py-2`,
+                      tw`flex flex-row mr-11 items-center justify-center py-2`,
                       threeBackRow ? tw`bg-[#565656]` : tw`bg-[#FFFFFF]`,
                     ]}
                   >
@@ -257,7 +258,7 @@ const RidePreference: React.FC<RidePreferenceProps> = ({
               </View>
 
               <TouchableOpacity
-                style={[tw`rounded-[1rem] bg-[#333333] p-3 my-2 mx-5`]}
+                style={[tw`rounded-[1rem] bg-[#333333] p-3 my-2`]}
                 onPress={handleSubmit}
               >
                 <Text

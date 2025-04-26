@@ -23,7 +23,7 @@ const validationSchema = Yup.object().shape({
     .matches(/^\d{11}$/, "Phone number must be exactly 11 digits")
     .required("Receiver's phone is required"),
   receiverAddress: Yup.string().required("Address is required"),
-  deliveryTime: Yup.string().required("Preferred delivery time is required"),
+  // deliveryTime: Yup.string().required("Preferred delivery time is required"),
   deliveryInstruction: Yup.string().optional(),
 });
 
@@ -48,7 +48,7 @@ const RecieverInfo = () => {
       receiverName: "",
       receiverPhone: "",
       receiverAddress: "",
-      deliveryTime: "", // Corrected the key
+      // deliveryTime: "", // Corrected the key
       deliveryInstruction: "",
     },
     validationSchema,
@@ -59,7 +59,7 @@ const RecieverInfo = () => {
             receiversName: values.receiverName,
             receiversPhone: values.receiverPhone,
             receiversAddress: values.receiverAddress,
-            deliveryTime: values.deliveryTime, // Now correctly stored
+            // deliveryTime: values.deliveryTime,
             deliveryInstruction: values.deliveryInstruction,
           },
         })
@@ -69,7 +69,15 @@ const RecieverInfo = () => {
   });
 
   const handleConfirm = (date: Date) => {
-    const formattedDate = date.toLocaleString();
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+
     setFieldValue("deliveryTime", formattedDate);
     hideDatePicker();
   };
@@ -137,7 +145,7 @@ const RecieverInfo = () => {
             </View>
 
             {/* Date & Time Picker */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={showDatePicker}
               style={tw`border border-[#101828] rounded-[21px] p-4`}
             >
@@ -155,7 +163,7 @@ const RecieverInfo = () => {
               mode="datetime"
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
-            />
+            /> */}
 
             {/* Delivery Instruction Input */}
             <View>

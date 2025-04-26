@@ -18,7 +18,7 @@ interface ReceiversInfo {
   receiversName: string;
   receiversPhone: string;
   receiversAddress: string;
-  deliveryTime: string;
+  // deliveryTime: string;
   deliveryInstruction: string;
 }
 
@@ -33,6 +33,8 @@ export interface SendFormState {
   receiversInfo: ReceiversInfo;
   cost: Cost;
   coupon: boolean;
+  estimatedDeliveryDays: number;
+  estimatedDeliveryDate: string;
 }
 
 const initialState: SendFormState = {
@@ -52,7 +54,7 @@ const initialState: SendFormState = {
     receiversName: "",
     receiversPhone: "",
     receiversAddress: "",
-    deliveryTime: "",
+    // deliveryTime: "",
     deliveryInstruction: "",
   },
   cost: {
@@ -60,6 +62,8 @@ const initialState: SendFormState = {
     amount: 0,
   },
   coupon: false,
+  estimatedDeliveryDays: 0,
+  estimatedDeliveryDate: "",
 };
 
 const sendSlice = createSlice({

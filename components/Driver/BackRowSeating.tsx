@@ -80,14 +80,14 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
             errors,
             touched,
           }) => (
-            <View style={tw`px-5`}>
+            <View style={tw``}>
               <View>
-                <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                <Text style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}>
                   Back row seating
                 </Text>
                 <Text
                   style={[
-                    tw`text-[16px]  pt-2`,
+                    tw`text-[14px]  pt-2`,
                     { fontFamily: "Poppins-Light" },
                   ]}
                 >
@@ -102,13 +102,13 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
                     <Icon
                       name="remove-outline"
                       type="ionicon"
-                      size={30}
+                      size={24}
                       color="white"
                     />
                   </TouchableOpacity>
                   <Text
                     style={[
-                      tw`text-[16px] text-white`,
+                      tw`text-[13px] text-white`,
                       { fontFamily: "Poppins-Bold" },
                     ]}
                   >
@@ -118,14 +118,14 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
                     <Icon
                       name="add-outline"
                       type="ionicon"
-                      size={30}
+                      size={24}
                       color="white"
                     />
                   </TouchableOpacity>
                 </View>
               </View>
               <View>
-                <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                <Text style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}>
                   Others
                 </Text>
                 <View
@@ -136,7 +136,7 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
                   >
                     <Text
                       style={[
-                        tw`text-[16px] border rounded-lg px-2`,
+                        tw`text-[14px] border rounded-lg px-2`,
                         values.other === "Bikes" && tw`bg-[#D9D9D9]`,
                         { fontFamily: "Poppins-Light" },
                       ]}
@@ -149,7 +149,7 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
                   >
                     <Text
                       style={[
-                        tw`text-[16px] border rounded-lg px-2`,
+                        tw`text-[14px] border rounded-lg px-2`,
                         values.other === "Pets" && tw`bg-[#D9D9D9]`,
                         { fontFamily: "Poppins-Light" },
                       ]}
@@ -162,7 +162,7 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
                   >
                     <Text
                       style={[
-                        tw`text-[16px] border rounded-lg px-2`,
+                        tw`text-[14px] border rounded-lg px-2`,
                         values.other === "Skates" && tw`bg-[#D9D9D9]`,
                         { fontFamily: "Poppins-Light" },
                       ]}
@@ -205,7 +205,7 @@ const BackRowSeating: React.FC<BackRowSeatingProps> = ({
               )}
               <TouchableOpacity
                 style={[tw`rounded-[1rem] bg-[#333333] p-3 mt-[19rem] mx-5`]}
-                onPress={() => handleSubmit}
+                onPress={handleSubmit}
               >
                 <Text
                   style={[

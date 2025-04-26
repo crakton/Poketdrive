@@ -12,7 +12,9 @@ const Tab = createBottomTabNavigator();
 const WaterRootTab = () => {
   return (
     <AirContextProvider>
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Navigator
+        screenOptions={{ headerShown: false, tabBarActiveTintColor: "#FF6633" }}
+      >
         <Tab.Screen
           name="Home"
           options={{
