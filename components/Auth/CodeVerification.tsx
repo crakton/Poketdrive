@@ -126,6 +126,7 @@ const CodeVerification = () => {
 
       await AsyncStorage.setItem("userData", JSON.stringify(data));
       await AsyncStorage.setItem("token", data.Bearer_token);
+      console.log(data.Bearer_token, data, "Bearer_token");
 
       navigation.replace("Onboarding" as any);
       registerIndieID(`${data.id}`, 22387, "Wl0rlWhlSiad3m2ob0v2aB");

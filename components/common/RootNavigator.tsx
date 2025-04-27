@@ -59,6 +59,8 @@ import FAQs from "@screens/Settings/FAQs";
 import IdDetails from "@screens/Settings/IdDetails";
 import IdVerification from "@screens/Settings/IdVerification";
 import Settings from "@screens/Settings/Settings";
+import MessageScreen from "@screens/Chat/Messages";
+import { IConversation } from "@redux/features/chatSlice";
 
 export const RootStack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
@@ -72,9 +74,8 @@ const RootNavigator = () => {
     const loadAuthData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const user = await AsyncStorage.getItem("User");
+        const user = await AsyncStorage.getItem("userData");
         const firstTime = await AsyncStorage.getItem("firstTime");
-
         setIsAuthenticated(!!token && !!user);
         setIsFirstTime(firstTime === "true");
       } catch (error) {
@@ -221,6 +222,7 @@ const RootNavigator = () => {
         {/* Water Management Screens */}
         <RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
         <RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
+        <RootStack.Screen name="Message" component={MessageScreen} />
         <RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
         <RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
         <RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
@@ -232,3 +234,45 @@ const RootNavigator = () => {
 };
 
 export default RootNavigator;
+function setConnectionStatus(arg0: boolean): any {
+  throw new Error("Function not implemented.");
+}
+
+function setConnectionError(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
+function setConversations(updatedConversations: IConversation[]): any {
+  throw new Error("Function not implemented.");
+}
+
+function addConversation(newConversation: IConversation): any {
+  throw new Error("Function not implemented.");
+}
+
+function setLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
+function useCallback(
+  arg0: (
+    conversationId: string,
+    recipientId: string,
+    recipientName: string
+  ) => void,
+  arg1: any[]
+) {
+  throw new Error("Function not implemented.");
+}
+
+function setActiveConversation(conversationId: string): any {
+  throw new Error("Function not implemented.");
+}
+
+function markConversationAsRead(conversationId: string): any {
+  throw new Error("Function not implemented.");
+}
+
+function setUserModalVisible(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}

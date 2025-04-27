@@ -15,21 +15,46 @@ import {
 } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import {
+  useNavigation,
+  NavigationProp,
+  useRoute,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import Home from "@screens/RideHaling/Home";
 import WalletHome from "@screens/MyWallet/Home";
 import Messages from "../../screens/Chat/Messages";
 import ManageRide from "../../screens/RideHaling/ManageRide";
 import ManageTrips from "../../screens/Driver/DriverItinerary/ManageTrips";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "nav";
+import Home from "@screens/RideHaling/Home";
+import Payment from "@screens/RideHaling/Payment";
+import ChatListScreen from "@screens/Chat/ChatListScreen";
+import { walletDetails } from "@services/walletService";
 
 export const MyDrawer = createDrawerNavigator();
 
 const DrawerContainer = () => {
   const { width } = useWindowDimensions();
+  const route = useRoute();
+  const navigation = useNavigation<NavigationProp<any>>();
+  const [userData, setUserData] = useState<any>(null);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem("userData");
+        if (jsonValue !== null) {
+          const parsedData = JSON.parse(jsonValue);
+
+          setUserData(parsedData);
+        }
+      } catch (e) {
+        console.log("Error fetching user data:", e);
+      }
+    };
+
+    fetchUserData();
+  }, [setUserData]);
 
   return (
     <MyDrawer.Navigator
@@ -43,74 +68,79 @@ const DrawerContainer = () => {
       }}
     >
       <MyDrawer.Screen
-        name="Home"
         component={Home}
+        name="Home"
         options={{
-          drawerIcon: ({ color, size }: any) => (
+          drawerIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
       <MyDrawer.Screen
-        name="wallet"
         component={WalletHome}
+        name="wallet"
         options={{
-          drawerIcon: ({ color, size }: any) => (
+          drawerIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="card-outline" size={size} color={color} />
           ),
         }}
       />
+
       <MyDrawer.Screen
+        component={ChatListScreen}
         name="Chat"
-        component={Messages}
-        options={{
-          headerShown: true,
-          header: ({ navigation }: any) => (
-            <View style={tw`flex-row items-center justify-between py-2 px-3`}>
-              <View style={tw`flex-row items-center mt-6`}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Ionicons name="arrow-back" size={24} color="black" />
-                </TouchableOpacity>
-                <View style={tw`flex-row items-center ml-2`}>
-                  <Image
-                    source={require("../../assets/images/avatar.png")}
-                    style={tw`w-10 h-10 rounded-full`}
-                  />
-                  <View style={tw`ml-2`}>
-                    <Text style={tw`font-bold`}>Jonny</Text>
-                    <View style={tw`flex-row items-center`}>
-                      <View
-                        style={tw`h-[1.4] w-[1.4] rounded-full bg-green-700`}
-                      />
-                      <Text style={tw`text-xs ml-1`}>Online</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity style={tw`mt-6`}>
-                <Ionicons name="call-outline" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-          ),
-          drawerIcon: ({ color, size }: any) => (
-            <Ionicons name="chatbox-outline" size={size} color={color} />
-          ),
-        }}
+        // options={{
+        // 	headerShown: true,
+        // 	header: ({ navigation }: { navigation: NavigationProp<any> }) => {
+        // 		return (
+        // 			<View style={tw`flex-row items-center justify-between py-2 px-3`}>
+        // 				<View style={tw`flex-row items-center mt-6`}>
+        // 					<TouchableOpacity onPress={() => navigation.goBack()}>
+        // 						<Ionicons name="arrow-back" size={24} color="black" />
+        // 					</TouchableOpacity>
+        // 					<View style={tw`flex-row items-center ml-2`}>
+        // 						<Image
+        // 							source={require("../../assets/images/avatar.png")}
+        // 							style={tw`w-10 h-10 rounded-full`}
+        // 						/>
+        // 						<View style={[tw`ml-2 flex flex-col`]}>
+        // 							<Text style={tw`font-bold`}>
+        // 								{userData?.firstName ?? "Jonny"}
+        // 							</Text>
+        // 							<View style={[tw`flex flex-row items-center`]}>
+        // 								<Text
+        // 									style={tw`h-[1.4] w-[1.4] rounded-full bg-green-700`}
+        // 								></Text>
+        // 								<Text style={tw`text-xs ml-1`}>Online</Text>
+        // 							</View>
+        // 						</View>
+        // 					</View>
+        // 				</View>
+        // 				<TouchableOpacity style={tw`mt-6`}>
+        // 					<Ionicons name="call-outline" size={24} color="black" />
+        // 				</TouchableOpacity>
+        // 			</View>
+        // 		);
+        // 	},
+        // 	drawerIcon: ({ color, size }: { color: string; size: number }) => (
+        // 		<Ionicons name="chatbox" size={size} color={color} />
+        // 	),
+        // }}
       />
       <MyDrawer.Screen
-        name="My Rides"
         component={ManageRide}
+        name="My Rides"
         options={{
-          drawerIcon: ({ color, size }: any) => (
+          drawerIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="car-outline" size={size} color={color} />
           ),
         }}
       />
       <MyDrawer.Screen
-        name="Work Rides"
         component={ManageTrips}
+        name="Work Rides"
         options={{
-          drawerIcon: ({ color, size }: any) => (
+          drawerIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="bus-outline" size={size} color={color} />
           ),
         }}
@@ -144,7 +174,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
-      nav.replace("CreateAccount");
+      nav.reset({
+        index: 0,
+        routes: [{ name: "CreateAccount" }],
+      });
       Alert.alert("Success", "You have been logged out.");
     } catch (e) {
       console.error("Failed to clear AsyncStorage:", e);

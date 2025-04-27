@@ -13,10 +13,11 @@ const MapScreen = ({ route }: any) => {
   const navigation = useNavigation();
 
   const { rideDetails = {} } = route.params || {};
+  console.log(rideDetails, "rideDetails");
+
   const destination = rideDetails?.destination?.location?.coordinates || [];
   const origin = rideDetails?.origin?.location?.coordinates || [];
-  console.log(origin, "yyg");
-  console.log(destination, "yyssg");
+  console.log(destination, "destination", origin, "origin");
 
   useEffect(() => {
     const saveRideDetails = async () => {
@@ -58,7 +59,9 @@ const MapScreen = ({ route }: any) => {
       <View style={tw`flex-1`}>
         <stack.Navigator>
           <stack.Screen name="NavigateCard" options={{ headerShown: false }}>
-            {(props) => <NavigateCard {...props} rideDetails={rideDetails} />}
+            {(props: any) => (
+              <NavigateCard {...props} rideDetails={rideDetails} />
+            )}
           </stack.Screen>
         </stack.Navigator>
       </View>

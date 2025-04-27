@@ -20,7 +20,7 @@ const ContinueButton: React.FC<ContinueButtonProps> = ({
     <TouchableOpacity
       style={[
         tw`p-3 items-center justify-center rounded-lg my-8`,
-        { backgroundColor: disabled || loading ? "#D3D3D3" : "#FF6633" },
+        { backgroundColor: disabled || loading ? "#D3D3D3" : "#FF4E00" },
       ]}
       onPress={onPress}
       disabled={disabled || loading}

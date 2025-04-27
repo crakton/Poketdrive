@@ -155,13 +155,15 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
             touched,
           }) => (
             <View>
-              <View style={tw`flex px-5 mb-5 items-start`}>
-                <Text style={[tw`text-2xl`, { fontFamily: "Poppins-Bold" }]}>
+              <View style={tw`flex  mb-5 items-start`}>
+                <Text
+                  style={[tw`text-[18px]`, { fontFamily: "Poppins-semibold" }]}
+                >
                   Vehicle Details
                 </Text>
               </View>
               <View
-                style={tw`flex flex-row items-center justify-center gap-10 px-5 pb-5 `}
+                style={tw`flex flex-row items-center justify-center gap-10  pb-5 `}
               >
                 {/* {carImageUri ? ( */}
                 <View style={tw`border p-1 rounded-md w-[40%] h-25  `}>
@@ -194,8 +196,8 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={tw`px-5 flex flex-row gap-10 `}>
-                <View style={tw`w-[10rem]`}>
+              <View style={tw` flex flex-row justify-between gap-4 `}>
+                <View style={tw`w-[47%]`}>
                   <Text
                     style={[
                       tw`text-16px text-center`,
@@ -217,7 +219,7 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                     </Text>
                   )}
                 </View>
-                <View style={tw`w-[10rem]`}>
+                <View style={tw`w-[47%]`}>
                   <Text
                     style={[
                       tw`text-16px text-center`,
@@ -243,7 +245,7 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                   )}
                 </View>
               </View>
-              <View style={tw``}>
+              <View style={tw`mt-3`}>
                 <Text
                   style={[
                     tw`text-16px text-center`,
@@ -267,15 +269,18 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                     <Text style={styles.error}>{errors.carName as string}</Text>
                   )}
               </View>
-              <View style={tw`flex px-3 pt-5 items-start`}>
+              <View style={tw`flex  pt-5 items-start`}>
                 <Text
-                  style={[tw`text-2xl px-5`, { fontFamily: "Poppins-Bold" }]}
+                  style={[
+                    tw`text-[18px] px-5`,
+                    { fontFamily: "Poppins-SemiBold" },
+                  ]}
                 >
                   Ride Schedule
                 </Text>
                 <Text
                   style={[
-                    tw`text-[16px] px-5 pt-2`,
+                    tw`text-[14px] px-5 pt-2`,
                     { fontFamily: "Poppins-Light" },
                   ]}
                 >
@@ -285,7 +290,10 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                 <View style={tw`flex flex-row px-5 pb-5 `}>
                   <View style={tw`flex flex-row items-center justify-start`}>
                     <Text
-                      style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
+                      style={[
+                        tw`text-[14px]`,
+                        { fontFamily: "Poppins-SemiBold" },
+                      ]}
                     >
                       One-Time
                     </Text>
@@ -301,7 +309,10 @@ const VehicleDetails: React.FC<VehicleDetailsProps> = ({
                   </View>
                   <View style={tw`flex flex-row items-center justify-start`}>
                     <Text
-                      style={[tw`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
+                      style={[
+                        tw`text-[14px]`,
+                        { fontFamily: "Poppins-SemiBold" },
+                      ]}
                     >
                       Recurring
                     </Text>
