@@ -72,7 +72,7 @@ const RootNavigator = () => {
     const loadAuthData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const user = await AsyncStorage.getItem("user");
+        const user = await AsyncStorage.getItem("User");
         const firstTime = await AsyncStorage.getItem("firstTime");
 
         setIsAuthenticated(!!token && !!user);
