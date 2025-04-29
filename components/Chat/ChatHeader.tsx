@@ -1,65 +1,88 @@
-// components/ChatHeader.jsx
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import tw from "twrnc";
+import { View, Text, TouchableOpacity, Image, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Linking } from "react-native";
+import tw from "twrnc";
+import { useChat } from "@hooks/useChat";
 
 interface ChatHeaderProps {
 	recipientName: string;
 	recipientId: string;
-	isOnline: boolean;
-	isTyping: boolean;
-	phoneNumber: string;
+	phoneNumber?: string;
 	navigation: any;
+	isTyping?: boolean;
+	isOnline?: boolean;
 }
 
-export const ChatHeader = ({
+export const ChatHeader: React.FC<ChatHeaderProps> = ({
 	recipientName,
 	recipientId,
-	isOnline,
-	isTyping,
 	phoneNumber,
 	navigation,
-}: ChatHeaderProps) => {
-	// Generate avatar from ID (or use actual avatar if available)
+	isTyping = false,
+	isOnline = false,
+}) => {
+	// Generate avatar URL based on recipient ID
 	const avatarUrl = recipientId
 		? `https://randomuser.me/api/portraits/men/${
 				(parseInt(recipientId.replace(/\D/g, "") || "0") % 70) + 1
 		  }.jpg`
 		: "https://randomuser.me/api/portraits/men/1.jpg";
-	const handlePhoneCall = () => {
-		const phoneUrl = `tel:${phoneNumber}`;
-		Linking.openURL(phoneUrl);
-	};
+
 	return (
 		<View
-			style={tw`flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200`}
+			style={tw`flex-row items-center px-3 py-1 bg-white border-b border-gray-200`}
 		>
-			<TouchableOpacity
-				style={tw`flex-row items-center`}
-				onPress={() => navigation.goBack()}
-			>
-				<Ionicons name="chevron-back" size={24} color="#000" />
-				<Image
-					source={{ uri: avatarUrl }}
-					style={tw`w-10 h-10 rounded-full ml-2`}
-				/>
-				<View style={tw`ml-3`}>
-					<Text style={tw`font-bold text-base`}>{recipientName}</Text>
-					<View style={tw`flex-row items-center`}>
-						{isOnline && (
-							<View style={tw`w-2 h-2 rounded-full bg-green-500 mr-1`} />
-						)}
-						<Text style={tw`text-sm text-gray-500`}>
-							{isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
-						</Text>
-					</View>
-				</View>
+			<TouchableOpacity onPress={() => navigation.goBack()} style={tw`mr-3`}>
+				<Ionicons name="chevron-back" size={24} color="#FF6633" />
 			</TouchableOpacity>
 
-			<TouchableOpacity style={tw`p-2`} onPress={handlePhoneCall}>
-				<Ionicons name="call" size={22} color="#000" />
+			<Image
+				source={{ uri: avatarUrl }}
+				style={tw`w-10 h-10 rounded-full mr-3`}
+			/>
+
+			<View style={tw`flex-1`}>
+				<Text style={tw`font-bold text-[16px]`}>{recipientName}</Text>
+
+				{isTyping ? (
+					<View style={tw`flex-row items-center`}>
+						<Text style={tw`text-green-600 text-sm mr-1`}>typing</Text>
+						<View style={tw`flex-row items-center`}>
+							<View
+								style={[
+									tw`w-1.5 h-1.5 bg-green-600 rounded-full mr-0.5`,
+									{ opacity: 0.6 },
+								]}
+							/>
+							<View
+								style={[
+									tw`w-1.5 h-1.5 bg-green-600 rounded-full mr-0.5`,
+									{ opacity: 0.8 },
+								]}
+							/>
+							<View
+								style={[
+									tw`w-1.5 h-1.5 bg-green-600 rounded-full`,
+									{ opacity: 1 },
+								]}
+							/>
+						</View>
+					</View>
+				) : (
+					<Text style={tw`text-gray-500 text-[10px]`}>
+						{isOnline ? "Online" : "Offline"}
+						{phoneNumber ? ` • ${phoneNumber}` : ""}
+					</Text>
+				)}
+			</View>
+
+			<TouchableOpacity
+				onPress={() => {
+					Linking.openURL(`tel:${phoneNumber}`);
+				}}
+				style={tw`p-2`}
+			>
+				<Ionicons name="call-outline" size={20} color="#333" />
 			</TouchableOpacity>
 		</View>
 	);

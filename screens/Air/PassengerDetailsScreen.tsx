@@ -395,7 +395,7 @@ const PassengerDetailsScreen = () => {
 				},
 				enableJetshare: true,
 				scheduleIndex: scheduledIndex,
-				selectedSeat: bookingData.selectedSeatId,
+				selectedSeat: bookingData.selectedSeat,
 				jetSharePricePerSeat:
 					bookingData.flight.availableSchedules[scheduledIndex]
 						.additionalCharge,

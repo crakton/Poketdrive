@@ -9,6 +9,7 @@ export interface IMessage {
 	message: string;
 	timestamp: string;
 	read: boolean;
+	status?: string; // e.g., "sent", "delivered", "read"
 }
 
 export interface IConversation {

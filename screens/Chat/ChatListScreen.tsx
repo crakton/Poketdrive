@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+// ChatListScreen.tsx - Simplified version that uses centralized ChatContext
+import React, { useEffect, useState, useCallback } from "react";
 import {
 	View,
 	Text,
@@ -11,75 +12,55 @@ import {
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import tw from "twrnc";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import chatSocketService from "../../services/chatService";
-import {
-	markConversationAsRead,
-	setActiveConversation,
-	setConnectionStatus,
-	setConversations,
-	addConversation,
-	setCurrentUserId,
-} from "../../redux/features/chatSlice";
 import { IUser } from "../../types/user";
 import PageLoader from "@components/ui/PageLoader";
 import { useUserService } from "@hooks/useUserService";
+import { useChat } from "@hooks/useChat";
 
 const ChatListScreen = () => {
 	const navigation = useNavigation<NavigationProp<any>>();
-	const dispatch = useAppDispatch();
-	const { conversations, isConnected, currentUserId } = useAppSelector(
-		(state) => state.chat
-	);
-	const [userData, setUserData] = useState<IUser | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [connectionError, setConnectionError] = useState(false);
-	const [token, setToken] = useState<string>("");
+
+	// Use chat context
+	const {
+		isConnected,
+		userData,
+		conversations,
+		connectionError,
+		retryConnection,
+		requestConversations,
+		setActiveConversation,
+	} = useChat();
+
 	const [userModalVisible, setUserModalVisible] = useState(false);
 
 	// Fetch users
 	const { useGetUsers } = useUserService();
 	const { data: users, isLoading: loadingUsers } = useGetUsers();
 
-	// Fetch user data and token from AsyncStorage
+	// Request conversations when component mounts or when connection status changes
 	useEffect(() => {
-		const fetchUserData = async () => {
-			try {
-				const tokenValue = await AsyncStorage.getItem("token");
-				const userDataStr = await AsyncStorage.getItem("userData");
+		if (isConnected) {
+			requestConversations();
+		}
+	}, [isConnected, requestConversations]);
 
-				if (userDataStr) {
-					const parsedUserData = JSON.parse(userDataStr);
-					setUserData(parsedUserData);
-					// Set current user ID in Redux store
-					dispatch(setCurrentUserId(parsedUserData.id));
-				}
-
-				if (tokenValue) {
-					setToken(tokenValue);
-				}
-			} catch (e) {
-				console.log("Error fetching user data:", e);
-			}
-		};
-
-		fetchUserData();
-	}, [dispatch]);
-
+	// Navigate to chat screen and set active conversation
 	const navigateToChat = useCallback(
 		(conversationId: string, recipientId: string, recipientName: string) => {
-			dispatch(setActiveConversation(conversationId));
-			dispatch(markConversationAsRead(conversationId));
+			// Set the active conversation in chat context
+			setActiveConversation(conversationId, recipientId);
+
+			// Navigate to message screen
 			navigation.navigate("Message", {
 				conversationId,
 				recipientId,
 				recipientName,
 			});
 		},
-		[dispatch, navigation]
+		[navigation, setActiveConversation]
 	);
 
+	// Initialize chat with selected user
 	const initiateChat = useCallback(
 		(recipientId: string, recipientName: string) => {
 			if (!userData?.id) return;
@@ -105,36 +86,7 @@ const ChatListScreen = () => {
 		[userData, conversations, navigateToChat]
 	);
 
-	const retryConnection = useCallback(() => {
-		setLoading(true);
-		chatSocketService.disconnect();
-
-		setTimeout(() => {
-			if (!userData?.id) {
-				setLoading(false);
-				return;
-			}
-
-			const socket = chatSocketService.connect(userData.id, token);
-
-			socket.once("connect", () => {
-				dispatch(setConnectionStatus(true));
-				setConnectionError(false);
-				setLoading(false);
-				chatSocketService.requestConversations();
-			});
-
-			setTimeout(() => {
-				const connected = chatSocketService.isConnected();
-				dispatch(setConnectionStatus(connected));
-				if (!connected) {
-					setConnectionError(true);
-				}
-				setLoading(false);
-			}, 3000);
-		}, 1000);
-	}, []);
-
+	// Format timestamp for display
 	const formatTimestamp = useCallback((timestamp: string) => {
 		const date = new Date(timestamp);
 		const today = new Date();
@@ -149,6 +101,7 @@ const ChatListScreen = () => {
 		return date.toLocaleDateString([], { month: "short", day: "numeric" });
 	}, []);
 
+	// Render individual conversation item
 	const renderConversationItem = ({ item }: { item: any }) => {
 		const lastMessage = item.lastMessage || {
 			message: "No messages yet",
@@ -183,7 +136,7 @@ const ChatListScreen = () => {
 				/>
 				<View style={tw`flex-1`}>
 					<Text style={tw`font-bold`}>{recipientName}</Text>
-					<Text style={tw`text-gray-500 text-sm`}>
+					<Text style={tw`text-[#ff6633] text-xs`}>
 						{lastMessage.message.length > 30
 							? `${lastMessage.message.slice(0, 30)}...`
 							: lastMessage.message}
@@ -208,12 +161,19 @@ const ChatListScreen = () => {
 							style={tw`absolute top-0 right-0`}
 						/>
 					)}
-					<Text style={tw`text-gray-400 text-xs`}>
-						{item.unreadCount > 0 ? item.unreadCount : ""}
-					</Text>
+					{item.unreadCount > 0 && (
+						<View
+							style={tw`bg-[#ff6633] rounded-full w-4 h-4 items-center justify-center absolute top-0 right-0`}
+						>
+							<Text style={tw`text-white text-center text-xs`}>
+								{item.unreadCount > 99 ? "99+" : item.unreadCount}
+							</Text>
+						</View>
+					)}
+
 					{recipientUser.role !== "passenger" && (
 						<>
-							<Text style={tw`text-gray-400 text-[10px]`}>
+							<Text style={tw`text-gray-400 mt-5 text-[10px]`}>
 								{recipientUser.carName}
 							</Text>
 							<Text style={tw`text-gray-400 text-[10px]`}>

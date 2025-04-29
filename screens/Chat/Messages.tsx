@@ -5,8 +5,6 @@ import {
 	TouchableOpacity,
 	KeyboardAvoidingView,
 	Platform,
-	ActivityIndicator,
-	Alert,
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,22 +13,14 @@ import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useUserService } from "@hooks/useUserService";
-import { useAppDispatch, useAppSelector } from "@redux/store";
-import chatSocketService from "@services/chatService";
-import {
-	addConversation,
-	addMessage,
-	IMessage,
-	markConversationAsRead,
-	removeMessage,
-	setConnectionStatus,
-	updateConversationMessages,
-} from "@redux/features/chatSlice";
+import { useAppDispatch } from "@redux/store";
+import { IMessage } from "@redux/features/chatSlice";
 import { ChatHeader } from "@components/Chat/ChatHeader";
 import { EmptyChat } from "@components/Chat/EmptyChat";
 import MessageBubble from "@components/Chat/MessageBubble";
 import ChatInput from "@components/Chat/ChatInput";
 import PageLoader from "@components/ui/PageLoader";
+import { useChat } from "@hooks/useChat";
 
 const MessageScreen = () => {
 	const route = useRoute();
@@ -49,254 +39,63 @@ const MessageScreen = () => {
 	const recipientName = params.recipientName || "User";
 	const recipientPhoneNumber = params.recipientPhoneNumber || "";
 
-	const { conversations, isConnected, currentUserId } = useAppSelector(
-		(state) => state.chat
-	);
+	// Get chat context
+	const {
+		conversations,
+		isConnected,
+		currentUserId,
+		sendMessage: contextSendMessage,
+		createChat: contextCreateChat,
+		deleteMessage: contextDeleteMessage,
+		sendTypingStatus: contextSendTypingStatus,
+		typingUsers,
+		loadingHistory,
+		setActiveConversation,
+	} = useChat();
 
 	const conversation = conversations.find((c) => c.id === conversationId);
 	const [newMessage, setNewMessage] = useState("");
-	const [loading, setLoading] = useState(!conversation);
-	const [offlineMode, setOfflineMode] = useState(false);
-	const [isTyping, setIsTyping] = useState(false);
+	const [offlineMode, setOfflineMode] = useState(!isConnected);
 	const [initializing, setInitializing] = useState(false);
-	const [incomingMessageTrigger, setIncomingMessageTrigger] = useState(0);
 	// Track if a message was just sent to prevent duplicates
 	const [justSentMessage, setJustSentMessage] = useState(false);
 	const flatListRef = useRef<FlatList<IMessage>>(null);
-
-	// Keep track of message IDs that are already processed to prevent duplicates
-	const processedMessageIdsRef = useRef(new Set());
 
 	// Fetch user data for displaying in chat
 	const { useGetUser } = useUserService();
 	const { data: recipientData } = useGetUser(recipientId);
 
-	// 1. Socket connection setup
+	// Check if this specific user is typing (robust check with logging)
+	const isTyping =
+		typingUsers && recipientId ? !!typingUsers[recipientId] : false;
+
+	// Debug logging for typing
 	useEffect(() => {
-		if (!currentUserId) return;
+		console.log(`Is ${recipientId} typing? ${isTyping}`, typingUsers);
+	}, [recipientId, isTyping, typingUsers]);
 
-		let isMounted = true;
-
-		// Check if socket is connected, connect if not
-		const socket = chatSocketService.getSocket();
-		if (!socket || !socket.connected) {
-			try {
-				chatSocketService.connect(currentUserId);
-				setTimeout(() => {
-					if (!isMounted) return;
-
-					const reconnected = chatSocketService.isConnected();
-					dispatch(setConnectionStatus(reconnected));
-					if (!reconnected) {
-						setOfflineMode(true);
-						Alert.alert(
-							"Connection Issue",
-							"Unable to connect to the chat server. Some features may be limited."
-						);
-					}
-				}, 1000);
-			} catch (error) {
-				console.error("Failed to connect to socket:", error);
-				setOfflineMode(true);
-			}
-		} else {
-			dispatch(setConnectionStatus(true));
+	// Set active conversation when entering the screen
+	useEffect(() => {
+		if (conversationId && recipientId) {
+			setActiveConversation(conversationId, recipientId);
 		}
+	}, [conversationId, recipientId, setActiveConversation]);
 
-		return () => {
-			isMounted = false;
-		};
-	}, [currentUserId, dispatch]);
-
-	// 2. Conversation initialization
+	// Update offline mode when connection status changes
 	useEffect(() => {
-		if (!currentUserId || !conversationId || !recipientId) return;
+		setOfflineMode(!isConnected);
+	}, [isConnected]);
 
-		// Mark conversation as read when opening the screen
-		dispatch(markConversationAsRead(conversationId));
-
-		// Request conversation history for this recipient
-		chatSocketService.requestConversationHistory(recipientId);
-
-		// Clear processed message IDs when conversation changes
-		processedMessageIdsRef.current = new Set();
-
-		// Set initial loading state
-		setLoading(true);
-
-		// Fallback timer to prevent indefinite loading
-		const loadingTimer = setTimeout(() => {
-			setLoading(false);
-		}, 3000);
-
-		return () => {
-			clearTimeout(loadingTimer);
-		};
-	}, [currentUserId, conversationId, recipientId, dispatch]);
-
-	// 3. Typing indicator cleanup
+	// Cleanup typing status when leaving
 	useEffect(() => {
 		return () => {
 			// Send "stopped typing" indicator when leaving
 			if (isConnected && recipientId && conversationId) {
-				chatSocketService.sendTypingStatus(recipientId, conversationId, false);
+				contextSendTypingStatus(recipientId, conversationId, false);
 			}
 		};
-	}, [isConnected, recipientId, conversationId]);
+	}, [isConnected, recipientId, conversationId, contextSendTypingStatus]);
 
-	// 4. New messages subscription
-	useEffect(() => {
-		const messageHandler = (messageData: IMessage) => {
-			// Parse message from socket format
-			const parsedMessage = chatSocketService.parseMessage(messageData);
-
-			if (!parsedMessage) return;
-
-			// Generate a consistent ID for checking duplicates
-			const messageId =
-				parsedMessage.id ||
-				`${parsedMessage.sender_id}-${parsedMessage.timestamp}`;
-
-			// Skip if we've already processed this message
-			if (processedMessageIdsRef.current.has(messageId)) {
-				return;
-			}
-
-			// IMPORTANT: For sent messages, make sure we're not duplicating
-			// what we've already added optimistically
-			if (parsedMessage.sender_id === currentUserId) {
-				// This is our own message coming back from the server
-				// Just mark it as processed but don't add it again
-				processedMessageIdsRef.current.add(messageId);
-				return;
-			}
-
-			// Add to processed set
-			processedMessageIdsRef.current.add(messageId);
-
-			if (
-				parsedMessage &&
-				(parsedMessage.conversationId === conversationId ||
-					parsedMessage.sender_id === recipientId ||
-					parsedMessage.recipient_id === recipientId)
-			) {
-				dispatch(
-					addMessage({
-						conversationId: parsedMessage.conversationId || conversationId,
-						message: parsedMessage,
-					})
-				);
-
-				// Force the component to update for incoming messages
-				setIncomingMessageTrigger((prev) => prev + 1);
-
-				// Mark as read if it's a new message from the other person
-				if (parsedMessage.sender_id === recipientId) {
-					dispatch(markConversationAsRead(conversationId));
-				}
-			}
-		};
-
-		// Register message handler
-		const messageUnsubscribe =
-			chatSocketService.subscribeToMessages(messageHandler);
-
-		return () => {
-			if (messageUnsubscribe) messageUnsubscribe();
-		};
-	}, [conversationId, dispatch, recipientId, currentUserId]);
-
-	// 5. Typing indicators subscription
-	useEffect(() => {
-		const typingHandler = (data: any) => {
-			console.log("Typing indicator received:", data); // Debugging
-
-			// Use a more robust check for the typing data
-			if (data && data.chatId === conversationId && data.from === recipientId) {
-				// Force immediate update for the typing indicator
-				setTimeout(() => {
-					setIsTyping(!!data.isTyping);
-				}, 0);
-			}
-		};
-
-		// Register typing handler
-		const typingUnsubscribe =
-			chatSocketService.subscribeToTypingIndicators(typingHandler);
-
-		return () => {
-			if (typingUnsubscribe) typingUnsubscribe();
-		};
-	}, [conversationId, recipientId]);
-	// 6. Message deletion subscription
-	useEffect(() => {
-		const deleteHandler = (data: any) => {
-			if (data.chatId === conversationId && data.messageId) {
-				dispatch(
-					removeMessage({
-						conversationId,
-						messageId: data.messageId,
-					})
-				);
-			}
-		};
-
-		// Register delete handler
-		const deleteUnsubscribe =
-			chatSocketService.subscribeToMessageDeletion(deleteHandler);
-
-		return () => {
-			if (deleteUnsubscribe) deleteUnsubscribe();
-		};
-	}, [conversationId, dispatch]);
-
-	// 7. Conversation history subscription
-	useEffect(() => {
-		const historyHandler = (messages: IMessage[]) => {
-			if (messages.length > 0) {
-				// Add all message IDs to the processed set
-				messages.forEach((msg) => {
-					const msgId = msg.id || `${msg.sender_id}-${msg.timestamp}`;
-					processedMessageIdsRef.current.add(msgId);
-				});
-
-				// Update conversation with history messages
-				dispatch(
-					updateConversationMessages({
-						conversationId,
-						messages,
-					})
-				);
-			}
-			setLoading(false);
-		};
-
-		// Register history handler
-		const historyUnsubscribe =
-			chatSocketService.subscribeToConversationHistory(historyHandler);
-
-		return () => {
-			if (historyUnsubscribe) historyUnsubscribe();
-		};
-	}, [conversationId, dispatch]);
-
-	// 8. Error handling subscription
-	useEffect(() => {
-		const errorHandler = (error: Error) => {
-			console.error("Chat error:", error);
-			Alert.alert(
-				"Chat Error",
-				"There was an issue with the chat service. Please try again."
-			);
-		};
-
-		// Register error handler
-		const errorUnsubscribe = chatSocketService.subscribeToErrors(errorHandler);
-
-		return () => {
-			if (errorUnsubscribe) errorUnsubscribe();
-		};
-	}, []);
 	// Scroll to bottom when messages change
 	useEffect(() => {
 		if (flatListRef.current && conversation?.messages?.length) {
@@ -320,101 +119,78 @@ const MessageScreen = () => {
 				/>
 			),
 		});
-	}, [navigation, recipientId, recipientName, isTyping, isConnected]);
+	}, [
+		navigation,
+		recipientId,
+		recipientName,
+		isTyping,
+		isConnected,
+		recipientPhoneNumber,
+	]);
 
 	// Send a message
-	const sendMessage = useCallback(() => {
+	const handleSendMessage = useCallback(() => {
 		if (newMessage.trim() === "" || !currentUserId || justSentMessage) return;
 
 		// Set flag to prevent duplicate sends
 		setJustSentMessage(true);
 
-		if (!isConnected) {
-			Alert.alert(
-				"Offline Mode",
-				"You're currently offline. Messages will be sent when connection is restored."
-			);
-			setNewMessage("");
-			// Reset flag after a short delay
-			setTimeout(() => setJustSentMessage(false), 500);
-			return;
-		}
-
-		// Check if this is a new conversation that needs to be created first
-		const conversationExists = conversations.some(
-			(c) => c.id === conversationId
-		);
-
-		if (!conversationExists && !initializing) {
-			setInitializing(true);
-
-			// Create the chat first
-			const newConversation = chatSocketService.createChat(
-				recipientId,
-				newMessage.trim()
+		try {
+			// Check if this is a new conversation that needs to be created first
+			const conversationExists = conversations.some(
+				(c) => c.id === conversationId
 			);
 
-			if (newConversation) {
-				// Add conversation to store
-				dispatch(addConversation(newConversation));
+			if (!conversationExists && !initializing) {
+				setInitializing(true);
 
-				// Clear message input
-				setNewMessage("");
-				setInitializing(false);
-
-				// Reset flag after a delay
-				setTimeout(() => setJustSentMessage(false), 500);
-			}
-		} else {
-			// Normal message in existing conversation
-			const messageData = chatSocketService.sendMessage(
-				conversationId,
-				recipientId,
-				newMessage.trim()
-			);
-
-			if (messageData) {
-				// Generate ID for tracking
-				const msgId =
-					messageData.id || `${messageData.sender_id}-${messageData.timestamp}`;
-				processedMessageIdsRef.current.add(msgId);
-
-				// Add message to the store with optimistic update
-				dispatch(
-					addMessage({
-						conversationId,
-						message: messageData as IMessage,
-					})
+				// Create the chat first
+				const newConversation = contextCreateChat(
+					recipientId,
+					newMessage.trim()
 				);
-				setNewMessage("");
 
-				// Reset flag after a delay
-				setTimeout(() => setJustSentMessage(false), 500);
+				if (newConversation) {
+					// Clear message input
+					setNewMessage("");
+					setInitializing(false);
+				}
+			} else {
+				// Send message in existing conversation
+				const messageData = contextSendMessage(
+					conversationId,
+					recipientId,
+					newMessage.trim()
+				);
+
+				if (messageData) {
+					setNewMessage("");
+				}
 			}
+		} catch (error) {
+			console.error("Error sending message:", error);
+		} finally {
+			// Reset flag after a delay
+			setTimeout(() => setJustSentMessage(false), 500);
 		}
 	}, [
 		newMessage,
 		currentUserId,
-		isConnected,
 		conversationId,
 		recipientId,
 		conversations,
 		initializing,
-		dispatch,
+		contextSendMessage,
+		contextCreateChat,
 		justSentMessage,
 	]);
 
 	// Delete a message
 	const handleDelete = useCallback(
 		(messageId: string) => {
-			if (!isConnected) {
-				Alert.alert("Error", "Cannot delete messages while offline");
-				return;
-			}
-
-			chatSocketService.deleteMessage(messageId, conversationId);
+			contextDeleteMessage(messageId, conversationId);
 		},
-		[isConnected, conversationId]
+		[contextDeleteMessage, conversationId]
 	);
 
 	// Handle typing indicator
@@ -424,14 +200,10 @@ const MessageScreen = () => {
 
 			// Send typing indicator
 			if (isConnected && recipientId && conversationId) {
-				chatSocketService.sendTypingStatus(
-					recipientId,
-					conversationId,
-					text.length > 0
-				);
+				contextSendTypingStatus(recipientId, conversationId, text.length > 0);
 			}
 		},
-		[isConnected, recipientId, conversationId]
+		[isConnected, recipientId, conversationId, contextSendTypingStatus]
 	);
 
 	// Show a meaningful message if we don't have proper conversation parameters
@@ -452,7 +224,7 @@ const MessageScreen = () => {
 		);
 	}
 
-	if (loading) {
+	if (loadingHistory && !conversation?.messages?.length) {
 		return (
 			<SafeAreaView style={tw`flex-1 justify-center items-center bg-gray-100`}>
 				<PageLoader />
@@ -502,7 +274,7 @@ const MessageScreen = () => {
 				<ChatInput
 					value={newMessage}
 					onChangeText={handleInputChange}
-					onSend={sendMessage}
+					onSend={handleSendMessage}
 					disabled={initializing}
 					initializing={initializing}
 					offlineMode={offlineMode}

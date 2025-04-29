@@ -60,7 +60,9 @@ const FlightBookingScreen = () => {
 								{bookingData.selectedFlight.departure.code}
 							</Text>
 							<Text style={tw`text-sm text-gray-500`}>
-								{bookingData.selectedFlight.airline.name}
+								{bookingData.selectedFlight.airline.name.length > 12
+									? bookingData.selectedFlight.airline.name.slice(0, 12) + "..."
+									: bookingData.selectedFlight.airline.name}
 							</Text>
 						</View>
 
@@ -82,7 +84,9 @@ const FlightBookingScreen = () => {
 								{bookingData.selectedFlight.destination.code}
 							</Text>
 							<Text style={tw`text-sm text-gray-500`}>
-								{bookingData.selectedFlight.airline.name}
+								{bookingData.selectedFlight.airline.name.length > 12
+									? bookingData.selectedFlight.airline.name.slice(0, 12) + "..."
+									: bookingData.selectedFlight.airline.name}
 							</Text>
 						</View>
 					</View>

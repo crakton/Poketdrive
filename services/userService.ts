@@ -1,5 +1,5 @@
 import { QueryClient, MutationFunction } from "@tanstack/react-query";
-import api from "../lib/api"; // Import the axios instance
+import api from "../lib/api";
 
 export default class UserService {
 	private queryClient: QueryClient;

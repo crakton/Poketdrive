@@ -16,31 +16,35 @@ const SeatSelectionScreen = () => {
 	const bookingData = useRoute().params as IBookingData;
 	const [selectedSeatId, setSelectedSeatId] = useState<string | null>(null);
 
-	// Get available schedule based on selected index
 	const availableSchedule =
 		bookingData.selectedFlight.availableSchedules[bookingData.scheduledIndex];
 	const seats = availableSchedule.availableSeats;
 
 	const [seatRows, setSeatRows] = useState<any[][]>([]);
 
-	// Process seat layout for both shared and non-shared flights
 	useEffect(() => {
-		// Organize seats into rows
 		const newSeatRows: any[][] = [];
 		let currentRow: any[] = [];
 
 		seats.forEach((seat, index) => {
-			// For non-shared flights, mark all seats as reserved except emergency ones
 			const seatStatus =
 				!bookingData.isTour && seat.status !== "emergency"
 					? "reserved"
 					: seat.status;
 
-			currentRow.push({
+			const seatLabel =
+				seat.label ||
+				`${Math.floor(index / 4) + 1}${String.fromCharCode(65 + (index % 4))}`;
+
+			const seatWithId = {
 				...seat,
+				id: seat.id || seatLabel, // ✅ Ensure unique ID
+				label: seatLabel,
 				isSelected: false,
 				status: seatStatus,
-			});
+			};
+
+			currentRow.push(seatWithId);
 
 			if ((index + 1) % 4 === 0) {
 				newSeatRows.push(currentRow);
@@ -56,67 +60,50 @@ const SeatSelectionScreen = () => {
 	}, [seats, bookingData.isTour]);
 
 	const handleSeatSelect = (seat: any, rowIndex: number, seatIndex: number) => {
-		// Don't allow selection if seat is reserved or emergency
 		if (seat.status === "reserved" || seat.status === "emergency") {
 			return;
 		}
 
-		// Create a new copy of seat rows
-		const updatedRows = [...seatRows];
+		const updatedRows = seatRows.map((row) =>
+			row.map((s) => ({ ...s, isSelected: false }))
+		);
 
-		// Deselect all seats first (to ensure only one is selected)
-		updatedRows.forEach((row) => {
-			row.forEach((s) => {
-				s.isSelected = false;
-			});
-		});
-
-		// Then select the clicked seat
 		updatedRows[rowIndex][seatIndex].isSelected = true;
 
-		// Update state
 		setSeatRows(updatedRows);
 		setSelectedSeatId(seat.id);
 	};
 
 	const handleSelectPress = () => {
-		// Add selected seat to booking data
 		const updatedBookingData = {
 			...bookingData,
 			selectedSeat: selectedSeatId,
 		};
 
-		// Navigate to next screen with updated booking data
 		navigation.navigate("PassengerDetails", updatedBookingData);
 	};
 
 	const getBackgroundColor = (seat: any) => {
-		if (seat.isSelected) {
-			return "#FF713B"; // Orange for selected
-		}
+		if (seat.isSelected) return "#FF713B";
 
 		switch (seat.status) {
 			case "emergency":
-				return "#E5E5E5"; // Light gray for emergency
+				return "#E5E5E5";
 			case "reserved":
-				return "#333333"; // Dark for reserved
+				return "#333333";
 			default:
-				return "#F1F4F9"; // Light blue-gray for available
+				return "#F1F4F9";
 		}
 	};
 
-	const getTextColor = (seat: any) => {
-		if (seat.isSelected) {
-			return "white";
-		}
-		return seat.status === "reserved" ? "white" : "black";
-	};
+	const getTextColor = (seat: any) =>
+		seat.isSelected || seat.status === "reserved" ? "white" : "black";
 
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
 			<View style={tw`flex-1 px-5 pt-4`}>
 				{/* Legend */}
-				<View style={tw`flex-row justify-center mb-8`}>
+				<View style={tw`flex-row justify-center mb-8 px-3`}>
 					<View style={tw`flex-row items-center mr-5`}>
 						<View style={tw`w-4 h-4 rounded-full bg-orange-500 mr-2`} />
 						<Text>Selected</Text>
@@ -150,7 +137,7 @@ const SeatSelectionScreen = () => {
 						>
 							{row.map((seat, seatIndex) => (
 								<TouchableOpacity
-									key={`seat-${rowIndex}-${seatIndex}`}
+									key={`seat-${seat.id}`}
 									style={[
 										tw`w-14 h-14 mx-2 rounded-md items-center justify-center`,
 										{ backgroundColor: getBackgroundColor(seat) },
@@ -166,8 +153,7 @@ const SeatSelectionScreen = () => {
 											{ color: getTextColor(seat) },
 										]}
 									>
-										{seat.label ||
-											`${rowIndex + 1}${String.fromCharCode(65 + seatIndex)}`}
+										{seat.label}
 									</Text>
 								</TouchableOpacity>
 							))}

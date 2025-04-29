@@ -2,17 +2,13 @@ import React, { memo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-
-interface Message {
-	id: string;
-	message: string;
-	timestamp: string | number | Date;
-}
+import { IMessage } from "@redux/features/chatSlice";
 
 interface MessageBubbleProps {
-	message: Message;
+	message: IMessage;
 	isCurrentUser: boolean;
 	onDelete: (id: string) => void;
+	status?: string; // e.g., "sent", "delivered", "read"
 }
 
 const MessageBubble = ({
