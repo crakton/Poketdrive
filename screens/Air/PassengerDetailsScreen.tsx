@@ -64,7 +64,7 @@ const PassengerDetailsScreen = () => {
 	const nameInputRef = useRef<TextInput>(null);
 	const addressInputRef = useRef<TextInput>(null);
 	const emailInputRef = useRef<TextInput>(null);
-	const passportInputRef = useRef<TextInputMask>(null);
+	const passportInputRef = useRef<TextInput>(null);
 	const countryInputRef = useRef<TextInput>(null);
 
 	// Validation states
@@ -281,7 +281,7 @@ const PassengerDetailsScreen = () => {
 				for (const passenger of passengers) {
 					if (passenger.email !== activePassenger) {
 						// Temporarily switch to each passenger to validate
-						selectPassenger(passenger.email);
+						selectPassenger(passenger.email!);
 						if (!validatePassenger(passenger)) {
 							allValid = false;
 							break;
@@ -503,7 +503,7 @@ const PassengerDetailsScreen = () => {
 											? "bg-[#FF6633]"
 											: "bg-gray-200"
 									}`}
-									onPress={() => selectPassenger(passenger.email)}
+									onPress={() => selectPassenger(passenger.email!)}
 								>
 									<Text
 										style={tw`${
@@ -589,7 +589,7 @@ const PassengerDetailsScreen = () => {
 								keyboardType="email-address"
 								placeholder="Enter your email address"
 								value={
-									currentPassenger?.email.startsWith("default-")
+									currentPassenger?.email!.startsWith("default-")
 										? ""
 										: currentPassenger?.email || ""
 								}
@@ -616,7 +616,7 @@ const PassengerDetailsScreen = () => {
 								style={tw`mr-3`}
 							/>
 							<TextInputMask
-								ref={passportInputRef}
+								refInput={passportInputRef}
 								type={"custom"}
 								options={{
 									mask: "A99999999", // Nigerian passport: A followed by 8 digits
