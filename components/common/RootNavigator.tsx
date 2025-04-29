@@ -59,176 +59,287 @@ import FAQs from "@screens/Settings/FAQs";
 import IdDetails from "@screens/Settings/IdDetails";
 import IdVerification from "@screens/Settings/IdVerification";
 import Settings from "@screens/Settings/Settings";
+import MessageScreen from "@screens/Chat/Messages";
+import { IUser } from "../../types/user";
+import chatSocketService from "@services/chatService";
+import { useAppDispatch } from "@redux/store";
+import { IConversation } from "@redux/features/chatSlice";
 
 export const RootStack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
 
 const RootNavigator = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isFirstTime, setIsFirstTime] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+	const [isFirstTime, setIsFirstTime] = useState<boolean>(false);
+	const [userData, setUserData] = useState<IUser>();
+	const [token, setToken] = useState<string>();
 
-  useEffect(() => {
-    const loadAuthData = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        const user = await AsyncStorage.getItem("user");
-        const firstTime = await AsyncStorage.getItem("firstTime");
+	const dispatch = useAppDispatch();
 
-        setIsAuthenticated(!!token && !!user);
-        setIsFirstTime(firstTime === "true");
-      } catch (error) {
-        console.error("Error loading auth data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+	useEffect(() => {
+		const loadAuthData = async () => {
+			try {
+				const token = await AsyncStorage.getItem("token");
+				const user = await AsyncStorage.getItem("user");
+				const firstTime = await AsyncStorage.getItem("firstTime");
 
-    loadAuthData();
-  }, []);
+				setIsAuthenticated(!!token && !!user);
+				setIsFirstTime(firstTime === "true");
+				if (token !== null) {
+					setUserData(JSON.parse(user as string));
+					setToken(token);
+				}
+			} catch (error) {
+				console.error("Error loading auth data", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
+		loadAuthData();
+	}, []);
 
-  return (
-    <NavigationContainer ref={navigationRef}>
-      <RootStack.Navigator
-        initialRouteName={
-          isFirstTime
-            ? "CreateAccount"
-            : isAuthenticated
-            ? "Onboarding"
-            : "CreateAccount"
-        }
-        screenOptions={{ headerShown: false }}
-      >
-        <RootStack.Screen name="Onboarding" component={Onboarding} />
-        <RootStack.Screen name="CreateAccount" component={CreateAccount} />
-        <RootStack.Screen name="Login" component={Login} />
-        <RootStack.Screen name="Verification" component={Verification} />
+	// Connect to socket when user data is available
+	useEffect(() => {
+		if (!userData?.id) return;
 
-        <RootStack.Screen name="LandDrawer" component={DrawerContainer} />
+		let socketConnectTimeout: NodeJS.Timeout;
 
-        {/* Main App Screens */}
-        <RootStack.Screen name="Home" component={Home} />
-        <RootStack.Screen name="TripSelection" component={TripSelection} />
-        <RootStack.Screen name="RideSelection" component={RideSelection} />
-        <RootStack.Screen name="MapScreen" component={MapScreen} />
-        <RootStack.Screen name="Payment" component={Payment} />
-        <RootStack.Screen name="Confirmation" component={Confirmation} />
+		try {
+			// Connect to socket with user ID
+			const socket = chatSocketService.connect(userData.id, token);
 
-        {/* Driver Screens */}
-        <RootStack.Screen name="RideSchedule" component={RideSchedule} />
-        <RootStack.Screen name="ManageTrips" component={ManageTrips} />
-        <RootStack.Screen name="TripItinerary" component={TripItinerary} />
-        <RootStack.Screen name="DriverDetails" component={DriverDetails} />
+			// Listen for connection events
+			socket.on("connect", () => {
+				dispatch(setConnectionStatus(true));
+				setConnectionError(false);
+				console.log("Socket connected successfully");
 
-        {/* Wallet Screens */}
-        <RootStack.Screen name="WalletHome" component={WalletHome} />
-        <RootStack.Screen name="WalletHistory" component={WalletHistory} />
-        <RootStack.Screen
-          name="AddPaymentMethod"
-          component={AddPaymentMethod}
-        />
-        <RootStack.Screen
-          name="PaymentSucessful"
-          component={PaymentSucessful}
-        />
+				// Request conversations after successful connection
+				chatSocketService.requestConversations();
+			});
 
-        {/* Settings Screens */}
-        <RootStack.Screen
-          name="AccountVerification"
-          component={AccountVerification}
-        />
-        <RootStack.Screen name="IdVerification" component={IdVerification} />
-        <RootStack.Screen name="IdDetails" component={IdDetails} />
-        <RootStack.Screen name="Settings" component={Settings} />
-        <RootStack.Screen name="FAQs" component={FAQs} />
+			socket.on("connect_error", (error) => {
+				console.error("Socket connection error:", error);
+				setConnectionError(true);
+				setLoading(false);
+			});
 
-        {/* Extra Screens */}
-        <RootStack.Screen
-          name="CarIdentification"
-          component={CarIdentification}
-        />
-        <RootStack.Screen
-          name="RideIdentification"
-          component={RideIdentification}
-        />
-        <RootStack.Screen name="RideProgress" component={RideProgress} />
-        <RootStack.Screen name="EndTrip" component={EndTrip} />
-        <RootStack.Screen
-          name="TripConfirmation"
-          component={TripConfirmation}
-        />
-        <RootStack.Screen name="ManageRide" component={ManageRide} />
-        <RootStack.Screen name="DriverEndTrip" component={DriverEndTrip} />
-        <RootStack.Screen name="AirTabBar" component={AirRootTab} />
-        <RootStack.Screen name="TourDetails" component={TourDetailsScreen} />
-        <RootStack.Screen name="FlightSearch" component={FlightSearchScreen} />
-        <RootStack.Screen
-          name="FlightDetails"
-          component={FlightDetailsScreen}
-        />
-        <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Book Flight" }}
-          name="FlightBooking"
-          component={FlightBookingScreen}
-        />
-        <RootStack.Screen name="Travels" component={TravelsScreen} />
-        <RootStack.Screen
-          options={{
-            headerShown: true,
-            headerTitle: "Choose Seat",
-          }}
-          name="SelectSeat"
-          component={SeatSelectionScreen}
-        />
-        <RootStack.Screen
-          name="PassengerDetails"
-          component={PassengerDetailsScreen}
-        />
-        <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Payment" }}
-          name="Payments"
-          component={PaymentsScreen}
-        />
-        <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Payment Report" }}
-          name="PaymentSuccess"
-          component={PaymentScreen}
-        />
-        <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Boarding pass" }}
-          name="TicketConfirmation"
-          component={TicketConfirmationScreen}
-        />
-        <RootStack.Screen
-          name="WalletPaymentSuccess"
-          component={PaymentSuccessScreen}
-        />
-        <RootStack.Screen name="MyWallet" component={MyWalletScreen} />
-        <RootStack.Screen
-          name="TransactionDetails"
-          component={TransactionDetailsScreen}
-        />
-        <RootStack.Screen
-          options={{ headerShown: true, headerTitle: "Card Management" }}
-          name={"CardManagement"}
-          component={CreditCardScreen}
-        />
+			// Subscribe to conversations updates
+			chatSocketService.subscribeToConversations((updatedConversations) => {
+				dispatch(setConversations(updatedConversations));
+				setLoading(false);
+			});
 
-        {/* Water Management Screens */}
-        <RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
-        <RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
-        <RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
-        <RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
-        <RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
-        <RootStack.Screen name="SucessScreen" component={SuccessScreen} />
-        <RootStack.Screen name="TrackingScreen" component={TrackingScreen} />
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
+			// Subscribe to new conversation events
+			chatSocketService.subscribeToNewConversations((newConversation) => {
+				dispatch(addConversation(newConversation));
+			});
+
+			// Set a timeout to show UI even if server doesn't respond
+			socketConnectTimeout = setTimeout(() => {
+				if (isLoading) {
+					setLoading(false);
+				}
+			}, 5000);
+		} catch (error) {
+			console.error("Failed to initialize socket:", error);
+			setConnectionError(true);
+			setLoading(false);
+		}
+
+		return () => {
+			clearTimeout(socketConnectTimeout);
+			// We don't disconnect here to keep the socket alive for other screens
+		};
+	}, [userData, token, dispatch, isLoading]);
+
+	if (isLoading) {
+		return <PageLoader />;
+	}
+
+	return (
+		<NavigationContainer ref={navigationRef}>
+			<RootStack.Navigator
+				initialRouteName={
+					isFirstTime
+						? "CreateAccount"
+						: isAuthenticated
+						? "Onboarding"
+						: "CreateAccount"
+				}
+				screenOptions={{ headerShown: false }}
+			>
+				<RootStack.Screen name="Onboarding" component={Onboarding} />
+				<RootStack.Screen name="CreateAccount" component={CreateAccount} />
+				<RootStack.Screen name="Login" component={Login} />
+				<RootStack.Screen name="Verification" component={Verification} />
+
+				<RootStack.Screen name="LandDrawer" component={DrawerContainer} />
+
+				{/* Main App Screens */}
+				<RootStack.Screen name="Home" component={Home} />
+				<RootStack.Screen name="TripSelection" component={TripSelection} />
+				<RootStack.Screen name="RideSelection" component={RideSelection} />
+				<RootStack.Screen name="MapScreen" component={MapScreen} />
+				<RootStack.Screen name="Payment" component={Payment} />
+				<RootStack.Screen name="Confirmation" component={Confirmation} />
+				<RootStack.Screen name="Message" component={MessageScreen} />
+
+				{/* Driver Screens */}
+				<RootStack.Screen name="RideSchedule" component={RideSchedule} />
+				<RootStack.Screen name="ManageTrips" component={ManageTrips} />
+				<RootStack.Screen name="TripItinerary" component={TripItinerary} />
+				<RootStack.Screen name="DriverDetails" component={DriverDetails} />
+
+				{/* Wallet Screens */}
+				<RootStack.Screen name="WalletHome" component={WalletHome} />
+				<RootStack.Screen name="WalletHistory" component={WalletHistory} />
+				<RootStack.Screen
+					name="AddPaymentMethod"
+					component={AddPaymentMethod}
+				/>
+				<RootStack.Screen
+					name="PaymentSucessful"
+					component={PaymentSucessful}
+				/>
+
+				{/* Settings Screens */}
+				<RootStack.Screen
+					name="AccountVerification"
+					component={AccountVerification}
+				/>
+				<RootStack.Screen name="IdVerification" component={IdVerification} />
+				<RootStack.Screen name="IdDetails" component={IdDetails} />
+				<RootStack.Screen name="Settings" component={Settings} />
+				<RootStack.Screen name="FAQs" component={FAQs} />
+
+				{/* Extra Screens */}
+				<RootStack.Screen
+					name="CarIdentification"
+					component={CarIdentification}
+				/>
+				<RootStack.Screen
+					name="RideIdentification"
+					component={RideIdentification}
+				/>
+				<RootStack.Screen name="RideProgress" component={RideProgress} />
+				<RootStack.Screen name="EndTrip" component={EndTrip} />
+				<RootStack.Screen
+					name="TripConfirmation"
+					component={TripConfirmation}
+				/>
+				<RootStack.Screen name="ManageRide" component={ManageRide} />
+				<RootStack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+				<RootStack.Screen name="AirTabBar" component={AirRootTab} />
+				<RootStack.Screen name="TourDetails" component={TourDetailsScreen} />
+				<RootStack.Screen name="FlightSearch" component={FlightSearchScreen} />
+				<RootStack.Screen
+					name="FlightDetails"
+					component={FlightDetailsScreen}
+				/>
+				<RootStack.Screen
+					options={{ headerShown: true, headerTitle: "Book Flight" }}
+					name="FlightBooking"
+					component={FlightBookingScreen}
+				/>
+				<RootStack.Screen name="Travels" component={TravelsScreen} />
+				<RootStack.Screen
+					options={{
+						headerShown: true,
+						headerTitle: "Choose Seat",
+					}}
+					name="SelectSeat"
+					component={SeatSelectionScreen}
+				/>
+				<RootStack.Screen
+					name="PassengerDetails"
+					component={PassengerDetailsScreen}
+				/>
+				<RootStack.Screen
+					options={{ headerShown: true, headerTitle: "Payment" }}
+					name="Payments"
+					component={PaymentsScreen}
+				/>
+				<RootStack.Screen
+					options={{ headerShown: true, headerTitle: "Payment Report" }}
+					name="PaymentSuccess"
+					component={PaymentScreen}
+				/>
+				<RootStack.Screen
+					options={{ headerShown: true, headerTitle: "Boarding pass" }}
+					name="TicketConfirmation"
+					component={TicketConfirmationScreen}
+				/>
+				<RootStack.Screen
+					name="WalletPaymentSuccess"
+					component={PaymentSuccessScreen}
+				/>
+				<RootStack.Screen name="MyWallet" component={MyWalletScreen} />
+				<RootStack.Screen
+					name="TransactionDetails"
+					component={TransactionDetailsScreen}
+				/>
+				<RootStack.Screen
+					options={{ headerShown: true, headerTitle: "Card Management" }}
+					name={"CardManagement"}
+					component={CreditCardScreen}
+				/>
+
+				{/* Water Management Screens */}
+				<RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
+				<RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
+				<RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
+				<RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
+				<RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
+				<RootStack.Screen name="SucessScreen" component={SuccessScreen} />
+				<RootStack.Screen name="TrackingScreen" component={TrackingScreen} />
+			</RootStack.Navigator>
+		</NavigationContainer>
+	);
 };
 
 export default RootNavigator;
+function setConnectionStatus(arg0: boolean): any {
+	throw new Error("Function not implemented.");
+}
+
+function setConnectionError(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}
+
+function setConversations(updatedConversations: IConversation[]): any {
+	throw new Error("Function not implemented.");
+}
+
+function addConversation(newConversation: IConversation): any {
+	throw new Error("Function not implemented.");
+}
+
+function setLoading(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}
+
+function useCallback(
+	arg0: (
+		conversationId: string,
+		recipientId: string,
+		recipientName: string
+	) => void,
+	arg1: any[]
+) {
+	throw new Error("Function not implemented.");
+}
+
+function setActiveConversation(conversationId: string): any {
+	throw new Error("Function not implemented.");
+}
+
+function markConversationAsRead(conversationId: string): any {
+	throw new Error("Function not implemented.");
+}
+
+function setUserModalVisible(arg0: boolean) {
+	throw new Error("Function not implemented.");
+}

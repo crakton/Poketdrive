@@ -1,5 +1,5 @@
-import { CommonActions, DrawerActions } from "@react-navigation/native";
-import { navigationRef } from "../components/common/RootNavigator";
+import { navigationRef } from "@components/common/RootNavigator";
+import { DrawerActions } from "@react-navigation/native";
 
 /**
  * Opens the drawer navigation
@@ -27,20 +27,42 @@ export function toggleDrawer() {
 		navigationRef.current?.dispatch(DrawerActions.toggleDrawer());
 	}
 }
-
 /**
- * Navigate to drawer screen first, then toggle it
- * Use this when you're outside the drawer navigator context
+ * Safe way to navigate to drawer and toggle it
  */
 export function navigateToDrawerAndToggle() {
 	if (navigationRef.isReady()) {
-		// First navigate to the drawer
-		navigationRef.current?.navigate("LandDrawer");
+		// First get the current navigation state
+		const state = navigationRef.current?.getState();
 
-		// Give it a moment to complete navigation
-		setTimeout(() => {
-			toggleDrawer();
-		}, 100);
+		// Try to find the drawer navigator in the state tree
+		let isDrawerInState = false;
+		state?.routes.forEach((route) => {
+			if (route.name === "LandDrawer") {
+				isDrawerInState = true;
+			}
+		});
+
+		if (!isDrawerInState) {
+			// If not in drawer state, navigate to it first
+			navigationRef.current?.navigate("LandDrawer");
+
+			// Wait for navigation to complete
+			setTimeout(() => {
+				try {
+					navigationRef.current?.dispatch(DrawerActions.openDrawer());
+				} catch (e) {
+					console.warn("Could not open drawer:", e);
+				}
+			}, 300);
+		} else {
+			// If already in drawer state, just toggle
+			try {
+				navigationRef.current?.dispatch(DrawerActions.toggleDrawer());
+			} catch (e) {
+				console.warn("Could not toggle drawer:", e);
+			}
+		}
 	}
 }
 

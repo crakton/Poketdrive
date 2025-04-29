@@ -32,4 +32,25 @@ export default class UserService {
 			},
 		};
 	};
+
+	getUsers = () => {
+		const queryKey = ["users"];
+		return {
+			queryKey,
+			queryFn: async () => {
+				const response = await api.get("/users");
+				return response.data;
+			},
+		};
+	};
+	getUser = (userId: string) => {
+		const queryKey = ["user", userId];
+		return {
+			queryKey,
+			queryFn: async () => {
+				const response = await api.get(`/users/${userId}`);
+				return response.data;
+			},
+		};
+	};
 }

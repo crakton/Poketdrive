@@ -1,28 +1,36 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
 	FlatList,
 	Text,
-	View,
-	TextInput,
 	TouchableOpacity,
 	KeyboardAvoidingView,
 	Platform,
 	ActivityIndicator,
-	Image,
 	Alert,
+	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import tw from "twrnc";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+
+import { useUserService } from "@hooks/useUserService";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import chatSocketService from "@services/chatService";
 import {
+	addConversation,
 	addMessage,
 	IMessage,
 	markConversationAsRead,
+	removeMessage,
 	setConnectionStatus,
-} from "../../redux/features/chatSlice";
-import chatSocketService, { TChatParams } from "../../services/chatService";
+	updateConversationMessages,
+} from "@redux/features/chatSlice";
+import { ChatHeader } from "@components/Chat/ChatHeader";
+import { EmptyChat } from "@components/Chat/EmptyChat";
+import MessageBubble from "@components/Chat/MessageBubble";
+import ChatInput from "@components/Chat/ChatInput";
+import PageLoader from "@components/ui/PageLoader";
 
 const MessageScreen = () => {
 	const route = useRoute();
@@ -30,133 +38,267 @@ const MessageScreen = () => {
 	const dispatch = useAppDispatch();
 
 	// Add default values to prevent undefined errors
-	const params = (route.params as TChatParams) || ({} as TChatParams);
+	const params = route.params as {
+		conversationId?: string;
+		recipientId?: string;
+		recipientName?: string;
+		recipientPhoneNumber?: string;
+	};
 	const conversationId = params.conversationId || "";
 	const recipientId = params.recipientId || "";
 	const recipientName = params.recipientName || "User";
+	const recipientPhoneNumber = params.recipientPhoneNumber || "";
 
-	const { conversations, isConnected } = useAppSelector((state) => state.chat);
+	const { conversations, isConnected, currentUserId } = useAppSelector(
+		(state) => state.chat
+	);
+
 	const conversation = conversations.find((c) => c.id === conversationId);
 	const [newMessage, setNewMessage] = useState("");
 	const [loading, setLoading] = useState(!conversation);
 	const [offlineMode, setOfflineMode] = useState(false);
-	const flatListRef = useRef<FlatList>(null);
+	const [isTyping, setIsTyping] = useState(false);
+	const [initializing, setInitializing] = useState(false);
+	const [incomingMessageTrigger, setIncomingMessageTrigger] = useState(0);
+	// Track if a message was just sent to prevent duplicates
+	const [justSentMessage, setJustSentMessage] = useState(false);
+	const flatListRef = useRef<FlatList<IMessage>>(null);
 
-	// Check socket connection at start
+	// Keep track of message IDs that are already processed to prevent duplicates
+	const processedMessageIdsRef = useRef(new Set());
+
+	// Fetch user data for displaying in chat
+	const { useGetUser } = useUserService();
+	const { data: recipientData } = useGetUser(recipientId);
+
+	// 1. Socket connection setup
 	useEffect(() => {
-		const socket = chatSocketService.getSocket();
-		const isSocketConnected = socket?.connected || false;
+		if (!currentUserId) return;
 
-		if (!isSocketConnected) {
-			// Try to connect if not already connected
+		let isMounted = true;
+
+		// Check if socket is connected, connect if not
+		const socket = chatSocketService.getSocket();
+		if (!socket || !socket.connected) {
 			try {
-				chatSocketService.connect("user1", "");
+				chatSocketService.connect(currentUserId);
 				setTimeout(() => {
+					if (!isMounted) return;
+
 					const reconnected = chatSocketService.isConnected();
 					dispatch(setConnectionStatus(reconnected));
 					if (!reconnected) {
 						setOfflineMode(true);
-						setLoading(false);
 						Alert.alert(
 							"Connection Issue",
-							"Unable to connect to the chat server. Some features may be limited.",
-							[{ text: "OK" }]
+							"Unable to connect to the chat server. Some features may be limited."
 						);
 					}
-				}, 2000); // Give it some time to connect
+				}, 1000);
 			} catch (error) {
 				console.error("Failed to connect to socket:", error);
 				setOfflineMode(true);
-				setLoading(false);
 			}
 		} else {
 			dispatch(setConnectionStatus(true));
 		}
-	}, [dispatch]);
-
-	useEffect(() => {
-		if (!conversationId) {
-			setLoading(false);
-			return;
-		}
-
-		// Mark conversation as read when screen opens
-		dispatch(markConversationAsRead(conversationId));
-
-		// Set up header
-		navigation.setOptions({
-			headerTitle: () => (
-				<View style={tw`flex-row items-center`}>
-					<Image
-						source={{
-							uri: recipientId
-								? `https://randomuser.me/api/portraits/men/${
-										parseInt(recipientId.replace("user", "") || "0") + 30
-								  }.jpg`
-								: "https://randomuser.me/api/portraits/men/30.jpg",
-						}}
-						style={tw`w-8 h-8 rounded-full mr-2`}
-					/>
-					<Text style={tw`font-bold`}>{recipientName}</Text>
-					{!isConnected && (
-						<View style={tw`ml-2 px-2 py-1 bg-yellow-100 rounded`}>
-							<Text style={tw`text-xs text-yellow-800`}>Offline</Text>
-						</View>
-					)}
-				</View>
-			),
-		});
-
-		// Subscribe to new messages
-		const socket = chatSocketService.getSocket();
-		if (socket && socket.connected) {
-			socket.on("receive_message", (messageData) => {
-				const { data } = messageData;
-				if (data && data.conversationId === conversationId) {
-					// Transform to match your local message structure if needed
-					const message = {
-						id: data.id || `server-${Date.now()}`,
-						conversationId: data.conversationId,
-						sender_id: data.senderId,
-						recipient_id: data.recipientId,
-						message: data.content,
-						timestamp: data.timestamp || new Date().toISOString(),
-						read: false,
-					};
-
-					dispatch(addMessage({ conversationId, message }));
-					dispatch(markConversationAsRead(conversationId));
-				}
-			});
-
-			if (!conversation && !offlineMode) {
-				chatSocketService.requestConversation(conversationId);
-
-				socket.once("conversation_data", () => {
-					setLoading(false);
-				});
-
-				// Fallback in case we don't get conversation data
-				setTimeout(() => {
-					setLoading(false);
-				}, 3000);
-			} else {
-				setLoading(false);
-			}
-		} else {
-			// If no socket connection, still show the UI with what we have
-			setLoading(false);
-		}
 
 		return () => {
-			if (socket) {
-				socket.off("receive_message");
+			isMounted = false;
+		};
+	}, [currentUserId, dispatch]);
+
+	// 2. Conversation initialization
+	useEffect(() => {
+		if (!currentUserId || !conversationId || !recipientId) return;
+
+		// Mark conversation as read when opening the screen
+		dispatch(markConversationAsRead(conversationId));
+
+		// Request conversation history for this recipient
+		chatSocketService.requestConversationHistory(recipientId);
+
+		// Clear processed message IDs when conversation changes
+		processedMessageIdsRef.current = new Set();
+
+		// Set initial loading state
+		setLoading(true);
+
+		// Fallback timer to prevent indefinite loading
+		const loadingTimer = setTimeout(() => {
+			setLoading(false);
+		}, 3000);
+
+		return () => {
+			clearTimeout(loadingTimer);
+		};
+	}, [currentUserId, conversationId, recipientId, dispatch]);
+
+	// 3. Typing indicator cleanup
+	useEffect(() => {
+		return () => {
+			// Send "stopped typing" indicator when leaving
+			if (isConnected && recipientId && conversationId) {
+				chatSocketService.sendTypingStatus(recipientId, conversationId, false);
 			}
 		};
-	}, [conversationId, dispatch, isConnected, offlineMode]);
+	}, [isConnected, recipientId, conversationId]);
 
+	// 4. New messages subscription
 	useEffect(() => {
-		// Scroll to bottom when messages change
+		const messageHandler = (messageData: IMessage) => {
+			// Parse message from socket format
+			const parsedMessage = chatSocketService.parseMessage(messageData);
+
+			if (!parsedMessage) return;
+
+			// Generate a consistent ID for checking duplicates
+			const messageId =
+				parsedMessage.id ||
+				`${parsedMessage.sender_id}-${parsedMessage.timestamp}`;
+
+			// Skip if we've already processed this message
+			if (processedMessageIdsRef.current.has(messageId)) {
+				return;
+			}
+
+			// IMPORTANT: For sent messages, make sure we're not duplicating
+			// what we've already added optimistically
+			if (parsedMessage.sender_id === currentUserId) {
+				// This is our own message coming back from the server
+				// Just mark it as processed but don't add it again
+				processedMessageIdsRef.current.add(messageId);
+				return;
+			}
+
+			// Add to processed set
+			processedMessageIdsRef.current.add(messageId);
+
+			if (
+				parsedMessage &&
+				(parsedMessage.conversationId === conversationId ||
+					parsedMessage.sender_id === recipientId ||
+					parsedMessage.recipient_id === recipientId)
+			) {
+				dispatch(
+					addMessage({
+						conversationId: parsedMessage.conversationId || conversationId,
+						message: parsedMessage,
+					})
+				);
+
+				// Force the component to update for incoming messages
+				setIncomingMessageTrigger((prev) => prev + 1);
+
+				// Mark as read if it's a new message from the other person
+				if (parsedMessage.sender_id === recipientId) {
+					dispatch(markConversationAsRead(conversationId));
+				}
+			}
+		};
+
+		// Register message handler
+		const messageUnsubscribe =
+			chatSocketService.subscribeToMessages(messageHandler);
+
+		return () => {
+			if (messageUnsubscribe) messageUnsubscribe();
+		};
+	}, [conversationId, dispatch, recipientId, currentUserId]);
+
+	// 5. Typing indicators subscription
+	useEffect(() => {
+		const typingHandler = (data: any) => {
+			console.log("Typing indicator received:", data); // Debugging
+
+			// Use a more robust check for the typing data
+			if (data && data.chatId === conversationId && data.from === recipientId) {
+				// Force immediate update for the typing indicator
+				setTimeout(() => {
+					setIsTyping(!!data.isTyping);
+				}, 0);
+			}
+		};
+
+		// Register typing handler
+		const typingUnsubscribe =
+			chatSocketService.subscribeToTypingIndicators(typingHandler);
+
+		return () => {
+			if (typingUnsubscribe) typingUnsubscribe();
+		};
+	}, [conversationId, recipientId]);
+	// 6. Message deletion subscription
+	useEffect(() => {
+		const deleteHandler = (data: any) => {
+			if (data.chatId === conversationId && data.messageId) {
+				dispatch(
+					removeMessage({
+						conversationId,
+						messageId: data.messageId,
+					})
+				);
+			}
+		};
+
+		// Register delete handler
+		const deleteUnsubscribe =
+			chatSocketService.subscribeToMessageDeletion(deleteHandler);
+
+		return () => {
+			if (deleteUnsubscribe) deleteUnsubscribe();
+		};
+	}, [conversationId, dispatch]);
+
+	// 7. Conversation history subscription
+	useEffect(() => {
+		const historyHandler = (messages: IMessage[]) => {
+			if (messages.length > 0) {
+				// Add all message IDs to the processed set
+				messages.forEach((msg) => {
+					const msgId = msg.id || `${msg.sender_id}-${msg.timestamp}`;
+					processedMessageIdsRef.current.add(msgId);
+				});
+
+				// Update conversation with history messages
+				dispatch(
+					updateConversationMessages({
+						conversationId,
+						messages,
+					})
+				);
+			}
+			setLoading(false);
+		};
+
+		// Register history handler
+		const historyUnsubscribe =
+			chatSocketService.subscribeToConversationHistory(historyHandler);
+
+		return () => {
+			if (historyUnsubscribe) historyUnsubscribe();
+		};
+	}, [conversationId, dispatch]);
+
+	// 8. Error handling subscription
+	useEffect(() => {
+		const errorHandler = (error: Error) => {
+			console.error("Chat error:", error);
+			Alert.alert(
+				"Chat Error",
+				"There was an issue with the chat service. Please try again."
+			);
+		};
+
+		// Register error handler
+		const errorUnsubscribe = chatSocketService.subscribeToErrors(errorHandler);
+
+		return () => {
+			if (errorUnsubscribe) errorUnsubscribe();
+		};
+	}, []);
+	// Scroll to bottom when messages change
+	useEffect(() => {
 		if (flatListRef.current && conversation?.messages?.length) {
 			setTimeout(() => {
 				flatListRef.current?.scrollToEnd({ animated: true });
@@ -164,49 +306,141 @@ const MessageScreen = () => {
 		}
 	}, [conversation?.messages?.length]);
 
-	const sendMessage = () => {
-		if (newMessage.trim() === "" || !conversationId || !recipientId) return;
+	// Set header with user info
+	useEffect(() => {
+		navigation.setOptions({
+			header: () => (
+				<ChatHeader
+					phoneNumber={recipientPhoneNumber}
+					recipientName={recipientName}
+					recipientId={recipientId}
+					isOnline={isConnected}
+					isTyping={isTyping}
+					navigation={navigation}
+				/>
+			),
+		});
+	}, [navigation, recipientId, recipientName, isTyping, isConnected]);
+
+	// Send a message
+	const sendMessage = useCallback(() => {
+		if (newMessage.trim() === "" || !currentUserId || justSentMessage) return;
+
+		// Set flag to prevent duplicate sends
+		setJustSentMessage(true);
 
 		if (!isConnected) {
 			Alert.alert(
 				"Offline Mode",
-				"You're currently offline. Messages will be sent when connection is restored.",
-				[{ text: "OK" }]
+				"You're currently offline. Messages will be sent when connection is restored."
 			);
-			// You could store messages locally to send later
-			// This is simplified for now
 			setNewMessage("");
+			// Reset flag after a short delay
+			setTimeout(() => setJustSentMessage(false), 500);
 			return;
 		}
 
-		const messageData = chatSocketService.sendMessage(
-			conversationId,
-			recipientId,
-			newMessage.trim()
+		// Check if this is a new conversation that needs to be created first
+		const conversationExists = conversations.some(
+			(c) => c.id === conversationId
 		);
 
-		if (messageData) {
-			const formattedMessage = {
-				...messageData,
-				id: `temp-${Date.now()}`,
-				read: false,
-				message: messageData.message, // Make sure this matches your IMessage type
-			};
+		if (!conversationExists && !initializing) {
+			setInitializing(true);
 
-			dispatch(
-				addMessage({ conversationId, message: formattedMessage as IMessage })
+			// Create the chat first
+			const newConversation = chatSocketService.createChat(
+				recipientId,
+				newMessage.trim()
 			);
-			setNewMessage("");
+
+			if (newConversation) {
+				// Add conversation to store
+				dispatch(addConversation(newConversation));
+
+				// Clear message input
+				setNewMessage("");
+				setInitializing(false);
+
+				// Reset flag after a delay
+				setTimeout(() => setJustSentMessage(false), 500);
+			}
+		} else {
+			// Normal message in existing conversation
+			const messageData = chatSocketService.sendMessage(
+				conversationId,
+				recipientId,
+				newMessage.trim()
+			);
+
+			if (messageData) {
+				// Generate ID for tracking
+				const msgId =
+					messageData.id || `${messageData.sender_id}-${messageData.timestamp}`;
+				processedMessageIdsRef.current.add(msgId);
+
+				// Add message to the store with optimistic update
+				dispatch(
+					addMessage({
+						conversationId,
+						message: messageData as IMessage,
+					})
+				);
+				setNewMessage("");
+
+				// Reset flag after a delay
+				setTimeout(() => setJustSentMessage(false), 500);
+			}
 		}
-	};
+	}, [
+		newMessage,
+		currentUserId,
+		isConnected,
+		conversationId,
+		recipientId,
+		conversations,
+		initializing,
+		dispatch,
+		justSentMessage,
+	]);
+
+	// Delete a message
+	const handleDelete = useCallback(
+		(messageId: string) => {
+			if (!isConnected) {
+				Alert.alert("Error", "Cannot delete messages while offline");
+				return;
+			}
+
+			chatSocketService.deleteMessage(messageId, conversationId);
+		},
+		[isConnected, conversationId]
+	);
+
+	// Handle typing indicator
+	const handleInputChange = useCallback(
+		(text: string) => {
+			setNewMessage(text);
+
+			// Send typing indicator
+			if (isConnected && recipientId && conversationId) {
+				chatSocketService.sendTypingStatus(
+					recipientId,
+					conversationId,
+					text.length > 0
+				);
+			}
+		},
+		[isConnected, recipientId, conversationId]
+	);
 
 	// Show a meaningful message if we don't have proper conversation parameters
-	if (!conversationId || !recipientId) {
+	if (!recipientId) {
 		return (
-			<SafeAreaView style={tw`flex-1 justify-center items-center bg-white`}>
+			<SafeAreaView style={tw`flex-1 justify-center items-center bg-gray-100`}>
 				<Ionicons name="chatbubble-ellipses-outline" size={64} color="#ccc" />
 				<Text style={tw`text-gray-500 mt-4 text-center`}>
-					No conversation selected
+					No recipient selected
 				</Text>
 				<TouchableOpacity
 					style={tw`mt-4 bg-orange-500 px-6 py-3 rounded-full`}
@@ -220,117 +454,61 @@ const MessageScreen = () => {
 
 	if (loading) {
 		return (
-			<SafeAreaView style={tw`flex-1 justify-center items-center bg-white`}>
-				<ActivityIndicator size="large" color="#F05A22" />
+			<SafeAreaView style={tw`flex-1 justify-center items-center bg-gray-100`}>
+				<PageLoader />
 			</SafeAreaView>
 		);
 	}
 
-	// Placeholder messages when no conversation data available
+	// Messages to display
 	const messages = conversation?.messages || [];
-	const emptyMessageView = (
-		<View style={tw`flex-1 justify-center items-center p-4`}>
-			<Ionicons name="chatbubble-ellipses-outline" size={64} color="#ccc" />
-			<Text style={tw`text-gray-500 mt-4 text-center`}>
-				{offlineMode
-					? "You're offline. Connect to see messages."
-					: "No messages yet. Start the conversation!"}
-			</Text>
-		</View>
-	);
 
 	return (
-		<SafeAreaView style={tw`flex-1 bg-white`}>
+		<SafeAreaView style={tw`flex-1 bg-gray-100`}>
 			<KeyboardAvoidingView
 				style={tw`flex-1`}
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
 				keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
 			>
+				<ChatHeader
+					phoneNumber={recipientData?.phoneNumber}
+					isOnline={isConnected}
+					isTyping={isTyping}
+					recipientName={recipientName}
+					recipientId={recipientId}
+					navigation={navigation}
+				/>
 				{messages.length === 0 ? (
-					emptyMessageView
+					<EmptyChat offlineMode={offlineMode} />
 				) : (
 					<FlatList
+						showsVerticalScrollIndicator={false}
+						showsHorizontalScrollIndicator={false}
+						keyboardShouldPersistTaps="handled"
 						data={messages}
 						keyExtractor={(item, index) => item.id || `msg-${index}`}
 						ref={flatListRef}
 						contentContainerStyle={tw`flex-grow p-2`}
-						renderItem={({ item }) => {
-							const isCurrentUser = item.sender_id === "user1"; // Adjust based on your auth
-							return (
-								<View
-									style={[
-										tw`my-1 mx-2 p-3 rounded-xl max-w-[80%]`,
-										isCurrentUser
-											? tw`bg-orange-100 self-end`
-											: tw`bg-gray-100 self-start`,
-									]}
-								>
-									<Text style={tw`text-base`}>{item.message}</Text>
-									<Text style={tw`text-xs text-gray-500 mt-1 text-right`}>
-										{new Date(item.timestamp).toLocaleTimeString([], {
-											hour: "2-digit",
-											minute: "2-digit",
-										})}
-										{isCurrentUser && (
-											<Ionicons
-												name={item.read ? "checkmark-done" : "checkmark"}
-												size={12}
-												color={item.read ? "#4CAF50" : "#999"}
-												style={tw`ml-1`}
-											/>
-										)}
-									</Text>
-								</View>
-							);
-						}}
+						renderItem={({ item }) => (
+							<MessageBubble
+								message={item}
+								isCurrentUser={item.sender_id === currentUserId}
+								onDelete={handleDelete}
+							/>
+						)}
 					/>
 				)}
 
-				<View
-					style={tw`flex-row items-center border-t border-gray-200 py-2 px-4 bg-white`}
-				>
-					<TouchableOpacity style={tw`mr-2`}>
-						<Ionicons name="happy-outline" size={24} color="#666" />
-					</TouchableOpacity>
-
-					<View
-						style={tw`flex-row items-center flex-1 bg-gray-100 rounded-full px-3`}
-					>
-						<TouchableOpacity style={tw`mr-2`}>
-							<Ionicons name="camera-outline" size={24} color="#666" />
-						</TouchableOpacity>
-
-						<TextInput
-							style={tw`flex-1 py-2`}
-							placeholder={
-								offlineMode
-									? "Offline mode - messages will be queued"
-									: "Type a message..."
-							}
-							value={newMessage}
-							onChangeText={setNewMessage}
-							multiline
-							numberOfLines={4}
-						/>
-
-						<TouchableOpacity
-							style={tw`ml-2 ${
-								newMessage.trim() && (!offlineMode || isConnected)
-									? "opacity-100"
-									: "opacity-50"
-							}`}
-							onPress={sendMessage}
-							disabled={!newMessage.trim()}
-						>
-							<Ionicons
-								name="send"
-								size={24}
-								color="#F05A22"
-								style={{ transform: [{ rotate: "-45deg" }] }}
-							/>
-						</TouchableOpacity>
-					</View>
-				</View>
+				<ChatInput
+					value={newMessage}
+					onChangeText={handleInputChange}
+					onSend={sendMessage}
+					disabled={initializing}
+					initializing={initializing}
+					offlineMode={offlineMode}
+					isConnected={isConnected}
+					isTyping={isTyping}
+				/>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);

@@ -44,4 +44,5 @@ export type AuthStackParamList = {
   ManageRide: any;
   DriverEndTrip: any;
   RecieverInfo: any;
+  Message: any;
 };
