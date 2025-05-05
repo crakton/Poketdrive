@@ -209,9 +209,9 @@ const ExploreScreen = () => {
 							style={tw`mr-2`}
 						/>
 						<Text style={tw`text-gray-400 flex-1`}>Looking for tour?</Text>
-						<TouchableOpacity onPress={openFilterBottomSheet}>
+						{/* <TouchableOpacity onPress={openFilterBottomSheet}>
 							<Ionicons name="options-outline" size={20} color="#000" />
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</TouchableOpacity>
 
 					{/* Date picker */}
