@@ -1,9 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../utils/constant";
+import Toast from "react-native-toast-message";
 
 const client = axios.create({
 	baseURL: baseUrl,
+	timeout: 10000,
 });
 
 // Function to handle navigation
@@ -126,57 +128,31 @@ client.interceptors.response.use(
 				if (status === 401 || status === 403) {
 					// Toast.error(`Client Error: ${status} - ${data?.message || "Error, try Again"}`, 'bottom');
 					// Redirect to login
-					// You can implement your navigation logic here
-					// Example: navigation.navigate('Login');
 				} else if (status && status >= 400 && status < 500) {
-					// Toast.error(`Client Error: ${status} - ${data?.message || "Error, try Again"}`, 'bottom');
+					Toast.show({
+						type: "error",
+						text1: `Client Error: ${status} - ${
+							data?.message || "Error, try Again"
+						}`,
+					});
 				} else if (status && status >= 500) {
-					// Toast.error(`Server Error: ${status} - ${data?.message || "Error, try Again"}`, 'bottom');
+					Toast.show({
+						type: "error",
+						text1: `Server Error: ${status} - ${
+							data?.message || "Error, try Again"
+						}`,
+					});
 				}
 			}
 		} else {
-			// Toast.error("An Error Occurred: Please try again later", 'bottom');
+			Toast.show({
+				type: "error",
+				text1: "An Error Occurred: Please try again later",
+			});
 		}
 
 		return Promise.reject(error);
 	}
 );
 
-// Simple HTTP methods for direct use
-const api = {
-	get: <T = any>(
-		url: string,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse<T>> => {
-		return client.get(url, config);
-	},
-	post: <T = any>(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse<T>> => {
-		return client.post(url, data, config);
-	},
-	put: <T = any>(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse<T>> => {
-		return client.put(url, data, config);
-	},
-	delete: <T = any>(
-		url: string,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse<T>> => {
-		return client.delete(url, config);
-	},
-	patch: <T = any>(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig
-	): Promise<AxiosResponse<T>> => {
-		return client.patch(url, data, config);
-	},
-};
-
-export default api;
+export default client;

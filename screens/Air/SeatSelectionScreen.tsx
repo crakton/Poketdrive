@@ -20,58 +20,8 @@ const SeatSelectionScreen = () => {
 		bookingData.selectedFlight.availableSchedules[bookingData.scheduledIndex];
 	const seats = availableSchedule.availableSeats;
 
-	const [seatRows, setSeatRows] = useState<any[][]>([]);
-
-	useEffect(() => {
-		const newSeatRows: any[][] = [];
-		let currentRow: any[] = [];
-
-		seats.forEach((seat, index) => {
-			const seatStatus =
-				!bookingData.isTour && seat.status !== "emergency"
-					? "reserved"
-					: seat.status;
-
-			const seatLabel =
-				seat.label ||
-				`${Math.floor(index / 4) + 1}${String.fromCharCode(65 + (index % 4))}`;
-
-			const seatWithId = {
-				...seat,
-				id: seat.id || seatLabel, // ✅ Ensure unique ID
-				label: seatLabel,
-				isSelected: false,
-				status: seatStatus,
-			};
-
-			currentRow.push(seatWithId);
-
-			if ((index + 1) % 4 === 0) {
-				newSeatRows.push(currentRow);
-				currentRow = [];
-			}
-		});
-
-		if (currentRow.length > 0) {
-			newSeatRows.push(currentRow);
-		}
-
-		setSeatRows(newSeatRows);
-	}, [seats, bookingData.isTour]);
-
-	const handleSeatSelect = (seat: any, rowIndex: number, seatIndex: number) => {
-		if (seat.status === "reserved" || seat.status === "emergency") {
-			return;
-		}
-
-		const updatedRows = seatRows.map((row) =>
-			row.map((s) => ({ ...s, isSelected: false }))
-		);
-
-		updatedRows[rowIndex][seatIndex].isSelected = true;
-
-		setSeatRows(updatedRows);
-		setSelectedSeatId(seat.id);
+	const handleSeatSelect = (seat: string) => {
+		setSelectedSeatId(seat);
 	};
 
 	const handleSelectPress = () => {
@@ -84,16 +34,9 @@ const SeatSelectionScreen = () => {
 	};
 
 	const getBackgroundColor = (seat: any) => {
-		if (seat.isSelected) return "#FF713B";
-
-		switch (seat.status) {
-			case "emergency":
-				return "#E5E5E5";
-			case "reserved":
-				return "#333333";
-			default:
-				return "#F1F4F9";
-		}
+		if (!bookingData.isTour) return "#4B5563";
+		if (seat === selectedSeatId) return "#FF713B";
+		return "#E5E5E5";
 	};
 
 	const getTextColor = (seat: any) =>
@@ -130,35 +73,62 @@ const SeatSelectionScreen = () => {
 
 				{/* Seat layout */}
 				<View style={tw`flex-1`}>
-					{seatRows.map((row, rowIndex) => (
-						<View
-							key={`row-${rowIndex}`}
-							style={tw`flex-row justify-center mb-4`}
-						>
-							{row.map((seat, seatIndex) => (
-								<TouchableOpacity
-									key={`seat-${seat.id}`}
+					{/* first row */}
+					<View style={tw`flex-row justify-center mb-4`}>
+						{seats.slice(0, 4).map((seat, index) => (
+							<TouchableOpacity
+								key={index}
+								style={tw`w-12 h-12 rounded-lg items-center justify-center mx-2`}
+								onPress={() => handleSeatSelect(seat)}
+							>
+								<View
 									style={[
-										tw`w-14 h-14 mx-2 rounded-md items-center justify-center`,
-										{ backgroundColor: getBackgroundColor(seat) },
+										tw`w-full h-full rounded-lg items-center justify-center`,
+										{
+											backgroundColor: getBackgroundColor(seat),
+										},
 									]}
-									onPress={() => handleSeatSelect(seat, rowIndex, seatIndex)}
-									disabled={
-										seat.status === "reserved" || seat.status === "emergency"
-									}
 								>
 									<Text
-										style={[
-											tw`font-medium text-center`,
-											{ color: getTextColor(seat) },
-										]}
+										style={{
+											color: getTextColor(seat),
+											fontWeight: "bold",
+										}}
 									>
-										{seat.label}
+										{seat}
 									</Text>
-								</TouchableOpacity>
-							))}
-						</View>
-					))}
+								</View>
+							</TouchableOpacity>
+						))}
+					</View>
+					{/* second row */}
+					<View style={tw`flex-row justify-center mb-4`}>
+						{seats.slice(4, seats.length).map((seat, index) => (
+							<TouchableOpacity
+								key={index}
+								style={tw`w-12 h-12 rounded-lg items-center justify-center mx-2`}
+								onPress={() => handleSeatSelect(seat)}
+							>
+								<View
+									style={[
+										tw`w-full h-full rounded-lg items-center justify-center`,
+										{
+											backgroundColor: getBackgroundColor(seat),
+										},
+									]}
+								>
+									<Text
+										style={{
+											color: getTextColor(seat),
+											fontWeight: "bold",
+										}}
+									>
+										{seat}
+									</Text>
+								</View>
+							</TouchableOpacity>
+						))}
+					</View>
 				</View>
 
 				{/* Select button */}

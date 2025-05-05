@@ -1,17 +1,25 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
 	NavigationProp,
 	useNavigation,
 	useRoute,
 } from "@react-navigation/native";
-import tw from "twrnc";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
-import { Avatar } from "@rneui/base";
-import Toast from "react-native-toast-message";
-import { IAirline, IFlight } from "../../types/airline";
+import { IFlight } from "../../types/airline";
 import { RootStackParamList } from "../../types/index";
+import Toast from "react-native-toast-message";
+
+// Import our reusable components
+import HeaderImage from "@components/ui/air/HeaderImage";
+import BookButton from "@components/ui/air/BookButton";
+import InfoCard from "@components/ui/air/InfoCard";
+import PassengerSelector from "@components/ui/air/PassengerSelector";
+import PilotInfo from "@components/ui/air/PilotInfo";
+import PriceDisplay from "@components/ui/air/PriceDisplay";
+import ReviewSection from "@components/ui/air/ReviewSection";
+import RouteDisplay, { IRoute } from "@components/ui/air/RouteDisplay";
+import TimeSelector from "@components/ui/air/TimeSelector";
 
 const TourDetailsScreen = () => {
 	const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -24,12 +32,31 @@ const TourDetailsScreen = () => {
 	const [scheduledIndex, setScheduledIndex] = useState<number>();
 
 	// Flight route data
-	const flightRoute = [
-		{ name: "Airfield: Bychye Polye", icon: "airplane" },
-		{ name: "Kronstadt", icon: "location" },
-		{ name: "Gulf of Finland", icon: "location" },
-		{ name: "Forts", icon: "location" },
-		{ name: "Dam", icon: "location" },
+	const flightRoute: IRoute[] = [
+		{ name: "Airfield: Bychye Polye", icon: "airplane-outline" },
+		{ name: "Kronstadt", icon: "location-outline" },
+		{ name: "Gulf of Finland", icon: "location-outline" },
+		{ name: "Forts", icon: "location-outline" },
+		{ name: "Dam", icon: "location-outline" },
+	];
+
+	// Pilot information
+	const pilotInfo = {
+		name: "Oleg Samsonov",
+		rating: 5,
+		airplane: "Cessna 172",
+		hoursFlown: 1250,
+		license: "Commercial Pilot's License - CPL",
+	};
+
+	// Mock review for demo
+	const reviews = [
+		{
+			name: "Ivan",
+			date: "May 21, 2022",
+			rating: 5,
+			text: "The flights are excellent! The airfield is located in a picturesque place and there is a lot to admire from above.",
+		},
 	];
 
 	// Time options for departure
@@ -52,6 +79,11 @@ const TourDetailsScreen = () => {
 		if (passengers < 8) {
 			setPassengers(passengers + 1);
 		}
+	};
+
+	const handleSelectTime = (idx: number, time: string) => {
+		setScheduledIndex(idx);
+		setSelectedTime(time);
 	};
 
 	// Booking data preparation
@@ -81,224 +113,67 @@ const TourDetailsScreen = () => {
 	};
 
 	return (
-		<SafeAreaView style={tw`flex-1 bg-white`}>
+		<SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
 			<ScrollView showsVerticalScrollIndicator={false}>
 				{/* Header image */}
-				<View style={tw`relative`}>
-					<Image
-						source={{ uri: preview.airline.image }}
-						style={tw`w-full h-56`}
-						resizeMode="cover"
-					/>
-					<TouchableOpacity
-						style={tw`absolute top-4 left-4 bg-white rounded-full p-2`}
-						onPress={() => navigation.goBack()}
-					>
-						<AntDesign name="arrowleft" size={24} color="#000" />
-					</TouchableOpacity>
-
-					{/* Rating badge */}
-					<View
-						style={tw`absolute top-4 right-4 bg-white rounded-full py-1 px-3 flex-row items-center`}
-					>
-						<AntDesign name="star" size={16} color="#FFD700" />
-						<Text style={tw`ml-1`}>4.9</Text>
-					</View>
-				</View>
+				<HeaderImage
+					imageUrl={preview.airline.image}
+					onBack={() => navigation.goBack()}
+					rating={4.9}
+				/>
 
 				{/* Tour title */}
-				<View style={tw`px-4 py-3 bg-white`}>
-					<Text style={tw`text-xl font-bold`}>
+				<View style={{ padding: 16, backgroundColor: "white" }}>
+					<Text style={{ fontSize: 20, fontWeight: "bold" }}>
 						Tour to {preview.airline.country}
 					</Text>
-					<Text style={tw`text-base mt-1`}>{preview.airline.name}</Text>
+					<Text style={{ fontSize: 16, marginTop: 4 }}>
+						{preview.airline.name}
+					</Text>
 				</View>
 
 				{/* Departure time selection */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100`}>
-					<Text style={tw`text-base font-medium mb-3`}>Departure time</Text>
-					<ScrollView
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={tw`gap-2`}
-					>
-						{timeOptions.map((time, idx) => (
-							<TouchableOpacity
-								key={time.toString()}
-								style={tw`px-6 py-2 rounded-md ${
-									selectedTime === time ? "bg-[#FF6633]" : "bg-gray-100"
-								}`}
-								onPress={() => {
-									setScheduledIndex(idx);
-									setSelectedTime(time.toString());
-								}}
-							>
-								<Text
-									style={tw`${
-										selectedTime === time ? "text-white" : "text-black"
-									} text-center`}
-								>
-									{time.toString()}
-								</Text>
-							</TouchableOpacity>
-						))}
-					</ScrollView>
-				</View>
+				<TimeSelector
+					timeOptions={timeOptions as string[]}
+					selectedTime={selectedTime}
+					onSelectTime={handleSelectTime}
+				/>
 
 				{/* Passengers count */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100`}>
-					<View style={tw`flex-row items-center justify-between`}>
-						<View style={tw`flex-row items-center`}>
-							<Ionicons
-								name="people-outline"
-								size={20}
-								color="#999"
-								style={tw`mr-2`}
-							/>
-							<Text style={tw`text-base`}>Passengers</Text>
-						</View>
-
-						<View style={tw`flex-row items-center`}>
-							<TouchableOpacity
-								style={tw`h-8 w-8 bg-gray-100 rounded-full items-center justify-center`}
-								onPress={handleDecreasePassenger}
-							>
-								<Text style={tw`text-lg font-medium`}>−</Text>
-							</TouchableOpacity>
-
-							<Text style={tw`mx-4 text-base`}>{passengers}</Text>
-
-							<TouchableOpacity
-								style={tw`h-8 w-8 bg-gray-100 rounded-full items-center justify-center`}
-								onPress={handleIncreasePassenger}
-							>
-								<Text style={tw`text-lg font-medium`}>+</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
+				<PassengerSelector
+					passengers={passengers}
+					onDecrease={handleDecreasePassenger}
+					onIncrease={handleIncreasePassenger}
+				/>
 
 				{/* Share flight information */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100`}>
-					<View style={tw`bg-gray-50 p-4 rounded-lg`}>
-						<Text style={tw`text-base font-medium mb-2`}>Shared Flight</Text>
-						<Text style={tw`text-gray-700`}>
-							You're joining a shared tour. The fare will be split among all
-							passengers.
-						</Text>
-					</View>
-				</View>
+				<InfoCard title="Shared Flight">
+					<Text style={{ color: "#4B5563" }}>
+						You're joining a shared tour. The fare will be split among all
+						passengers.
+					</Text>
+				</InfoCard>
 
 				{/* Price */}
-				<View style={tw`py-4 px-5`}>
-					<Text style={tw`text-base font-medium mb-2`}>Ticket price</Text>
-					<Text style={tw`text-xl font-bold text-center mt-4 bg-gray-100 p-3`}>
-						₽{(preview?.fixedPrice || 10000).toLocaleString()}
-					</Text>
-				</View>
+				<PriceDisplay price={preview?.fixedPrice || 10000} />
 
 				{/* Flight route */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100`}>
-					<Text style={tw`text-base font-medium mb-3`}>Flight route</Text>
-					<View style={tw`bg-gray-50 p-4 rounded-lg`}>
-						{flightRoute.map((stop, index) => (
-							<View
-								key={stop.name}
-								style={tw`flex-row items-center mb-4 last:mb-0`}
-							>
-								<View
-									style={tw`mr-2 rounded-full ${
-										index === 0 ? "bg-orange-100" : "bg-gray-200"
-									} p-2`}
-								>
-									<Ionicons
-										name={index === 0 ? "airplane" : "location-outline"}
-										size={16}
-										color={index === 0 ? "#FF5722" : "#666"}
-									/>
-								</View>
-								<Text>{stop.name}</Text>
-							</View>
-						))}
-					</View>
-				</View>
+				<RouteDisplay routes={flightRoute} />
 
 				{/* Pilot information */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100`}>
-					<Text style={tw`text-base font-medium mb-3`}>Pilot information</Text>
-					<View style={tw`flex-row items-center mb-3`}>
-						<Avatar size={40} title="OS" />
-						<View style={tw`ml-3`}>
-							<Text style={tw`font-medium`}>Oleg Samsonov</Text>
-							<View style={tw`flex-row items-center`}>
-								{[1, 2, 3, 4, 5].map((star) => (
-									<Ionicons key={star} name="star" size={14} color="#FFD700" />
-								))}
-								<Text style={tw`ml-1`}>5</Text>
-							</View>
-						</View>
-					</View>
-
-					<View style={tw`flex-row mb-2`}>
-						<View style={tw`bg-gray-50 p-2 rounded-lg mr-2 flex-1`}>
-							<Text style={tw`text-gray-500 text-xs`}>Airplane</Text>
-							<Text>Cessna 172</Text>
-						</View>
-						<View style={tw`bg-gray-50 p-2 rounded-lg flex-1`}>
-							<Text style={tw`text-gray-500 text-xs`}>Hours flown</Text>
-							<Text>1,250 hours</Text>
-						</View>
-					</View>
-
-					<View style={tw`bg-gray-50 p-2 rounded-lg`}>
-						<Text style={tw`text-gray-500 text-xs`}>License</Text>
-						<Text>Commercial Pilot's License - CPL</Text>
-					</View>
-				</View>
+				<PilotInfo pilot={pilotInfo} />
 
 				{/* Customer reviews */}
-				<View style={tw`px-4 py-3 bg-white border-t border-gray-100 mb-24`}>
-					<View style={tw`flex-row items-center justify-between mb-3`}>
-						<Text style={tw`text-base font-medium`}>Customer reviews</Text>
-						<TouchableOpacity>
-							<Text style={tw`text-[#FF6633]`}>See all</Text>
-						</TouchableOpacity>
-					</View>
-
-					<View style={tw`mb-4`}>
-						<View style={tw`flex-row items-center mb-1`}>
-							<Avatar size={30} title="IV" />
-							<View style={tw`ml-2`}>
-								<Text style={tw`font-medium`}>Ivan</Text>
-								<Text style={tw`text-xs text-gray-500`}>May 21, 2022</Text>
-							</View>
-						</View>
-
-						<View style={tw`flex-row mb-2`}>
-							{[1, 2, 3, 4, 5].map((star) => (
-								<Ionicons key={star} name="star" size={14} color="#FFD700" />
-							))}
-						</View>
-
-						<Text style={tw`text-gray-700`}>
-							The flights are excellent! The airfield is located in a
-							picturesque place and there is a lot to admire from above.
-						</Text>
-					</View>
-				</View>
+				<ReviewSection
+					reviews={reviews}
+					onSeeAll={() => {
+						// Handle see all reviews
+					}}
+				/>
 			</ScrollView>
 
 			{/* Fixed Book button at bottom */}
-			<View
-				style={tw`absolute bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-gray-200`}
-			>
-				<TouchableOpacity
-					style={tw`bg-[#FF6633] py-3 rounded-lg items-center`}
-					onPress={handleBooking}
-				>
-					<Text style={tw`text-white font-bold text-base`}>Book</Text>
-				</TouchableOpacity>
-			</View>
+			<BookButton onPress={handleBooking} />
 		</SafeAreaView>
 	);
 };

@@ -14,7 +14,7 @@ const Onboarding = () => {
 			]}
 		>
 			<Text style={[tw`text-2xl`, { fontFamily: "Poppins-Black" }]}>
-				Welcome to uRide
+				Welcome to Poketdrive
 			</Text>
 			<Text style={[tw`text-lg`, { fontFamily: "Poppins-Regular" }]}>
 				Select your cruise type

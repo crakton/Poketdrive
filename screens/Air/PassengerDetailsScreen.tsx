@@ -367,12 +367,12 @@ const PassengerDetailsScreen = () => {
 
 			navigation.navigate("Payments", data);
 		} catch (error) {
-			const e = error as Error;
+			const e = error as AxiosError<any, AxiosResponse>;
 			console.error("Full flight booking error:", e);
 
 			Toast.show({
 				type: "error",
-				text1: `Full flight booking failed: ${e.message}`,
+				text1: `Full flight booking failed: ${e.response?.data.message}`,
 			});
 
 			throw error; // Re-throw to be caught by the main try-catch
@@ -393,7 +393,8 @@ const PassengerDetailsScreen = () => {
 					name: currentPassenger.name,
 					passportNumber: currentPassenger.passportNumber,
 				},
-				enableJetshare: true,
+				maxJetSharePassengers: bookingData.passengers,
+				enableJetShare: true,
 				scheduleIndex: scheduledIndex,
 				selectedSeat: bookingData.selectedSeat,
 				jetSharePricePerSeat:
@@ -401,8 +402,7 @@ const PassengerDetailsScreen = () => {
 						.additionalCharge,
 			};
 
-			console.log("Shared flight booking payload:", payload);
-
+			// Pass just the flight ID separately, not embedded in the payload
 			const data = await airServices.bookAndShareFlight({
 				id: flight._id,
 				payload: payload as TBookFlightWithSharedSeatsDTO,
@@ -418,17 +418,15 @@ const PassengerDetailsScreen = () => {
 			navigation.navigate("Payments", data);
 		} catch (error) {
 			const e = error as AxiosError<any, AxiosResponse>;
-			console.error("Shared flight booking error:", e.response?.data);
 
 			Toast.show({
 				type: "error",
-				text1: `Shared flight booking failed: ${e.message}`,
+				text1: `Shared flight booking failed: ${e.response?.data.message}`,
 			});
 
-			throw error; // Re-throw to be caught by the main try-catch
+			throw error;
 		}
 	};
-
 	return (
 		<SafeAreaView style={tw`flex-1 bg-white`}>
 			<KeyboardAvoidingView

@@ -9,7 +9,7 @@ export type TBookFlightWithSharedSeatsDTO = {
 	scheduleIndex: number;
 	selectedSeat: string;
 	passengerInfo: TPassengerDTO;
-	enableJetshare: boolean;
+	enableJetShare: boolean;
 	jetSharePricePerSeat: number;
 };
 

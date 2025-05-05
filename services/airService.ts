@@ -95,6 +95,7 @@ export default class AirService {
 		any,
 		{ payload: TBookFlightWithSharedSeatsDTO; id: string }
 	> = async ({ payload, id }) => {
+		console.log("payload", payload);
 		const response = await api.post(`/air/booking/${id}/book-jet`, payload);
 		return response.data;
 	};
