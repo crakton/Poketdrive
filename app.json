@@ -48,14 +48,18 @@
         "googleMaps": {
           "apiKey": "GOOGLE_MAPS_APIKEY"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/SplashNew.png"
     },
     "extra": {
       "eas": {
-        "projectId": "0c7cd1c9-d32d-4672-b431-89cb793f3ec7"
+        "projectId": "2098109f-b648-4494-a495-f9da33d261c1"
       }
     },
     "plugins": [
