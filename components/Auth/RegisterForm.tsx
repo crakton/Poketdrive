@@ -54,12 +54,12 @@ const RegisterForm = () => {
 			clientId:
 				"463687535027-cdhalaasercs9i92aslf424ekdujge8b.apps.googleusercontent.com", // android client id
 
-			redirectUri: "com.crakton.pocketdrive:/oauthredirect",
+			redirectUri: "com.crakton.poketdrive:/oauthredirect",
 			responseType: ResponseType.IdToken,
 			scopes: ["profile", "email"],
 		},
 		{
-			scheme: "pocketdrive",
+			scheme: "poketdrive",
 		}
 	);
 

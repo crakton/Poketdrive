@@ -1,4 +1,4 @@
-package com.crakton.pocketdrive
+package com.crakton.poketdrive
 
 import android.os.Build
 import android.os.Bundle

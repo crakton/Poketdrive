@@ -1,5 +1,5 @@
 {
-  "name": "pocketdrive",
+  "name": "poketdrive",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -9,8 +9,8 @@
     "android:clean": "cd android && ./gradlew clean && cd ..",
     "android:debug": "expo run:android --variant=debug",
     "android:release": "expo run:android --variant=release",
-    "build:apk": "npm run android:clean && expo prebuild --clean && cd android && ./gradlew assembleRelease",
-    "build:debug-apk": "npm run android:clean && expo prebuild --clean && cd android && ./gradlew assembleDebug"
+     "build:apk": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "build:debug-apk": "expo prebuild --clean && cd android && ./gradlew clean && ./gradlew assembleDebug"
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.2.3",

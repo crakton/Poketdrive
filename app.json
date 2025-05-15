@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "PocketDrive",
-    "slug": "pocketdrive",
-    "scheme": "pocketdrive",
+    "name": "PoketDrive",
+    "slug": "poketdrive",
+    "scheme": "poketdrive",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/SplashNew.png",
+    "icon": "./assets/poketdrive.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/SplashNew.png",
+      "image": "./assets/splashscreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#FF6633"
     },
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.crakton.pocketdrive",
+      "bundleIdentifier": "com.crakton.poketdrive",
       "userInterfaceStyle": "automatic",
       "config": {
         "googleMapsApiKey": "GOOGLE_MAPS_APIKEY"
@@ -25,17 +25,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/SplashNew.png",
+        "foregroundImage": "./assets/poketdrive.png",
         "backgroundColor": "#FF6633"
       },
-      "package": "com.crakton.pocketdrive",
+      "package": "com.crakton.poketdrive",
       "intentFilters": [
         {
           "action": "VIEW",
           "autoVerify": true,
           "data": [
             {
-              "scheme": "pocketdrive"
+              "scheme": "poketdrive"
             }
           ],
           "category": [
@@ -55,7 +55,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/SplashNew.png"
+      "favicon": "./assets/poketdrive.png"
     },
     "extra": {
       "eas": {

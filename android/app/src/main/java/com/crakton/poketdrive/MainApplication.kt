@@ -1,4 +1,4 @@
-package com.crakton.pocketdrive
+package com.crakton.poketdrive
 
 import android.app.Application
 import android.content.res.Configuration
