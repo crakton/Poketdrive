@@ -21,7 +21,7 @@ const TripItineraryCard: React.FC<CardProps> = ({
 	onDelete,
 	onCall,
 	onChat,
-	isVerified, // Add this prop
+	isVerified, 
 }) => {
 	return (
 		<View style={styles.card}>
@@ -38,7 +38,7 @@ const TripItineraryCard: React.FC<CardProps> = ({
 				<View style={tailwind`flex flex-row gap-4`}>
 					<Avatar
 						size={50}
-						source={name ? { uri: name } : require("@assets/images/logo.png")}
+						source={name ? { uri: name } : require("../../assets/profilepi.png")}
 						title={name}
 						rounded
 					/>

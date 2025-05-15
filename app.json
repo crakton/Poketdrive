@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "ur-ride",
-    "slug": "ur-ride",
-    "scheme": "ur-ride",
+    "name": "PocketDrive",
+    "slug": "pocketdrive",
+    "scheme": "pocketdrive",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/SplashNew.png",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.omenvc.urride",
+      "bundleIdentifier": "com.crakton.pocketdrive",
       "userInterfaceStyle": "automatic",
       "config": {
         "googleMapsApiKey": "GOOGLE_MAPS_APIKEY"
@@ -28,14 +28,14 @@
         "foregroundImage": "./assets/SplashNew.png",
         "backgroundColor": "#FF6633"
       },
-      "package": "com.omenvc.urride",
+      "package": "com.crakton.pocketdrive",
       "intentFilters": [
         {
           "action": "VIEW",
           "autoVerify": true,
           "data": [
             {
-              "scheme": "ur-ride"
+              "scheme": "pocketdrive"
             }
           ],
           "category": [
