@@ -15,80 +15,80 @@ const recent = `<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmln
 </svg>`;
 
 export const land_onboarding = [
-  {
-    id: 1,
-    title: "Hi there,\nIntroducing uRide",
-    subTitle: "Our app is designed to make your ride safe and comfortable.",
-    img_name: require("../assets/images/land/urride_onboarding1.png"),
-  },
-  {
-    id: 2,
-    title: "Book at convenient",
-    subTitle: "Schedule your rides on preferred \ntime and preferred stop",
-    img_name: require("../assets/images/land/urride_onboarding2.png"),
-  },
-  {
-    id: 3,
-    title: "Earn at ease",
-    subTitle: "Share ride, enjoy comfort and \nsave more time",
-    img_name: require("../assets/images/land/urride_onboarding3.png"),
-  },
+	{
+		id: 1,
+		title: "Hi there,\nIntroducing uRide",
+		subTitle: "Our app is designed to make your ride safe and comfortable.",
+		img_name: require("../assets/images/land/urride_onboarding1.png"),
+	},
+	{
+		id: 2,
+		title: "Book at convenient",
+		subTitle: "Schedule your rides on preferred \ntime and preferred stop",
+		img_name: require("../assets/images/land/urride_onboarding2.png"),
+	},
+	{
+		id: 3,
+		title: "Earn at ease",
+		subTitle: "Share ride, enjoy comfort and \nsave more time",
+		img_name: require("../assets/images/land/urride_onboarding3.png"),
+	},
 ];
 // Sample transactions
 export const transactions = [
-  {
-    id: "1",
-    trackingNumber: "MM09132005",
-    status: "Processed at sort facility",
-    time: "2 Hrs",
-    icon: recent,
-  },
-  {
-    id: "2",
-    trackingNumber: "MM09132006",
-    status: "Out for delivery",
-    time: "4 Hrs",
-    icon: recent,
-  },
-  {
-    id: "3",
-    trackingNumber: "MM09132007",
-    status: "Delivered",
-    time: "1 Day",
-    icon: recent,
-  },
+	{
+		id: "1",
+		trackingNumber: "MM09132005",
+		status: "Processed at sort facility",
+		time: "2 Hrs",
+		icon: recent,
+	},
+	{
+		id: "2",
+		trackingNumber: "MM09132006",
+		status: "Out for delivery",
+		time: "4 Hrs",
+		icon: recent,
+	},
+	{
+		id: "3",
+		trackingNumber: "MM09132007",
+		status: "Delivered",
+		time: "1 Day",
+		icon: recent,
+	},
 ];
 interface InputField {
-  name:
-    | "senderName"
-    | "senderPhone"
-    | "senderEmail"
-    | "pickupAddress"
-    | "pickupTime";
-  placeholder: string;
-  keyboardType?: "default" | "email-address" | "phone-pad";
-  maxLength?: number;
+	name:
+		| "senderName"
+		| "senderPhone"
+		| "senderEmail"
+		| "pickupAddress"
+		| "pickupTime";
+	placeholder: string;
+	keyboardType?: "default" | "email-address" | "phone-pad";
+	maxLength?: number;
 }
 export const inputFields: InputField[] = [
-  {
-    name: "senderName",
-    placeholder: "Enter sender name",
-    keyboardType: "default",
-  },
-  {
-    name: "senderPhone",
-    placeholder: "Enter sender phone",
-    keyboardType: "phone-pad",
-    maxLength: 11,
-  },
-  {
-    name: "senderEmail",
-    placeholder: "Enter sender email",
-    keyboardType: "email-address",
-  },
-  {
-    name: "pickupAddress",
-    placeholder: "Pickup Address",
-    keyboardType: "default",
-  },
+	{
+		name: "senderName",
+		placeholder: "Enter sender name",
+		keyboardType: "default",
+	},
+	{
+		name: "senderPhone",
+		placeholder: "Enter sender phone",
+		keyboardType: "phone-pad",
+		maxLength: 11,
+	},
+	{
+		name: "senderEmail",
+		placeholder: "Enter sender email",
+		keyboardType: "email-address",
+	},
+	{
+		name: "pickupAddress",
+		placeholder: "Pickup Address",
+		keyboardType: "default",
+	},
 ];

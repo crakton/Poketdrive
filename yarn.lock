@@ -5012,7 +5012,7 @@ react-native-gesture-handler@~2.24.0:
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
 
-react-native-google-places-autocomplete@^2.5.6:
+react-native-google-places-autocomplete@^2.5.7:
   version "2.5.7"
   resolved "https://registry.yarnpkg.com/react-native-google-places-autocomplete/-/react-native-google-places-autocomplete-2.5.7.tgz#92a7ded4466a46fff70fa428f9f8dd60c19f9edb"
   integrity sha512-yWEJ31gsRptStEZDele9no0J6Z+MxtNpQKKwjvGmFrWmpYDEAzpRtxy1Xq0u+ckMepJfrg/EU+OL5LgtMbnCDA==

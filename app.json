@@ -5,7 +5,7 @@
     "scheme": "poketdrive",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/poketdrive.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splashscreen.png",
@@ -25,7 +25,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/poketdrive.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FF6633"
       },
       "package": "com.crakton.poketdrive",
