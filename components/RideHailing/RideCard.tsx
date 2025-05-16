@@ -30,12 +30,17 @@ const RideCard: React.FC<RideCardProps> = ({ ride }) => {
   const handleNext = () => {
     navigation.navigate("EndTrip");
   };
+  const limitWords = (text: string, wordLimit: number) => {
+    const words = text.split(" ");
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(" ") + "...";
+  };
   return (
     <TouchableOpacity onPress={handleNext} style={styles.card}>
       <View>
         <View style={tailwind`flex flex-row items-center justify-between`}>
           <Text
-            style={[tailwind`text-[14px] py-5`, { fontFamily: "Poppins-Bold" }]}
+            style={[tailwind`text-[13px] py-5`, { fontFamily: "Poppins-Bold" }]}
           >
             {ride?.departureTime}
           </Text>
@@ -76,7 +81,7 @@ const RideCard: React.FC<RideCardProps> = ({ ride }) => {
             <Text
               style={[tailwind`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
             >
-              {ride.origin}
+              {limitWords(ride.origin, 2)}
             </Text>
             <View style={{ flex: 1 }}>
               <Text
@@ -85,7 +90,7 @@ const RideCard: React.FC<RideCardProps> = ({ ride }) => {
                   { fontFamily: "Poppins-Light", flexWrap: "wrap" },
                 ]}
               >
-                {ride.origin}
+                {limitWords(ride.origin, 2)}
               </Text>
             </View>
           </View>
@@ -100,23 +105,23 @@ const RideCard: React.FC<RideCardProps> = ({ ride }) => {
           />
           <View
             style={[
-              tailwind`text-lg flex-row gap-2`,
+              tailwind`text-[14px] flex-row gap-2`,
               { fontFamily: "Poppins-Bold", alignItems: "center" },
             ]}
           >
             <Text
-              style={[tailwind`text-[16px]`, { fontFamily: "Poppins-Bold" }]}
+              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}
             >
-              {ride.destination}
+              {limitWords(ride.destination, 2)}
             </Text>
             <View style={{ flex: 1 }}>
               <Text
                 style={[
-                  tailwind`text-base mx-2`,
+                  tailwind`text-[14px] mx-2`,
                   { fontFamily: "Poppins-Light", flexWrap: "wrap" },
                 ]}
               >
-                {ride.destination}
+                {limitWords(ride.destination, 2)}
               </Text>
             </View>
           </View>
@@ -127,24 +132,24 @@ const RideCard: React.FC<RideCardProps> = ({ ride }) => {
         <View style={tailwind`flex flex-row gap-4`}>
           <View>
             <Text
-              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}
+              style={[tailwind`text-[12px]`, { fontFamily: "Poppins-Bold" }]}
             >
               Driver: {ride.creator.creatorName}
             </Text>
             <Text
-              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Light" }]}
+              style={[tailwind`text-[12px]`, { fontFamily: "Poppins-Light" }]}
             >
               Luggage: {ride.LuggageType}
             </Text>
             <Text
-              style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Light" }]}
+              style={[tailwind`text-[12px]`, { fontFamily: "Poppins-Light" }]}
             >
               Remaining capacity: {ride.remainingCapacity}
             </Text>
           </View>
         </View>
         <View>
-          <Text style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}>
+          <Text style={[tailwind`text-[18px]`, { fontFamily: "Poppins-Bold" }]}>
             {ride.price}
           </Text>
         </View>

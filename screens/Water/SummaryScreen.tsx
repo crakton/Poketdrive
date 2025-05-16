@@ -24,8 +24,6 @@ const SummaryScreen = () => {
 
   const waterSendData = useSelector((state: RootState) => state.sendForm);
 
-  console.log(waterSendData, "waterSendData");
-
   const formattedData: SendFormState = {
     senderInfo: {
       sender_name: waterSendData?.senderInfo?.sender_name,
@@ -57,6 +55,7 @@ const SummaryScreen = () => {
   const handleProceed = () => {
     sendOrder(formattedData);
   };
+  console.log(waterSendData?.estimatedDeliveryDays, "formattedData");
 
   const paymentMethods = [
     { id: "visa", label: "Visa/Mastercard/JCB" },
@@ -126,12 +125,12 @@ const SummaryScreen = () => {
           >
             <FontAwesome5 name="clock" size={14} color="white" />
             <Text style={tw`text-white ml-2 text-[12px] font-semibold`}>
-              Take around 20 min
+              Take around {waterSendData?.estimatedDeliveryDays} days
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={tw`mt-6 p-4 border border-gray-300 rounded-lg`}>
+        {/* <View style={tw`mt-6 p-4 border border-gray-300 rounded-lg`}>
           {paymentMethods.map((method) => (
             <TouchableOpacity
               key={method.id}
@@ -165,7 +164,7 @@ const SummaryScreen = () => {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
       </ScrollView>
 
       <View style={tw`px-5 `}>

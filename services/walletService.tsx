@@ -9,7 +9,7 @@ export interface WalletPayment {
 export const walletPayment = async (data: WalletPayment) => {
   const options: AxiosRequestConfig = {
     method: "POST",
-    url: "https://4115-18-222-10-130.ngrok-free.app/api/v1/wallet/initialize_payment",
+    url: "https://urideserver-fgfm.onrender.com/api/v1/wallet/initialize_payment",
     data,
   };
 

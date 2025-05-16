@@ -34,7 +34,6 @@ const AddPaymentMethod = () => {
   const [userData, setUserData] = useState<any>(null);
   const [payLink, setPayLink] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  // console.log(userData.id, "data");
   const navigation =
     useNavigation<
       NativeStackNavigationProp<AuthStackParamList, "WalletHome">
@@ -67,6 +66,8 @@ const AddPaymentMethod = () => {
       },
       {
         onSuccess: async (data) => {
+          console.log(data, "data");
+
           setLoading(false);
           setPayLink(data?.content); // Store the link
           // console.log(data, "data");

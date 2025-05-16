@@ -17,6 +17,7 @@ import * as yup from "yup";
 import { useSchedule } from "../../hooks/reactQuery/useSchedule";
 import Loader from "../loader/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ContinueButton from "@components/ui/ContinueButton";
 
 interface PricingProps {
   setFormData: any;
@@ -30,7 +31,7 @@ const PriceSetting: React.FC<PricingProps> = ({
   handleNext,
 }) => {
   const navigation = useNavigation();
-  const { mutate, isPending } = useSchedule();
+  const { mutate, isPending, status } = useSchedule();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -63,9 +64,9 @@ const PriceSetting: React.FC<PricingProps> = ({
       .typeError("Price must be a number")
       .required("Price is required"),
   });
-
+  console.log("FormData being sent:", formData);
   const Pricing = () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     console.log("FormData being sent:", formData);
     mutate(formData, {
       onSuccess: (data) => {
@@ -79,7 +80,7 @@ const PriceSetting: React.FC<PricingProps> = ({
           });
         } else {
           console.log("First attempt failed, retrying...");
-          setLoading(false); // Stop loading before retry
+          setLoading(false);
           setRetryCount((prev) => prev + 1);
           if (retryCount < 1) {
             setRetrying(true); // Trigger retry
@@ -90,7 +91,7 @@ const PriceSetting: React.FC<PricingProps> = ({
       },
       onError: (error) => {
         console.log("Error Response:", error);
-        setLoading(false); // Stop loading before retry
+        setLoading(false);
         setRetryCount((prev) => prev + 1);
         if (retryCount < 1) {
           setRetrying(true); // Trigger retry
@@ -128,49 +129,66 @@ const PriceSetting: React.FC<PricingProps> = ({
               errors,
               touched,
             }) => (
-              <View style={tw`px-5`}>
+              <View style={tw``}>
                 <View>
-                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                  <Text
+                    style={[
+                      tw`text-[16px]`,
+                      { fontFamily: "Poppins-SemiBold" },
+                    ]}
+                  >
                     Pricing
                   </Text>
                   <Text
                     style={[
-                      tw`text-[16px]  pt-2`,
+                      tw`text-[14px]  pt-2`,
                       { fontFamily: "Poppins-Light" },
                     ]}
                   >
                     Set a price that each seat would pay to cover your fuel and
                     other expenses{" "}
                   </Text>
-                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+                  <Text
+                    style={[
+                      tw`text-[14px]`,
+                      { fontFamily: "Poppins-SemiBold" },
+                    ]}
+                  >
                     Prices are in naira
                   </Text>
                 </View>
 
                 <View style={tw`flex mt-5 justify-center`}>
-                  <Text style={[tw`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                    Enter a price in naira
-                  </Text>
-                  <View
-                    style={tw`flex flex-row items-center border rounded-lg  my-5 py-2 px-2  justify-center w-[13rem]`}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter a Price"
-                      keyboardType="numeric"
-                      value={values.price}
-                      onChangeText={handleChange("price")}
-                      onBlur={handleBlur("price")}
-                    />
-                    <TouchableOpacity>
-                      <Text style={[tw``, { fontFamily: "Poppins-Bold" }]}>
-                        Naira
-                      </Text>
-                    </TouchableOpacity>
+                  <View>
+                    <Text
+                      style={[
+                        tw`text-[14px]`,
+                        { fontFamily: "Poppins-SemiBold" },
+                      ]}
+                    >
+                      Enter a price in naira
+                    </Text>
+                    <View
+                      style={tw`flex flex-row items-center border rounded-lg  my-5  px-2  justify-center w-[13rem]`}
+                    >
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Enter a Price"
+                        keyboardType="numeric"
+                        value={values.price}
+                        onChangeText={handleChange("price")}
+                        onBlur={handleBlur("price")}
+                      />
+                      <TouchableOpacity>
+                        <Text style={[tw``, { fontFamily: "Poppins-Bold" }]}>
+                          Naira
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    {touched.price && typeof errors.price === "string" && (
+                      <Text style={tw`text-red-500 ml-2`}>{errors.price}</Text>
+                    )}
                   </View>
-                  {touched.price && typeof errors.price === "string" && (
-                    <Text style={tw`text-red-500 ml-2`}>{errors.price}</Text>
-                  )}
                 </View>
 
                 <TouchableOpacity
@@ -186,6 +204,14 @@ const PriceSetting: React.FC<PricingProps> = ({
                     Post a Trip
                   </Text>
                 </TouchableOpacity>
+                {/* <View style={tw`rounded-[1rem]  mt-[19rem]`}>
+                  <ContinueButton
+                    text={"Post a Trip"}
+                    onPress={handleSubmit}
+                    disabled={false}
+                    loading={status === "pending"}
+                  />
+                </View> */}
               </View>
             )}
           </Formik>

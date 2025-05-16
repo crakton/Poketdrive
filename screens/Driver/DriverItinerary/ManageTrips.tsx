@@ -225,7 +225,7 @@ const ManageTrips = () => {
               setSelectedTripId(null); // Clear selected trip ID on cancel
             }}
           >
-            <Text style={[tw` `, { fontFamily: "Poppins-Bold" }]}>Close</Text>
+            {/* <Text style={[tw` `, { fontFamily: "Poppins-Bold" }]}>Close</Text> */}
             <View>
               <Icon
                 name="trash-outline"
@@ -235,8 +235,8 @@ const ManageTrips = () => {
               />
               <Text
                 style={[
-                  tw` px-10 text-center py-5 text-[16px]`,
-                  { fontFamily: "Poppins-Bold" },
+                  tw` px-10 text-center py-5 text-[14px]`,
+                  { fontFamily: "Poppins-SemiBold" },
                 ]}
               >
                 Are you sure you want to delete this Trip?
@@ -252,7 +252,7 @@ const ManageTrips = () => {
                     name="checkmark-outline"
                     type="ionicon"
                     color="white"
-                    size={50}
+                    size={34}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -266,7 +266,7 @@ const ManageTrips = () => {
                     name="close-outline"
                     type="ionicon"
                     color="white"
-                    size={50}
+                    size={34}
                   />
                 </TouchableOpacity>
               </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,13 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../nav";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import { IUser } from "@types/user";
+import {
+  markConversationAsRead,
+  setActiveConversation,
+  // setCurrentUserId is not a named export
+} from "@redux/features/chatSlice";
 
 type NavigateCardProps = {
   rideDetails: any; // Define the type of data you expect to receive
@@ -41,6 +48,68 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
   `;
 
   const phoneNumber = "1234567890"; // Replace this with the desired phone number
+  const dispatch = useAppDispatch();
+  const { conversations, isConnected } = useAppSelector((state) => state.chat);
+  const [userData, setUserData] = useState<IUser | null>(null);
+
+  const [token, setToken] = useState<string>("");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const tokenValue = await AsyncStorage.getItem("token");
+        const userDataStr = await AsyncStorage.getItem("userData");
+
+        if (userDataStr) {
+          const parsedUserData = JSON.parse(userDataStr);
+          setUserData(parsedUserData);
+          // Set current user ID in Redux store
+          dispatch(setCurrentUserId(parsedUserData.id));
+        }
+
+        if (tokenValue) {
+          setToken(tokenValue);
+        }
+      } catch (e) {
+        console.log("Error fetching user data:", e);
+      }
+    };
+
+    fetchUserData();
+  }, [dispatch]);
+  const navigateToChat = useCallback(
+    (conversationId: string, recipientId: string, recipientName: string) => {
+      dispatch(setActiveConversation(conversationId));
+      dispatch(markConversationAsRead(conversationId));
+      navigation.navigate("Message", {
+        conversationId,
+        recipientId,
+        recipientName,
+      });
+    },
+    [dispatch, navigation]
+  );
+  const initiateChat = useCallback(
+    (recipientId: string, recipientName: string) => {
+      if (!userData?.id) return;
+
+      // Use existing conversation if it exists
+      const existingConversation = conversations.find((c) =>
+        c.participants.includes(recipientId)
+      );
+
+      if (existingConversation) {
+        navigateToChat(existingConversation.id, recipientId, recipientName);
+      } else {
+        // For new chats, we'll create the conversationId in the format user1_user2 (sorted)
+        const participants = [userData.id, recipientId].sort();
+        const conversationId = participants.join("_");
+
+        // Navigate to the chat screen, the actual chat creation will happen there
+        navigateToChat(conversationId, recipientId, recipientName);
+      }
+    },
+    [userData, conversations, navigateToChat]
+  );
 
   const handlePhoneCall = () => {
     const phoneUrl = `tel:${phoneNumber}`;
@@ -66,7 +135,7 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
       setSelectedSeats([...selectedSeats, seatNumber]);
     }
   };
-
+  console.log(rideDetails.creator.id, "rideDetails");
   return (
     <ScrollView style={tailwind`bg-white h-full flex-1`}>
       <View style={tailwind`px-5 py-5 bg-[#FFFF]`}>
@@ -79,19 +148,23 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
               style={styles.icon}
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
-              <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                {rideDetails.origin.name}
+              <Text
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Bold" }]}
+              >
+                {rideDetails?.origin?.name}
               </Text>
               <Text
-                style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Light" }]}
               >
                 {rideDetails.origin.name}
               </Text>
             </View>
           </View>
           <View>
-            <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-              {new Date(rideDetails.departure_time).toLocaleString()}
+            <Text
+              style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Bold" }]}
+            >
+              {new Date(rideDetails?.departure_time).toLocaleString()}
             </Text>
           </View>
         </View>
@@ -104,30 +177,34 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
               style={styles.icon}
             />
             <View style={[tailwind``, { fontFamily: "Poppins-Bold" }]}>
-              <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                {rideDetails.destination.name}
+              <Text
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Bold" }]}
+              >
+                {rideDetails?.destination?.name}
               </Text>
               <Text
-                style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Light" }]}
               >
-                {rideDetails.destination.name}
+                {rideDetails?.destination?.name}
               </Text>
             </View>
           </View>
           <View>
-            <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+            <Text
+              style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Bold" }]}
+            >
               Est. 10:30
             </Text>
           </View>
         </View>
         <View style={tailwind`flex flex-row justify-center pt-1 items-center`}>
           <Text style={[tailwind`text-sm`, { fontFamily: "Poppins-Bold" }]}>
-            {rideDetails.remaining_capacity} Seats left
+            {rideDetails?.remaining_capacity} Seats left
           </Text>
           <View style={styles.verticalLine} />
 
           <Text style={[tailwind`text-sm`, { fontFamily: "Poppins-Bold" }]}>
-            {formatPrice(rideDetails.price)} per seat
+            {formatPrice(rideDetails?.price)} per seat
           </Text>
         </View>
         {/* <View
@@ -190,8 +267,8 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
               uri: "https://randomuser.me/api/portraits/men/36.jpg",
             }}
           />
-          <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-            {rideDetails.creator.name.firstName}
+          <Text style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}>
+            {rideDetails?.creator?.name?.firstName}
           </Text>
         </View>
         <View>
@@ -213,37 +290,51 @@ const NavigateCard: React.FC<NavigateCardProps> = ({ rideDetails }: any) => {
             color="black"
             style={styles.icon}
           />
-          <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Regular" }]}>
-            {rideDetails.luggage_type}
+          <Text
+            style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Regular" }]}
+          >
+            {rideDetails?.luggage_type}
           </Text>
         </View>
-        <View style={tailwind`flex flex-row items-center justify-center gap-5`}>
+        <View style={tailwind`flex flex-row items-center justify-start gap-5`}>
           <TouchableOpacity
-            style={tailwind`rounded-[1rem] bg-[#F25B3E] p-3 my-2`}
+            style={tailwind`rounded-[1rem] bg-[#F25B3E] py-[12px] w-[60%] my-2`}
             onPress={() => navigation.navigate("Payment")}
           >
             <Text
               style={[
-                tailwind`text-center text-2xl text-white`,
-                { fontFamily: "Poppins-Bold" },
+                tailwind`text-center text-[16px] text-white`,
+                { fontFamily: "Poppins-SemiBold" },
               ]}
             >
               Request to Book
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={tailwind`border p-2 rounded-full bg-black`}
-            onPress={handlePhoneCall}
-          >
-            <Icon name="call-outline" type="ionicon" color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={tailwind`border p-2 rounded-full bg-black`}>
-            <Icon
-              name="chatbubble-ellipses-outline"
-              type="ionicon"
-              color="white"
-            />
-          </TouchableOpacity>
+          <View style={tailwind`flex flex-row gap-5`}>
+            {/* <TouchableOpacity
+              style={tailwind`border p-2 rounded-full bg-black`}
+              onPress={handlePhoneCall}
+            >
+              <Icon name="call-outline" type="ionicon" color="white" />
+            </TouchableOpacity> */}
+
+            <TouchableOpacity
+              style={tailwind`border p-2 rounded-full bg-black`}
+              onPress={() =>
+                navigateToChat(
+                  userData?.id ?? "",
+                  rideDetails?.creator?.name?.firstName,
+                  rideDetails?.creator?.id
+                )
+              }
+            >
+              <Icon
+                name="chatbubble-ellipses-outline"
+                type="ionicon"
+                color="white"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </ScrollView>

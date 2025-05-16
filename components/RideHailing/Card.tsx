@@ -34,7 +34,6 @@ const Card: React.FC<CardProps> = ({
   rating,
   driven,
 }: CardProps) => {
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -42,13 +41,21 @@ const Card: React.FC<CardProps> = ({
       minimumFractionDigits: 0,
     }).format(price);
   };
+  const limitWords = (text: string, wordLimit: number) => {
+    const words = text.split(" ");
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(" ") + "...";
+  };
   return (
     <SafeAreaView style={tailwind`bg-[#FFFFFF]`}>
       <View style={styles.card}>
         <View>
           <View style={tailwind`flex flex-row justify-between items-center`}>
             <Text
-              style={[tailwind`text-lg py-5`, { fontFamily: "Poppins-Bold" }]}
+              style={[
+                tailwind`text-[12px] py-5`,
+                { fontFamily: "Poppins-SemiBold" },
+              ]}
             >
               {date}
             </Text>
@@ -59,7 +66,7 @@ const Card: React.FC<CardProps> = ({
               />
               <Text
                 style={[
-                  tailwind`text-[14px] py-5 px-2`,
+                  tailwind`text-[12px] py-5 px-2`,
                   { fontFamily: "Poppins-Bold" },
                 ]}
               >
@@ -76,17 +83,19 @@ const Card: React.FC<CardProps> = ({
             />
             <View
               style={[
-                tailwind`text-lg flex-row gap-2`,
+                tailwind`text-[13px] flex-row gap-2`,
                 { fontFamily: "Poppins-Bold", alignItems: "center" },
               ]}
             >
-              <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                {fromLocation}
+              <Text
+                style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}
+              >
+                {limitWords(fromLocation, 2)}
               </Text>
               <Text
-                style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Light" }]}
               >
-                {fromDescription}
+                {limitWords(fromDescription, 2)}
               </Text>
             </View>
           </View>
@@ -104,13 +113,15 @@ const Card: React.FC<CardProps> = ({
                 { fontFamily: "Poppins-Bold", alignItems: "center" },
               ]}
             >
-              <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
-                {toLocation}
+              <Text
+                style={[tailwind`text-[14px]`, { fontFamily: "Poppins-Bold" }]}
+              >
+                {limitWords(toLocation, 2)}
               </Text>
               <Text
-                style={[tailwind`text-base`, { fontFamily: "Poppins-Light" }]}
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Light" }]}
               >
-                {toDescription}
+                {limitWords(toDescription, 2)}
               </Text>
             </View>
           </View>
@@ -129,7 +140,9 @@ const Card: React.FC<CardProps> = ({
               />
             </View>
             <View>
-              <Text style={[tailwind`text-lg`, { fontFamily: "Poppins-Bold" }]}>
+              <Text
+                style={[tailwind`text-[13px]`, { fontFamily: "Poppins-Bold" }]}
+              >
                 {driverName}
               </Text>
               <Text
@@ -146,7 +159,7 @@ const Card: React.FC<CardProps> = ({
           <View style={tailwind`flex-col justify-between `}>
             <View style={tailwind` pb-[10]]`}>
               <Text
-                style={[tailwind`text-2xl`, { fontFamily: "Poppins-Bold" }]}
+                style={[tailwind`text-[18px]`, { fontFamily: "Poppins-Bold" }]}
               >
                 {formatPrice(parseInt(price))}
               </Text>

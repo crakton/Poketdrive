@@ -47,6 +47,7 @@ const CardDetails = () => {
   }, []);
 
   const { isLoading, data, refetch } = useWalletDetails(userData?.id as string);
+  console.log(data, "walletData");
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
