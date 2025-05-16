@@ -19,7 +19,6 @@ import TravelsScreen from "@screens/Air/TravelsScreen";
 import CreateAccount from "@screens/Auth/CreateAccount";
 import Login from "@screens/Auth/Login";
 import Verification from "@screens/Auth/Verification";
-import MessageScreen from "@screens/Chat/Messages";
 import DriverDetails from "@screens/Driver/DriverDetails";
 import DriverEndTrip from "@screens/Driver/DriverEndTrip";
 import ManageTrips from "@screens/Driver/DriverItinerary/ManageTrips";
@@ -54,6 +53,8 @@ import SummaryScreen from "@screens/Water/SummaryScreen";
 import TrackingScreen from "@screens/Water/TrackingScreen";
 import { RootStack } from "./RootNavigator";
 import Settings from "@screens/Settings/Settings";
+import { IConversation } from "@redux/features/chatSlice";
+import MessageScreen from "@screens/Chat/Messages";
 
 const NavigationTree = () => {
 	const { isLoading, isAuthenticated, isFirstTime } = useAppNavigation();
@@ -78,10 +79,8 @@ const NavigationTree = () => {
 			<RootStack.Screen name="Login" component={Login} />
 			<RootStack.Screen name="Verification" component={Verification} />
 
-			{/* Main navigators */}
 			<RootStack.Screen name="LandDrawer" component={DrawerContainer} />
-			<RootStack.Screen name="AirTabBar" component={AirRootTab} />
-			<RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
+
 			{/* Main App Screens */}
 			<RootStack.Screen name="Home" component={Home} />
 			<RootStack.Screen name="TripSelection" component={TripSelection} />
@@ -89,7 +88,6 @@ const NavigationTree = () => {
 			<RootStack.Screen name="MapScreen" component={MapScreen} />
 			<RootStack.Screen name="Payment" component={Payment} />
 			<RootStack.Screen name="Confirmation" component={Confirmation} />
-			<RootStack.Screen name="Message" component={MessageScreen} />
 
 			{/* Driver Screens */}
 			<RootStack.Screen name="RideSchedule" component={RideSchedule} />
@@ -127,6 +125,7 @@ const NavigationTree = () => {
 			<RootStack.Screen name="TripConfirmation" component={TripConfirmation} />
 			<RootStack.Screen name="ManageRide" component={ManageRide} />
 			<RootStack.Screen name="DriverEndTrip" component={DriverEndTrip} />
+			<RootStack.Screen name="AirTabBar" component={AirRootTab} />
 			<RootStack.Screen name="TourDetails" component={TourDetailsScreen} />
 			<RootStack.Screen name="FlightSearch" component={FlightSearchScreen} />
 			<RootStack.Screen name="FlightDetails" component={FlightDetailsScreen} />
@@ -179,7 +178,9 @@ const NavigationTree = () => {
 			/>
 
 			{/* Water Management Screens */}
+			<RootStack.Screen name="WaterTabBar" component={WaterRootTab} />
 			<RootStack.Screen name="RecieverInfo" component={RecieverInfo} />
+			<RootStack.Screen name="Message" component={MessageScreen} />
 			<RootStack.Screen name="QuoteScreen" component={QuoteScreen} />
 			<RootStack.Screen name="SummaryScreen" component={SummaryScreen} />
 			<RootStack.Screen name="PaymentScreen" component={PaymentScreen} />
