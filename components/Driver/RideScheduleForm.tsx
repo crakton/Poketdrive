@@ -1,241 +1,322 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
-import {
-	View,
-	StyleSheet,
-	TouchableOpacity,
-	Platform,
-	Text as RNText, // Rename to avoid conflict with @rneui/base
-	LogBox,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { CheckBox, Icon, Text } from "@rneui/base";
-import { Formik } from "formik";
+import { Formik, FormikValues } from "formik";
 import * as yup from "yup";
 import tw from "twrnc";
 import { GOOGLE_MAPS_APIKEY } from "../../utils/constant";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-
-LogBox.ignoreLogs([
-	"VirtualizedLists should never be nested",
-	"Encountered two children with the same key",
-]);
-
-interface ScheduleFormValues {
-	fromwhere: string;
-	towhere: string;
-	stops: string[];
-}
-
-interface RideScheduleFormProps {
-	setFormData: (data: any) => void;
-	formData: any;
-	handleNext: () => void;
-}
+import {
+	useGoogleAutocomplete,
+	GoogleLocationResult,
+} from "@appandflow/react-native-google-autocomplete";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import AutocompleteInput from "@components/ui/AutocompleteInput";
+import * as Location from "expo-location";
+import { setLocationData } from "@redux/features/rideScheduleSlice";
 
 const validationSchema = yup.object().shape({
-	fromwhere: yup.string().required("Start Location is required"),
-	towhere: yup.string().required("Destination is required"),
+	from: yup.string().required("Start Location is required"),
+	to: yup.string().required("Destination is required"),
 });
 
-// Safe getter function to avoid undefined errors
-const safeGet = (obj: any, path: string, defaultValue: any = null) => {
-	try {
-		const keys = path.split(".");
-		let current = obj;
+interface Stop {
+	id: string;
+	address: string;
+	details?: any;
+}
 
-		for (const key of keys) {
-			if (current === undefined || current === null) {
-				return defaultValue;
-			}
-			current = current[key];
-		}
-
-		return current === undefined || current === null ? defaultValue : current;
-	} catch (e) {
-		console.error(`Error accessing path: ${path}`, e);
-		return defaultValue;
-	}
-};
-
-const RideScheduleForm: React.FC<RideScheduleFormProps> = (props) => {
-	console.log("RideScheduleForm rendering with props:", JSON.stringify(props));
-
-	// Create local copies to avoid direct access to potentially undefined properties
-	const setFormData = props.setFormData || (() => {});
-	const formData = props.formData || {};
-	const handleNext = props.handleNext || (() => {});
-
-	// Safe initialization
+const RideScheduleForm: React.FC<{ onNext: () => void }> = ({ onNext }) => {
+	const { locationData } = useAppSelector((state) => state.rideSchedule);
 	const [stopEnabled, setStopEnabled] = useState(false);
+	const [stops, setStops] = useState<Stop[]>([]);
+	const [activeInput, setActiveInput] = useState<string | null>(null);
+	const [userLocation, setUserLocation] = useState<{
+		lat: number;
+		lng: number;
+	} | null>(null);
+	const dispatch = useAppDispatch();
 
-	// Log formData for debugging
+	// Initialize stops from locationData and set stopEnabled if there are existing stops
 	useEffect(() => {
-		console.log("Current formData:", JSON.stringify(formData));
-		console.log("formData.stops:", formData.stops);
+		if (locationData.stops && locationData.stops.length > 0) {
+			const initialStops: Stop[] = locationData.stops.map((address, index) => ({
+				id: `stop-${index}`,
+				address: address,
+			}));
+			setStops(initialStops);
+			setStopEnabled(true);
+		}
+	}, []);
 
-		// Safe initialization of stopEnabled based on formData
-		const hasStops = Array.isArray(formData.stops) && formData.stops.length > 0;
-		console.log("hasStops:", hasStops);
-		setStopEnabled(hasStops);
-	}, [formData]);
-
-	// Safe initialization of initialValues
-	const initialValues = useMemo(() => {
-		console.log("Initializing form values");
-
-		const stops = Array.isArray(formData.stops) ? [...formData.stops] : [];
-		console.log("initialValues.stops:", stops);
-
-		return {
-			fromwhere: safeGet(formData, "origin", ""),
-			towhere: safeGet(formData, "destination", ""),
-			stops: stops.length > 0 ? stops : [""],
-		};
-	}, [formData]);
-
-	const handleSearch = useCallback(
-		(values: any) => {
-			console.log("handleSearch with values:", JSON.stringify(values));
-
-			try {
-				// Safe data preparation
-				const origin = values.fromwhere || "";
-				const destination = values.towhere || "";
-				const stops = Array.isArray(values.stops)
-					? values.stops.filter((stop: any) => !!stop)
-					: [];
-
-				console.log("Prepared data:", { origin, destination, stops });
-
-				// Safe update to formData
-				const updatedFormData = {
-					...formData,
-					origin,
-					destination,
-					stops,
-				};
-
-				console.log("Updating formData:", JSON.stringify(updatedFormData));
-
-				setFormData(updatedFormData);
-				handleNext();
-			} catch (error) {
-				console.error("Error in handleSearch:", error);
-				// Handle error (could show alert if needed)
+	// Get user's current location
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== "granted") {
+				console.log("Permission to access location was denied");
+				return;
 			}
+
+			let location = await Location.getCurrentPositionAsync({});
+			setUserLocation({
+				lat: location.coords.latitude,
+				lng: location.coords.longitude,
+			});
+		})();
+	}, []);
+
+	// Common autocomplete config with Nigeria restriction and location biasing
+	const getAutocompleteConfig = () => ({
+		language: "en",
+		debounce: 300, // Increased debounce for better performance
+		minLength: 3, // Increased minimum length
+		components: "country:ng", // Restrict to Nigeria
+		// For even more comprehensive results
+		types: "establishment|geocode|lodging|food|gas_station|hospital|school",
+		location: userLocation
+			? `${userLocation.lat},${userLocation.lng}`
+			: undefined,
+		radius: userLocation ? "50000" : undefined, // 50km radius around user
+		strictbounds: false, // Allow results outside the radius but prefer those inside
+		fields: "place_id,formatted_address,name,geometry,types,address_components", // Request comprehensive data
+		sessiontoken: true, // Use session tokens for better API usage
+	});
+
+	// Create separate autocomplete instances with unique keys
+	const startLocation = useGoogleAutocomplete(GOOGLE_MAPS_APIKEY, {
+		...getAutocompleteConfig(),
+	});
+
+	const destination = useGoogleAutocomplete(GOOGLE_MAPS_APIKEY, {
+		...getAutocompleteConfig(),
+	});
+
+	const stopAutocomplete = useGoogleAutocomplete(GOOGLE_MAPS_APIKEY, {
+		...getAutocompleteConfig(),
+	});
+
+	const handleSearch = React.useCallback(
+		(values: FormikValues) => {
+			const formData = {
+				from: values.from,
+				to: values.to,
+				stops: stops
+					.filter((stop) => stop.address.trim() !== "")
+					.map((stop) => stop.address),
+			};
+
+			console.log("Form Data:", formData);
+			dispatch(setLocationData(formData));
+			onNext();
 		},
-		[formData, handleNext, setFormData]
+		[stops]
 	);
 
+	const handleLocationSelect = async (
+		result: GoogleLocationResult,
+		type: "from" | "to" | "stop",
+		setFieldValue: (field: string, value: any) => void,
+		stopIndex?: number
+	) => {
+		try {
+			// Clear other autocomplete results to prevent interference
+			if (type === "from") {
+				destination.clearSearch();
+				stopAutocomplete.clearSearch();
+			} else if (type === "to") {
+				startLocation.clearSearch();
+				stopAutocomplete.clearSearch();
+			} else if (type === "stop") {
+				startLocation.clearSearch();
+				destination.clearSearch();
+			}
+
+			const details = await (type === "from"
+				? startLocation
+				: type === "to"
+				? destination
+				: stopAutocomplete
+			).searchDetails(result.place_id);
+
+			// Use the full formatted address for better location identification
+			const fullAddress =
+				result.structured_formatting.main_text || result.description;
+
+			if (type === "from") {
+				setFieldValue("from", fullAddress);
+				setFieldValue("fromDetails", details);
+				dispatch(setLocationData({ ...locationData, from: fullAddress }));
+				startLocation.setTerm(fullAddress);
+				startLocation.clearSearch();
+			} else if (type === "to") {
+				setFieldValue("to", fullAddress);
+				setFieldValue("toDetails", details);
+				dispatch(setLocationData({ ...locationData, to: fullAddress }));
+				destination.setTerm(fullAddress);
+				destination.clearSearch();
+			} else if (type === "stop" && stopIndex !== undefined) {
+				const updatedStops = [...stops];
+				updatedStops[stopIndex] = {
+					...updatedStops[stopIndex],
+					address: fullAddress,
+					details: details,
+				};
+				setStops(updatedStops);
+				dispatch(
+					setLocationData({
+						...locationData,
+						stops: updatedStops.map((stop) => stop.address),
+					})
+				);
+				stopAutocomplete.setTerm(fullAddress);
+				stopAutocomplete.clearSearch();
+			}
+			setActiveInput(null);
+		} catch (error) {
+			console.error("Error getting location details:", error);
+		}
+	};
+
+	const addStop = () => {
+		const newStop: Stop = {
+			id: Date.now().toString(),
+			address: "",
+		};
+		const updatedStops = [...stops, newStop];
+		setStops(updatedStops);
+		// Update Redux store
+		dispatch(
+			setLocationData({
+				...locationData,
+				stops: updatedStops.map((stop) => stop.address),
+			})
+		);
+	};
+
+	const removeStop = (index: number) => {
+		const updatedStops = stops.filter((_, i) => i !== index);
+		setStops(updatedStops);
+		// Update Redux store
+		dispatch(
+			setLocationData({
+				...locationData,
+				stops: updatedStops.map((stop) => stop.address),
+			})
+		);
+	};
+
 	return (
+		// <SafeAreaView style={tw`flex-1 bg-white p-4`}>
 		<Formik
-			initialValues={initialValues}
+			initialValues={{
+				from: locationData.from,
+				to: locationData.to,
+				stops: stops.map((stop) => stop.address), // Initialize with current stops
+				fromDetails: null,
+				toDetails: null,
+			}}
 			onSubmit={handleSearch}
 			validationSchema={validationSchema}
 			enableReinitialize
 		>
-			{({ values, handleSubmit, setFieldValue, errors, touched }) => {
-				console.log("Formik rendering with values:", JSON.stringify(values));
-
-				// Ensure stops is always an array
-				if (!Array.isArray(values.stops)) {
-					console.log("Resetting stops to empty array");
-					setFieldValue("stops", []);
-				}
-
-				return (
-					<View style={tw`flex gap-2`}>
-						<RNText style={tw`text-black text-sm`}>
-							Debug: StopEnabled: {stopEnabled ? "true" : "false"}
-						</RNText>
-
+			{({ values, handleSubmit, setFieldValue, errors, touched }) => (
+				<View>
+					<View style={tw`py-4`}>
 						{/* Start Location */}
-						<View>
-							<Text style={[tw`text-[14px]`, styles.label]}>
-								Start Location
-							</Text>
-							<View style={styles.inputContainer}>
+						<View style={tw`mb-4`}>
+							<Text style={tw`text-sm font-semibold mb-1`}>Start Location</Text>
+							<View style={tw`flex-row items-start`}>
 								<Icon
 									name="location"
 									type="ionicon"
 									color="red"
 									size={20}
-									style={styles.icon}
+									style={tw`mr-2 mt-3`}
 								/>
-								<View style={styles.autocompleteContainer}>
-									<GooglePlacesAutocomplete
-										placeholder="From where?"
-										fetchDetails={true}
-										onPress={(data, details = null) => {
-											console.log("Start location selected:", data.description);
-											setFieldValue("fromwhere", data.description);
-										}}
-										query={{
-											key: GOOGLE_MAPS_APIKEY,
-											language: "en",
-										}}
-										onFail={(error) => console.error(error)}
-										requestUrl={{
-											url: "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api",
-											useOnPlatform: "web",
-										}}
-										styles={{
-											textInput: styles.autocompleteInput,
-											container: styles.autocompleteInnerContainer,
-											listView: styles.listView,
-										}}
-										enablePoweredByContainer={false}
-										nearbyPlacesAPI="GooglePlacesSearch"
-									/>
-								</View>
+								<AutocompleteInput
+									placeholder="From where?"
+									value={locationData.from}
+									onChangeText={(text) => {
+										// Clear other searches to prevent interference
+										destination.clearSearch();
+										stopAutocomplete.clearSearch();
+
+										startLocation.setTerm(text);
+										setFieldValue("from", text);
+										dispatch(
+											setLocationData({
+												...locationData,
+												from: text,
+											})
+										);
+									}}
+									results={startLocation.locationResults}
+									onSelect={(result) =>
+										handleLocationSelect(result, "from", setFieldValue)
+									}
+									isActive={activeInput === "from"}
+									onFocus={() => {
+										setActiveInput("from");
+										// Clear other searches when focusing
+										destination.clearSearch();
+										stopAutocomplete.clearSearch();
+									}}
+									onBlur={() => setActiveInput(null)}
+									error={touched.from ? (errors.from as string) : undefined}
+								/>
 							</View>
-							{touched.fromwhere && errors.fromwhere && (
-								<Text style={styles.error}>{errors.fromwhere as string}</Text>
-							)}
 						</View>
 
 						{/* Destination */}
-						<View>
-							<Text style={[tw`text-[14px]`, styles.label]}>Destination</Text>
-							<View style={styles.inputContainer}>
+						<View style={tw`mb-4`}>
+							<Text style={tw`text-sm font-semibold mb-1`}>Destination</Text>
+							<View style={tw`flex-row items-start`}>
 								<Icon
 									name="location"
 									type="ionicon"
 									color="green"
 									size={20}
-									style={styles.icon}
+									style={tw`mr-2 mt-3`}
 								/>
-								<View style={styles.autocompleteContainer}>
-									<GooglePlacesAutocomplete
-										placeholder="To where?"
-										fetchDetails={true}
-										onPress={(data, details = null) => {
-											console.log("Destination selected:", data.description);
-											setFieldValue("towhere", data.description);
-										}}
-										query={{
-											key: GOOGLE_MAPS_APIKEY,
-											language: "en",
-										}}
-										styles={{
-											textInput: styles.autocompleteInput,
-											container: styles.autocompleteInnerContainer,
-											listView: styles.listView,
-										}}
-										enablePoweredByContainer={false}
-										nearbyPlacesAPI="GooglePlacesSearch"
-									/>
-								</View>
+								<AutocompleteInput
+									placeholder="To where?"
+									value={locationData.to}
+									onChangeText={(text) => {
+										// Clear other searches to prevent interference
+										startLocation.clearSearch();
+										stopAutocomplete.clearSearch();
+
+										destination.setTerm(text);
+										setFieldValue("to", text);
+										dispatch(
+											setLocationData({
+												...locationData,
+												to: text,
+											})
+										);
+									}}
+									results={destination.locationResults}
+									onSelect={(result) =>
+										handleLocationSelect(result, "to", setFieldValue)
+									}
+									isActive={activeInput === "to"}
+									onFocus={() => {
+										setActiveInput("to");
+										// Clear other searches when focusing
+										startLocation.clearSearch();
+										stopAutocomplete.clearSearch();
+									}}
+									onBlur={() => setActiveInput(null)}
+									error={touched.to ? (errors.to as string) : undefined}
+								/>
 							</View>
-							{touched.towhere && errors.towhere && (
-								<Text style={styles.error}>{errors.towhere as string}</Text>
-							)}
 						</View>
 
 						{/* Stops Checkbox */}
-						<View style={tw`flex gap-1`}>
-							<Text style={[tw`text-[14px]`, styles.label]}>Stops?</Text>
-							<View style={styles.checkboxOuterContainer}>
-								<View style={styles.checkboxContainer}>
+						<View style={tw`mb-4`}>
+							<Text style={tw`text-sm font-semibold mb-1`}>Stops?</Text>
+							<View style={tw`flex-row items-center`}>
+								<View style={tw`rounded-full overflow-hidden`}>
 									<CheckBox
 										checkedColor="green"
 										uncheckedColor="black"
@@ -243,22 +324,25 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = (props) => {
 										checked={stopEnabled}
 										onPress={() => {
 											const newStopEnabled = !stopEnabled;
-											console.log("Toggling stopEnabled to:", newStopEnabled);
 											setStopEnabled(newStopEnabled);
-
-											if (newStopEnabled) {
-												console.log("Setting stops to ['']");
-												setFieldValue("stops", [""]);
-											} else {
-												console.log("Setting stops to []");
-												setFieldValue("stops", []);
+											if (newStopEnabled && stops.length === 0) {
+												addStop();
+											} else if (!newStopEnabled) {
+												// Clear all stops when unchecked
+												setStops([]);
+												dispatch(
+													setLocationData({
+														...locationData,
+														stops: [],
+													})
+												);
 											}
 										}}
 										checkedIcon="dot-circle-o"
 										uncheckedIcon="circle-o"
 									/>
 								</View>
-								<Text style={styles.checkboxLabel}>
+								<Text style={tw`text-xs text-gray-600 ml-1`}>
 									Add a stop to get more bookings
 								</Text>
 							</View>
@@ -266,185 +350,92 @@ const RideScheduleForm: React.FC<RideScheduleFormProps> = (props) => {
 
 						{/* Stops list */}
 						{stopEnabled && (
-							<View>
-								{Array.isArray(values.stops) &&
-									values.stops.map((stop, index) => (
-										<View style={styles.inputContainer} key={`stop-${index}`}>
-											<TouchableOpacity
-												onPress={() => {
-													console.log("Removing stop at index:", index);
-													if (Array.isArray(values.stops)) {
-														const newStops = values.stops.filter(
-															(_, i) => i !== index
-														);
-														console.log("New stops after removal:", newStops);
-														setFieldValue(
-															"stops",
-															newStops.length > 0 ? newStops : [""]
-														);
-													}
-												}}
-											>
-												<Icon
-													name="remove-circle-outline"
-													type="ionicon"
-													color="red"
-													size={24}
-													style={styles.icon}
-												/>
-											</TouchableOpacity>
+							<View style={tw`mb-4`}>
+								{stops.map((stop, index) => (
+									<View key={stop.id} style={tw`flex-row items-start mb-3`}>
+										<TouchableOpacity onPress={() => removeStop(index)}>
+											<Icon
+												name="remove-circle-outline"
+												type="ionicon"
+												color="red"
+												size={24}
+												style={tw`mr-2 mt-2`}
+											/>
+										</TouchableOpacity>
+										<AutocompleteInput
+											placeholder="Enter a stop"
+											value={stop.address}
+											onChangeText={(text) => {
+												// Clear other searches to prevent interference
+												startLocation.clearSearch();
+												destination.clearSearch();
 
-											<View style={styles.autocompleteContainer}>
-												<GooglePlacesAutocomplete
-													placeholder="Enter a stop"
-													fetchDetails={true}
-													onPress={(data, details = null) => {
-														console.log(
-															`Stop ${index} selected:`,
-															data.description
-														);
-														if (Array.isArray(values.stops)) {
-															const newStops = [...values.stops];
-															newStops[index] = data.description;
-															console.log("Updated stops array:", newStops);
-															setFieldValue("stops", newStops);
-														}
-													}}
-													query={{
-														key: GOOGLE_MAPS_APIKEY,
-														language: "en",
-													}}
-													onFail={(error) => console.error(error)}
-													requestUrl={{
-														url: "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api",
-														useOnPlatform: "web",
-													}}
-													styles={{
-														textInput: styles.autocompleteInput,
-														container: styles.autocompleteInnerContainer,
-														listView: styles.listView,
-													}}
-													enablePoweredByContainer={false}
-													nearbyPlacesAPI="GooglePlacesSearch"
-													keyboardShouldPersistTaps="handled"
-												/>
-											</View>
-										</View>
-									))}
+												stopAutocomplete.setTerm(text);
+												const updatedStops = [...stops];
+												updatedStops[index] = {
+													...updatedStops[index],
+													address: text,
+												};
+												setStops(updatedStops);
+												dispatch(
+													setLocationData({
+														...locationData,
+														stops: updatedStops.map((stop) => stop.address),
+													})
+												);
+											}}
+											results={stopAutocomplete.locationResults}
+											onSelect={(result) =>
+												handleLocationSelect(
+													result,
+													"stop",
+													setFieldValue,
+													index
+												)
+											}
+											isActive={activeInput === `stop-${index}`}
+											onFocus={() => {
+												setActiveInput(`stop-${index}`);
+												// Clear other searches when focusing
+												startLocation.clearSearch();
+												destination.clearSearch();
+											}}
+											onBlur={() => setActiveInput(null)}
+										/>
+									</View>
+								))}
 
 								<TouchableOpacity
-									onPress={() => {
-										console.log("Adding new stop");
-										if (Array.isArray(values.stops)) {
-											const newStops = [...values.stops, ""];
-											console.log("New stops array after adding:", newStops);
-											setFieldValue("stops", newStops);
-										} else {
-											console.log("stops is not an array, setting to ['']");
-											setFieldValue("stops", [""]);
-										}
-									}}
-									style={tw`flex flex-row items-center py-2`}
+									onPress={addStop}
+									style={tw`flex-row items-center py-2`}
 								>
 									<Icon
 										name="add-circle-outline"
 										type="ionicon"
 										color="green"
 										size={24}
-										style={styles.addIcon}
+										style={tw`mr-1`}
 									/>
-									<Text style={tw`text-green-600 ml-2`}>Add another stop</Text>
+									<Text style={tw`text-green-600 ml-1`}>Add another stop</Text>
 								</TouchableOpacity>
 							</View>
 						)}
-
-						{/* Submit Button */}
-						<TouchableOpacity
-							onPress={() => {
-								console.log("Next button pressed");
-								handleSubmit();
-							}}
-							style={tw`rounded bg-[#404040] w-full rounded-lg p-3 mt-[90%]`}
-						>
-							<Text style={tw`text-center text-white text-[20px] font-bold`}>
-								Next
-							</Text>
-						</TouchableOpacity>
 					</View>
-				);
-			}}
+
+					{/* Submit Button */}
+					<TouchableOpacity
+						onPress={() => handleSubmit()}
+						style={tw`bg-[#404040] w-full rounded-lg p-3`}
+					>
+						<Text style={tw`text-center text-white text-lg font-bold`}>
+							Next
+						</Text>
+					</TouchableOpacity>
+				</View>
+			)}
 		</Formik>
+		// </SafeAreaView>
 	);
 };
-
-const styles = StyleSheet.create({
-	inputContainer: {
-		flexDirection: "row",
-		marginBottom: 20,
-		borderRadius: 5,
-		paddingHorizontal: 10,
-		alignItems: "center",
-	},
-	icon: {
-		marginRight: 10,
-	},
-	addIcon: {
-		marginRight: 5,
-	},
-	error: {
-		color: "red",
-		fontSize: 12,
-		marginTop: 5,
-	},
-	label: {
-		fontFamily: "Poppins-SemiBold",
-		marginBottom: 5,
-	},
-	checkboxOuterContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		borderRadius: 5,
-		paddingHorizontal: 10,
-		marginBottom: 10,
-	},
-	checkboxContainer: {
-		borderRadius: 1000,
-		overflow: "hidden",
-	},
-	checkboxLabel: {
-		fontFamily: "Poppins-Light",
-		fontSize: 12,
-		marginLeft: 7,
-	},
-	autocompleteContainer: {
-		flex: 1,
-		zIndex: 1,
-	},
-	autocompleteInnerContainer: {
-		flex: 1,
-	},
-	autocompleteInput: {
-		height: 45,
-		borderRadius: 10,
-		paddingVertical: 10,
-		paddingHorizontal: 15,
-		backgroundColor: "#F5F5F5",
-		fontFamily: "Poppins-Regular",
-		fontSize: 14,
-	},
-	listView: {
-		borderWidth: 1,
-		borderColor: "#DDD",
-		backgroundColor: "#FFF",
-		marginTop: 5,
-		borderRadius: 5,
-		elevation: 3,
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
-		zIndex: 9999,
-	},
-});
 
 export default RideScheduleForm;

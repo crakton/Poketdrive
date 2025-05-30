@@ -1,14 +1,12 @@
-import React, { useCallback, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
 	SafeAreaView,
-	ScrollView,
 	StyleSheet,
 	View,
 	StatusBar,
-	Alert,
-	TouchableOpacity,
-	Text,
+	Dimensions,
 } from "react-native";
+import PagerView from "react-native-pager-view";
 import tw from "twrnc";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -19,136 +17,167 @@ import VehicleDetails from "../../components/Driver/VehicleDetails";
 import RidePreference from "../../components/Driver/RidePreference";
 import BackRowSeating from "../../components/Driver/BackRowSeating";
 import PriceSetting from "../../components/Driver/PriceSetting";
-
-interface Schedule {
-	origin: string;
-	destination: string;
-	stops: string[];
-	type: string;
-	other: string;
-	price: number;
-	brs: number;
-	departure_time: string;
-	total_capacity: string;
-	remaining_capacity: string;
-	creator: string;
-	riders: string[];
-	luggage_type: string;
-	carName: string;
-	carColor: string;
-	carNumber: string;
-}
+import { useAppSelector } from "@redux/store";
+import { Schedule } from "@services/scheduleService";
+import { fetchUserDetails, TUserDetails } from "@utils/fetchUser";
+import { useSchedule } from "@hooks/reactQuery/useSchedule";
+import { useLandService } from "@hooks/land/useLandService";
 
 const RideSchedule = () => {
+	const rideSchedule = useAppSelector((state) => state.rideSchedule);
+	const pagerRef = useRef<PagerView>(null);
+	const [currentPage, setCurrentPage] = useState(0);
+	const [userData, setUserData] = useState<TUserDetails>();
 	const navigation =
 		useNavigation<
 			NativeStackNavigationProp<AuthStackParamList, "RidePreference">
 		>();
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { usePostTrip } = useLandService();
+	const { mutate, data, isError, isSuccess } = usePostTrip();
 
-	const [currentStep, setCurrentStep] = useState(0);
-	const [formData, setFormData] = useState<Schedule>({
-		origin: "",
-		destination: "",
-		stops: [],
-		type: "",
-		other: "",
-		price: 0,
-		brs: 0,
-		departure_time: "",
-		total_capacity: "",
-		remaining_capacity: "",
-		creator: "",
-		riders: [],
-		luggage_type: "",
-		carName: "",
-		carColor: "",
-		carNumber: "",
-	});
-
-	const handleNext = useCallback(() => {
-		if (currentStep < steps.length - 1) {
-			setCurrentStep(currentStep + 1);
-		}
-	}, [currentStep]);
-
-	const handleBack = useCallback(() => {
-		if (currentStep > 0) {
-			setCurrentStep(currentStep - 1);
-		} else {
-			navigation.goBack();
-		}
-	}, [currentStep, navigation]);
+	React.useEffect(() => {
+		(async () => setUserData(await fetchUserDetails()))();
+	}, []);
 
 	const steps = [
 		{
-			component: (
-				<RideScheduleForm
-					formData={formData}
-					setFormData={setFormData}
-					handleNext={handleNext}
-				/>
-			),
+			component: <RideScheduleForm onNext={() => goToNextPage()} />,
 			title: "Ride Schedule",
 		},
 		{
-			component: (
-				<VehicleDetails
-					formData={formData}
-					setFormData={setFormData}
-					handleNext={handleNext}
-				/>
-			),
+			component: <VehicleDetails onNext={() => goToNextPage()} />,
 			title: "Vehicle Details",
 		},
 		{
-			component: (
-				<RidePreference
-					formData={formData}
-					setFormData={setFormData}
-					handleNext={handleNext}
-				/>
-			),
+			component: <RidePreference onNext={() => goToNextPage()} />,
 			title: "Ride Preferences",
 		},
 		{
-			component: (
-				<BackRowSeating
-					formData={formData}
-					setFormData={setFormData}
-					handleNext={handleNext}
-				/>
-			),
+			component: <BackRowSeating onNext={() => goToNextPage()} />,
 			title: "Back Row Seating",
 		},
 		{
 			component: (
 				<PriceSetting
-					formData={formData}
-					setFormData={setFormData}
-					handleNext={handleNext}
+					isSubmitting={isSubmitting}
+					onNext={() => handlePosting()}
 				/>
 			),
 			title: "Price Setting",
 		},
 	];
+	const handlePosting = React.useCallback(() => {
+		// Handle the final submission logic
+		const payload = {
+			brs: getBRS(),
+			carColor: rideSchedule.vehicleDetails.carColor,
+			carName: rideSchedule.vehicleDetails.carName,
+			carNumber: rideSchedule.vehicleDetails.carNumber,
+			creator: userData?.id,
+			departure_time: rideSchedule.vehicleDetails.dateTime,
+			destination: rideSchedule.locationData.to,
+			origin: rideSchedule.locationData.from,
+			luggage_type: rideSchedule.ridePreferences.luggageSize,
+			other: rideSchedule.backRowSeating.otherPreferences?.other,
+			price: rideSchedule.price,
+			remaining_capacity:
+				rideSchedule.backRowSeating.otherPreferences?.counts?.toString(),
+			stops: rideSchedule.locationData.stops || [],
+			total_capacity: rideSchedule.backRowSeating.maxPersons.toString(),
+			riders: [],
+			type: rideSchedule.vehicleDetails.rideType,
+		} as Schedule;
+		console.log("Posting ride schedule with payload:", payload);
+
+		setIsSubmitting(true);
+		try {
+			mutate(payload, {
+				onSuccess: (data) => {
+					setIsSubmitting(false);
+					console.log("Ride schedule posted successfully:", data);
+				},
+				onError: (error) => {
+					setIsSubmitting(false);
+					console.error("Error posting ride schedule:", error);
+				},
+			});
+		} catch (error) {
+			setIsSubmitting(false);
+			console.error("Error posting ride schedule:", error);
+		} finally {
+			setIsSubmitting(false);
+		}
+	}, [navigation, rideSchedule]);
+
+	const getBRS = React.useCallback(() => {
+		const { seatingType } = rideSchedule.ridePreferences;
+		switch (seatingType) {
+			case "2-max":
+				return 2;
+			case "3-max":
+				return 3;
+			default:
+				return 0; // No back row seating
+		}
+	}, []);
+
+	const goToNextPage = React.useCallback(() => {
+		if (currentPage < steps.length - 1) {
+			setCurrentPage((prev) => prev + 1); // Update state first
+			setTimeout(() => {
+				pagerRef.current?.setPage(currentPage + 1); // Then update pager
+			}, 0);
+		}
+	}, [currentPage, steps.length]);
+
+	const handleBackPress = React.useCallback(() => {
+		if (currentPage > 0) {
+			setCurrentPage((prev) => prev - 1); // Update state first
+			setTimeout(() => {
+				pagerRef.current?.setPage(currentPage - 1); // Then update pager
+			}, 0);
+		} else {
+			navigation.goBack();
+		}
+	}, [currentPage, navigation]);
+
+	console.log("isError:", isError);
+	console.log("isSuccess:", isSuccess);
+	console.log("data:", data);
 
 	return (
 		<SafeAreaView
-			style={[tw`bg-[#FFFFFF] h-full`, { paddingTop: StatusBar.currentHeight }]}
+			style={[tw`bg-[#FFFFFF] flex-1`, { paddingTop: StatusBar.currentHeight }]}
 		>
-			<ScrollView>
-				<View style={tw`flex gap-[1]`}>
-					<HeaderBackButton
-						title={steps[currentStep].title}
-						onBack={handleBack}
-					/>
-					<View style={tw`px-5 mt-5`}>{steps[currentStep].component}</View>
-				</View>
-			</ScrollView>
+			<HeaderBackButton
+				onBack={handleBackPress}
+				title={steps[currentPage].title}
+			/>
+			<PagerView
+				ref={pagerRef}
+				style={styles.pager}
+				initialPage={0}
+				orientation={"vertical"}
+				scrollEnabled={false}
+				onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+			>
+				{steps.map((step, index) => (
+					<View key={index} style={tw`px-5 mt-5 flex-1 h-full`}>
+						{step.component}
+					</View>
+				))}
+			</PagerView>
 		</SafeAreaView>
 	);
 };
 
 export default RideSchedule;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	pager: {
+		flex: 1,
+		width: Dimensions.get("window").width,
+		height: Dimensions.get("window").height - StatusBar.currentHeight! - 56, // Adjust height to fit below the status bar and header
+	},
+});
